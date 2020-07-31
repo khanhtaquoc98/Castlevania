@@ -1,0 +1,80 @@
+# id	file_path	transparent_color_r	g	b
+[TEXTURES]
+0	textures\mario.png	255	255	255
+1	resources\simon.png	255	255	255
+20	textures\misc.png	176	224	248
+30 	resources\bbox.png	255	255	255
+2	resources\whip.png	255	255	255
+
+# id	left	top	right	bottom	texture_id
+[SPRITES]
+# ==== SIMON =========
+# idle 
+10001	141	21	156	51	1
+# walk
+10002	100	20	112	51	1		
+10003	56	21	72	51	1
+10004	15	21	31	51	1
+#jump
+10005	197	21	213	51	1
+#duck
+10007	197	21	213	51	1
+# die 
+10099	215	120	231	135	1
+#standing
+10008	16	78	31	108	1
+10009	57	78	72	108	1
+10010	105	78	120	108	1
+
+# ==== WHIP =========
+#normal
+20001	74	8	82	32	2
+20002	187	5	203	23	2
+20003	266	8	296	17	2
+
+#BRICK
+50001	0	0	16	16	30	
+
+# ani_id	sprite1_id	time1	sprite2_id	time2	...
+[ANIMATIONS]
+# ==== SIMON =========
+#idle
+0	10001	100
+#walk
+100	10002	100	10003	100	10004	100
+#jump
+200	10005	100
+#duck
+300	10007	100
+#standing
+500	10008	100	10009	100	10010	100
+#die
+400	10099	100
+
+
+#BIRCK
+701	50001	100
+
+#
+# id	ani1	ani2	ani3
+#
+[ANIMATION_SETS]
+# SIMON
+1	0	100	200	300	500	400
+
+#BIRCK
+31	701	
+
+[OBJECTS]
+# type	x	y	ani_set_id	extra_settings per object type
+# type: 0 = Simon , 1 = Brick, 2 = Goomba, 3 = Koopas
+# SIMON
+0	10	10	1
+
+# BRICK 
+1	0	144	22	768	16
+
+# --- SCENE PORTAL ----
+# type	l	t	ani_set_id	r	b	scene_id
+50	722	60	0	750	144	50
+
