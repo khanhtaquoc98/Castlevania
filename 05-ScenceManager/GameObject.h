@@ -83,6 +83,7 @@ public:
 	int GetOrientation() { return nx; }
 	void ReDirection() { this->nx = -nx; this->vx = -vx; }
 
+	bool isOnGround() { return vy == 0; }
 
 	int GetState() { return this->state; }
 
