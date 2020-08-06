@@ -129,7 +129,9 @@ void CGameObject::RenderBoundingBox()
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(x, y,nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 32);
+	//CGame::GetInstance()->Draw(x, y,nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 32);
+	//x,y == left and top of simon
+	CGame::GetInstance()->Draw(l, t, nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 32);
 }
 
 

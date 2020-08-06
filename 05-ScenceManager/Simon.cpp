@@ -6,11 +6,13 @@
 #include "Game.h"
 
 #include "Goomba.h"
+#include "Whip.h"
 #include "Portal.h"
 
 CSimon::CSimon(float x, float y) : CGameObject()
 {
 	//level = MARIO_LEVEL_BIG;
+
 	untouchable = 0;
 	SetState(SIMON_STATE_IDLE);
 
@@ -18,12 +20,15 @@ CSimon::CSimon(float x, float y) : CGameObject()
 	start_y = y; 
 	this->x = x; 
 	this->y = y; 
+
+	whip = new CWhip();
 }
 
 void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
+	if (x <= -6) x = -6;
 
 	// Simple fall down
 	vy += MARIO_GRAVITY*dt;
@@ -112,6 +117,12 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+
+	if (state == SIMON_STATE_STANDING || state == SIMON_STATE_STANDING_SIT)
+	{
+		whip->SetOrientation(nx);
+		whip->SetPositionWhip(D3DXVECTOR2(x,y), state == SIMON_STATE_STANDING ? true : false);
+	}
 }
 
 void CSimon::Render()
@@ -134,13 +145,15 @@ void CSimon::Render()
 		}
 	}
 	
-
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 
 	animation_set->at(ani)->Render(x, y, nx, alpha);
-
 	RenderBoundingBox();
+
+	if (state == SIMON_STATE_STANDING || state == SIMON_STATE_STANDING_SIT) {
+		whip->RenderbyFrame(animation_set->at(ani)->GetCurrentFrame());
+	}
 }
 
 void CSimon::SetState(int state)
@@ -185,12 +198,14 @@ void CSimon::SetState(int state)
 
 void CSimon::GetBoundingBox(float &left, float &top, float &right, float &bottom)
 {
-	left = x;
-	top = y; 
-	right = x + SIMON_BBOX_WIDTH;
-	bottom = y + SIMON_BBOX_HEIGHT;
-
+	if (nx > 0) {
+		left = x + 8;
+	}
+	else left = x + 6;
 	
+	top = y; 
+	right = left + SIMON_BBOX_WIDTH;
+	bottom = top + SIMON_BBOX_HEIGHT;
 }
 
 /*

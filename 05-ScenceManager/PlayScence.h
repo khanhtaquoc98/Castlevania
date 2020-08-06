@@ -7,6 +7,7 @@
 #include "Simon.h"
 #include "Goomba.h"
 #include "Koopas.h"
+#include "Whip.h"
 
 
 class CPlayScene: public CScene

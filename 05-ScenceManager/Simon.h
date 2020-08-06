@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Whip.h"
 
 #define MARIO_WALKING_SPEED		0.065f 
 //0.1f
@@ -40,6 +41,7 @@ class CSimon : public CGameObject
 
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
+	CWhip* whip;
 public: 
 	CSimon(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);

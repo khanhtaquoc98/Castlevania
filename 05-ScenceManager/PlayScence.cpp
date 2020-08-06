@@ -31,6 +31,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define OBJECT_TYPE_BRICK	1
 #define OBJECT_TYPE_GOOMBA	2
 #define OBJECT_TYPE_KOOPAS	3
+#define OBJECT_TYPE_WHIP	4
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -164,6 +165,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break; 
 	}
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
+	case OBJECT_TYPE_WHIP: obj = new CWhip(); break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			float r = atof(tokens[4].c_str());
@@ -188,7 +190,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 void CPlayScene::Load()
 {
-	DebugOut(L"[INFO] Start loading scene resources from : %s \n", sceneFilePath);
+	DebugOut(L"[INFO] Start loading scene from : %s \n", sceneFilePath);
 
 	ifstream f;
 	f.open(sceneFilePath);
@@ -229,7 +231,7 @@ void CPlayScene::Load()
 
 	f.close();
 
-	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
+	//CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
@@ -304,10 +306,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		else if(simon->GetState() == SIMON_STATE_DUCK)
 			simon->SetState(SIMON_STATE_STANDING_SIT);
 		break;
-	case DIK_SPACE:
+	case DIK_S:
 		if (simon->GetState() != SIMON_STATE_JUMP 
 			&& simon->animation_set->at(SIMON_ANI_STANDING)->IsOver(SIMON_TIME_STANDING) 
-			&& simon->GetState() != SIMON_STATE_STANDING)
+			&& simon->GetState() != SIMON_STATE_STANDING
+			&& simon->GetState() != SIMON_STATE_DUCK)
 			simon->SetState(SIMON_STATE_JUMP);
 		break;
 	case DIK_R: 
