@@ -20,7 +20,7 @@
 #include "GameObject.h"
 #include "Textures.h"
 
-#include "Simon.h"
+#include "Mario.h"
 #include "Brick.h"
 #include "Goomba.h"
 
@@ -29,9 +29,15 @@
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"SAMPLE 05 - SCENCE MANAGER"
 
+<<<<<<< HEAD
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(255, 255, 255)
 #define SCREEN_WIDTH 270
 #define SCREEN_HEIGHT 270
+=======
+#define BACKGROUND_COLOR D3DCOLOR_XRGB(255, 255, 200)
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
+>>>>>>> parent of 759d0a9... Update State Simon
 
 #define MAX_FRAME_RATE 120
 

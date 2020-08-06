@@ -1,7 +1,7 @@
 # id	file_path	transparent_color_r	g	b
 [TEXTURES]
 0	textures\mario.png	255	255	255
-1	resources\simon.png	116	116	116	
+1	resources\simon.png	255	255	255
 20	textures\misc.png	176	224	248
 30 	resources\bbox.png	255	255	255
 2	resources\whip.png	255	0	255
@@ -10,6 +10,7 @@
 [SPRITES]
 # ==== SIMON =========
 # idle 
+<<<<<<< HEAD
 10001	9	21	39	51	1
 # walk
 10002	94	20	120	51	1		
@@ -28,8 +29,23 @@
 10012	52	139	82	169	1
 10013	100	139	130	169	1
 
+=======
+10001	141	21	156	51	1
+# walk
+10002	100	20	112	51	1		
+10003	56	21	72	51	1
+10004	15	21	31	51	1
+#jump
+10005	197	21	213	51	1
+#duck
+10007	197	21	213	51	1
+>>>>>>> parent of 759d0a9... Update State Simon
 # die 
 10099	215	120	231	135	1
+#standing
+10008	16	78	31	108	1
+10009	57	78	72	108	1
+10010	105	78	120	108	1
 
 # ==== WHIP =========
 #normal
@@ -53,8 +69,6 @@
 300	10007	100
 #standing
 500	10008	100	10009	100	10010	100
-#standing_sit
-600	10011	100	10012	100	10013	100
 #die
 400	10099	100
 
@@ -70,7 +84,7 @@
 #
 [ANIMATION_SETS]
 # SIMON
-1	0	100	200	300	500	600	400
+1	0	100	200	300	500	400
 
 #WHIP
 2	10

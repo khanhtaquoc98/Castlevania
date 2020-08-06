@@ -9,6 +9,10 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
     <Filter Include="Frameworks">
       <UniqueIdentifier>{2655cd7b-2663-48e4-b89e-e7c5aaeee926}</UniqueIdentifier>
     </Filter>
@@ -17,9 +21,6 @@
     </Filter>
     <Filter Include="Weapons">
       <UniqueIdentifier>{9f360d39-b0ad-4e54-8fdc-74ed9985bfed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Player">
-      <UniqueIdentifier>{6e83ec7f-77eb-44fc-bada-bc61bbe9ba57}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,6 +31,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mario.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Koopas.cpp">
@@ -62,18 +66,15 @@
     <ClCompile Include="PlayScence.cpp">
       <Filter>Scence</Filter>
     </ClCompile>
-    <ClCompile Include="Simon.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Whip.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Brick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Goomba.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mario.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Koopas.h">
@@ -108,12 +109,6 @@
     </ClInclude>
     <ClInclude Include="Scence.h">
       <Filter>Scence</Filter>
-    </ClInclude>
-    <ClInclude Include="Simon.h">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Whip.h">
-      <Filter>Weapons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
