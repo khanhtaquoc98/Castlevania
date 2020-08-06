@@ -149,8 +149,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			DebugOut(L"[ERROR] MARIO object was created before!\n");
 			return;
 		}
-		obj = new CMario(x,y); 
-		player = (CMario*)obj;  
+		obj = new CSimon(x,y);
+		player = (CSimon*)obj;
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
@@ -294,28 +294,27 @@ void CPlayScene::Unload()
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
-	//DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
+	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
-	CMario *mario = ((CPlayScene*)scence)->GetPlayer();
+	CSimon *simon = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
 	case DIK_A:
-		mario->SetState(SIMON_STATE_STANDING);
+		if (simon->GetState() == SIMON_STATE_IDLE || simon->GetState() == SIMON_STATE_JUMP) {
+			simon->SetState(SIMON_STATE_STANDING);
+		}
+		else if(simon->GetState() == SIMON_STATE_DUCK)
+			simon->SetState(SIMON_STATE_STANDING_SIT);
 		break;
-<<<<<<< HEAD
 	case DIK_S:
 		if (simon->GetState() != SIMON_STATE_JUMP 
 			&& simon->animation_set->at(SIMON_ANI_STANDING)->IsOver(SIMON_TIME_STANDING) 
 			&& simon->GetState() != SIMON_STATE_STANDING
 			&& simon->GetState() != SIMON_STATE_DUCK)
 			simon->SetState(SIMON_STATE_JUMP);
-=======
-	case DIK_SPACE:
-		mario->SetState(SIMON_STATE_JUMP);
->>>>>>> parent of 759d0a9... Update State Simon
 		break;
 	case DIK_R: 
-		mario->Reset();
+		simon->Reset();
 		break;
 	}
 }
@@ -323,26 +322,30 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 void CPlayScenceKeyHandler::KeyState(BYTE *states)
 {
 	CGame *game = CGame::GetInstance();
-	CMario *mario = ((CPlayScene*)scence)->GetPlayer();
+	CSimon *simon = ((CPlayScene*)scence)->GetPlayer();
 
 	// disable control key when Mario die 
-	if (mario->GetState() == SIMON_STATE_DIE) return;
-	if (mario->GetState() == SIMON_STATE_STANDING && mario->animation_set->at(SIMON_ANI_STANDING)->IsOver(SIMON_TIME_STANDING) == false) return;
-
-
-	if (game->IsKeyDown(DIK_RIGHT))
+	if (simon->GetState() == SIMON_STATE_DIE) return;
+	if (simon->GetState() == SIMON_STATE_JUMP && simon->isOnGround() == false) return;
+	if (simon->GetState() == SIMON_STATE_STANDING && simon->animation_set->at(SIMON_ANI_STANDING)->IsOver(SIMON_TIME_STANDING) == false) return;
+	if (simon->GetState() == SIMON_STATE_STANDING_SIT && simon->animation_set->at(SIMON_ANI_STANDING_SIT)->IsOver(SIMON_TIME_STANDING) == false) return;
+	
+	
+	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_A))
 	{
-		mario->SetOrientation(1);
-		mario->SetState(SIMON_STATE_WALKING);
+			simon->SetOrientation(1);
+			simon->SetState(SIMON_STATE_WALKING);
 	}
-	else if (game->IsKeyDown(DIK_LEFT))
+	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_A))
 	{
-		mario->SetOrientation(-1);
-		mario->SetState(SIMON_STATE_WALKING);
+		simon->SetOrientation(-1);
+		simon->SetState(SIMON_STATE_WALKING);
 	}
 	else if (game->IsKeyDown(DIK_DOWN)) {
-		mario->SetState(SIMON_STATE_DUCK);
+		if (game->IsKeyDown(DIK_RIGHT)) { simon->SetOrientation(1); }
+		else if (game->IsKeyDown(DIK_LEFT)) simon->SetOrientation(-1); 
+		simon->SetState(SIMON_STATE_DUCK);
 	}
 	else
-		mario->SetState(SIMON_STATE_IDLE);
+		simon->SetState(SIMON_STATE_IDLE);
 }

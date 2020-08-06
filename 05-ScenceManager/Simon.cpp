@@ -2,21 +2,17 @@
 #include <assert.h>
 #include "Utils.h"
 
-#include "Mario.h"
+#include "Simon.h"
 #include "Game.h"
 
 #include "Goomba.h"
 #include "Whip.h"
 #include "Portal.h"
 
-CMario::CMario(float x, float y) : CGameObject()
+CSimon::CSimon(float x, float y) : CGameObject()
 {
-<<<<<<< HEAD:05-ScenceManager/Simon.cpp
 	//level = MARIO_LEVEL_BIG;
 
-=======
-	level = MARIO_LEVEL_BIG;
->>>>>>> parent of 759d0a9... Update State Simon:05-ScenceManager/Mario.cpp
 	untouchable = 0;
 	SetState(SIMON_STATE_IDLE);
 
@@ -28,7 +24,7 @@ CMario::CMario(float x, float y) : CGameObject()
 	whip = new CWhip();
 }
 
-void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
+void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
@@ -129,7 +125,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	}
 }
 
-void CMario::Render()
+void CSimon::Render()
 {
 	int ani = -1;
 	if (state == SIMON_STATE_DIE)
@@ -137,6 +133,7 @@ void CMario::Render()
 	else if (state == SIMON_STATE_DUCK) ani = SIMON_ANI_DUCK;
 	else if (state == SIMON_STATE_JUMP) ani = SIMON_ANI_JUMP;
 	else if (state == SIMON_STATE_STANDING) ani = SIMON_ANI_STANDING;
+	else if (state == SIMON_STATE_STANDING_SIT) ani = SIMON_ANI_STANDING_SIT;
 	else
 	{
 		if (vx == 0)
@@ -159,7 +156,7 @@ void CMario::Render()
 	}
 }
 
-void CMario::SetState(int state)
+void CSimon::SetState(int state)
 {
 	CGameObject::SetState(state);
 
@@ -167,7 +164,6 @@ void CMario::SetState(int state)
 	{
 	case SIMON_STATE_WALKING:
 		if (nx > 0) {
-
 			vx = MARIO_WALKING_SPEED;
 		}
 		else {
@@ -186,6 +182,11 @@ void CMario::SetState(int state)
 		animation_set->at(SIMON_ANI_STANDING)->SetAniStartTime(GetTickCount());
 		break;
 	}
+	case SIMON_STATE_STANDING_SIT: {
+		animation_set->at(SIMON_ANI_STANDING_SIT)->Reset();
+		animation_set->at(SIMON_ANI_STANDING_SIT)->SetAniStartTime(GetTickCount());
+		break;
+	}
 	case SIMON_STATE_IDLE:
 		vx = 0;
 		break;
@@ -195,7 +196,7 @@ void CMario::SetState(int state)
 	}
 }
 
-void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom)
+void CSimon::GetBoundingBox(float &left, float &top, float &right, float &bottom)
 {
 	if (nx > 0) {
 		left = x + 8;
@@ -210,7 +211,7 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 /*
 	Reset Mario status to the beginning state of a scene
 */
-void CMario::Reset()
+void CSimon::Reset()
 {
 	SetState(SIMON_STATE_IDLE);
 	//SetLevel(MARIO_LEVEL_BIG);
