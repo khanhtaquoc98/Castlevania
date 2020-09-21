@@ -7,19 +7,17 @@
 #define SHORT_CHAIN		1
 #define LONG_CHAIN		2
 
-
-
 class CWhip : public CGameObject {
 	static CWhip* __instance;
-
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	virtual void Render() {}
 	virtual void SetState(int state);
-	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
-
+	
 public:
 	CWhip();	
 	virtual void RenderbyFrame(int currentFrame);
+	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	void SetPositionWhip(D3DXVECTOR2 simonPosition, bool isStanding);
+	void UpItemWhip();
 	static CWhip* GetInstance();
 };

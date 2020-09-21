@@ -6,6 +6,15 @@
 #include "Textures.h"
 #include "Sprites.h"
 #include "Portal.h"
+#include "Torch.h"
+#include "Simon.h"
+#include "Items.h"
+#include "ItemBigHeart.h"
+#include "ItemChain.h"
+#include "ItemDagger.h"
+#include "Dagger.h"
+#include "SubWeapons.h"
+#include "Map.h"
 
 using namespace std;
 
@@ -26,12 +35,19 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define SCENE_SECTION_ANIMATIONS 4
 #define SCENE_SECTION_ANIMATION_SETS	5
 #define SCENE_SECTION_OBJECTS	6
+#define SCENE_SECTION_INFO_MAP		7
+#define SCENE_SECTION_TILE_MAP		8
 
 #define OBJECT_TYPE_SIMON	0
 #define OBJECT_TYPE_BRICK	1
-#define OBJECT_TYPE_GOOMBA	2
-#define OBJECT_TYPE_KOOPAS	3
 #define OBJECT_TYPE_WHIP	4
+#define OBJECT_TYPE_TORCH	5
+
+#define OBJECT_ITEM_BIG_HEART		6
+#define OBJECT_ITEM_CHAIN		7
+#define OBJECT_ITEM_DAGGER		8
+
+#define OBJECT_SUBWEAPON_DAGGER	41
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -149,12 +165,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			DebugOut(L"[ERROR] MARIO object was created before!\n");
 			return;
 		}
-		obj = new CSimon(x,y);
+		obj = CSimon::GetInstance();
 		player = (CSimon*)obj;
-
+		obj->SetVisible(true);
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: 
 	{
 		int width = atoi(tokens[4].c_str());
@@ -162,18 +177,54 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CBrick(); 
 		obj->SetWidth(width);
 		obj->SetHeight(height);
+		obj->SetVisible(true);
 		break; 
 	}
-	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
-	case OBJECT_TYPE_WHIP: obj = new CWhip(); break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			float r = atof(tokens[4].c_str());
 			float b = atof(tokens[5].c_str());
 			int scene_id = atoi(tokens[6].c_str());
 			obj = new CPortal(x, y, r, b, scene_id);
+			obj->SetVisible(true);
 		}
 		break;
+	case OBJECT_TYPE_TORCH:
+		{
+			obj = new CTorch();
+			int IdItem = atoi(tokens[4].c_str());
+			obj->SetItem(IdItem);
+			obj->SetVisible(true);
+			break;
+		}
+	case OBJECT_ITEM_BIG_HEART:
+		{
+			obj = new CItemBigHeart();
+			CItems::GetInstance()->AddItem(OBJECT_ITEM_BIG_HEART, obj);
+			obj->SetVisible(false);
+			break;
+		}
+	case OBJECT_ITEM_CHAIN:
+	{
+		obj = new CItemChain();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_CHAIN, obj);
+		obj->SetVisible(false);
+		break;
+	}
+	case OBJECT_ITEM_DAGGER:
+	{
+		obj = new CItemDagger();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_DAGGER, obj);
+		obj->SetVisible(false);
+		break;
+	}
+	case OBJECT_SUBWEAPON_DAGGER:
+	{	
+		obj = new CDagger();
+		obj->SetVisible(false);
+		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_DAGGER, obj);
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -183,9 +234,36 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	obj->SetPosition(x, y);
 
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-
 	obj->SetAnimationSet(ani_set);
 	objects.push_back(obj);
+}
+
+void CPlayScene::_ParseSection_INFO_MAP(string line){
+	vector<string> tokens = split(line);
+	if (tokens.size() < 3) return; // skip invalid lines 
+	widthMap = atoi(tokens[0].c_str());
+	colTileImage = atoi(tokens[1].c_str());
+	 idTexture = atoi(tokens[2].c_str());
+}
+
+#define TILE_WIDTH 16;
+
+void CPlayScene::_ParseSection_TILE_MAP(string line) {
+	vector<string> tokens = split(line);
+	
+	for (int i = 0; i < tokens.size(); i++) {
+		int index = atoi(tokens[i].c_str());
+		RECT Tile;
+		int x = i * TILE_WIDTH;
+		int y = rowTile;
+		Tile.left = index % colTileImage * 16;
+		Tile.top = index / colTileImage * 16;
+		Tile.right = Tile.left + 16;
+		Tile.bottom = Tile.top + 16;
+		CMap* map = new CMap(x, y, idTexture, Tile.left, Tile.top, Tile.right, Tile.bottom);
+		tileMaps.push_back(map);
+	}
+	rowTile += 16;
 }
 
 void CPlayScene::Load()
@@ -214,6 +292,12 @@ void CPlayScene::Load()
 			section = SCENE_SECTION_ANIMATION_SETS; continue; }
 		if (line == "[OBJECTS]") { 
 			section = SCENE_SECTION_OBJECTS; continue; }
+		if (line == "[INFO_MAP]") {
+			section = SCENE_SECTION_INFO_MAP; continue;
+		}
+		if (line == "[TILE_MAP]") {
+			section = SCENE_SECTION_TILE_MAP; continue;
+		}
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }	
 
 		//
@@ -226,14 +310,14 @@ void CPlayScene::Load()
 			case SCENE_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
 			case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
 			case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
+			case SCENE_SECTION_INFO_MAP: _ParseSection_INFO_MAP(line); break;
+			case SCENE_SECTION_TILE_MAP: _ParseSection_TILE_MAP(line); break;
 		}
 	}
 
 	f.close();
 
-	//Texture of BoundingBox
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
-
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -243,9 +327,12 @@ void CPlayScene::Update(DWORD dt)
 	// TO-DO: This is a "dirty" way, need a more organized way 
 
 	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 1; i < objects.size(); i++)
+
+	for (size_t i = 0; i < objects.size(); i++)
 	{
-		coObjects.push_back(objects[i]);
+		if (objects[i]->isVisible()) {
+			coObjects.push_back(objects[i]);
+		}
 	}
 
 	for (size_t i = 0; i < objects.size(); i++)
@@ -264,7 +351,11 @@ void CPlayScene::Update(DWORD dt)
 	if (cx < game->GetScreenWidth() /2 ) {
 		cx = 0.0f;
 	}
-	else {
+	else if (cx > this->widthMap - game->GetScreenWidth() / 2) {
+		cx = this->widthMap - game->GetScreenWidth();
+	}
+	else
+	{
 		cx -= game->GetScreenWidth() / 2;
 		cy -= game->GetScreenHeight() / 2;
 
@@ -275,8 +366,16 @@ void CPlayScene::Update(DWORD dt)
 
 void CPlayScene::Render()
 {
-	for (int i = 0; i < objects.size(); i++)
-		objects[i]->Render();
+	for (int i = 0; i < tileMaps.size(); i++)
+		tileMaps[i]->Render();
+	for (int i = 0; i < objects.size(); i++) {
+		if (!dynamic_cast<CSimon*>(objects[i]) && objects[i]->isVisible() == true) 
+			objects[i]->Render();
+	}
+	for (int i = 0; i < objects.size(); i++) {
+		if (dynamic_cast<CSimon*>(objects[i]))
+			objects[i]->Render();
+	}
 }
 
 /*
@@ -285,8 +384,11 @@ void CPlayScene::Render()
 void CPlayScene::Unload()
 {
 	for (int i = 0; i < objects.size(); i++)
+	{
+		/*if (!dynamic_cast<CSimon*>(objects[i]))*/
 		delete objects[i];
-
+	}
+		
 	objects.clear();
 	player = NULL;
 
@@ -300,19 +402,28 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CSimon *simon = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
-	case DIK_A:
-		if (simon->GetState() == SIMON_STATE_IDLE || simon->GetState() == SIMON_STATE_JUMP) {
-			simon->SetState(SIMON_STATE_STANDING);
-		}
-		else if(simon->GetState() == SIMON_STATE_DUCK)
-			simon->SetState(SIMON_STATE_STANDING_SIT);
+	case DIK_Q:
+		simon->SetWeapon(SUBWEAPON_DAGGER);
 		break;
-	case DIK_S:
-		if (simon->GetState() != SIMON_STATE_JUMP 
-			&& simon->animation_set->at(SIMON_ANI_STANDING)->IsOver(SIMON_TIME_STANDING) 
-			&& simon->GetState() != SIMON_STATE_STANDING
-			&& simon->GetState() != SIMON_STATE_DUCK)
+	case DIK_Z:
+		if (simon->GetState() == SIMON_STATE_JUMP) {
+			simon->SetState(SIMON_STATE_JUMP_ATTACK);
+		} 
+		else if (simon->GetState() == SIMON_STATE_IDLE) {
+			if (CGame::GetInstance()->IsKeyDown(DIK_UP) && simon->GetWeapon() != 0) {
+				simon->SetState(SIMON_STATE_ATTACK_SUBWEAPON);
+			}
+			else
+			simon->SetState(SIMON_STATE_ATTACK);
+		}
+		else if (simon->GetState() == SIMON_STATE_SIT)
+			simon->SetState(SIMON_STATE_ATTACK_SIT);
+		break;
+	case DIK_X:
+		if (simon->GetState() == SIMON_STATE_ATTACK || simon->GetState() == SIMON_STATE_ATTACK_SIT) return;
+		if (simon->GetState() == SIMON_STATE_IDLE || simon->GetState() == SIMON_STATE_WALKING) {
 			simon->SetState(SIMON_STATE_JUMP);
+		}
 		break;
 	case DIK_R: 
 		simon->Reset();
@@ -327,17 +438,21 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 
 	// disable control key when Mario die 
 	if (simon->GetState() == SIMON_STATE_DIE) return;
-	if (simon->GetState() == SIMON_STATE_JUMP && simon->isOnGround() == false) return;
-	if (simon->GetState() == SIMON_STATE_STANDING && simon->animation_set->at(SIMON_ANI_STANDING)->IsOver(SIMON_TIME_STANDING) == false) return;
-	if (simon->GetState() == SIMON_STATE_STANDING_SIT && simon->animation_set->at(SIMON_ANI_STANDING_SIT)->IsOver(SIMON_TIME_STANDING) == false) return;
+	if (simon->GetState() == SIMON_STATE_JUMP && simon->vy != 0) return;
+	if (simon->GetState() == SIMON_STATE_JUMP_ATTACK && simon->animation_set->at(SIMON_ANI_ATTACK)->IsOver(SIMON_TIME_ATTACK) == false) return;
+	if (simon->GetState() == SIMON_STATE_ATTACK && simon->animation_set->at(SIMON_ANI_ATTACK)->IsOver(SIMON_TIME_ATTACK) == false) return;
+	if (simon->GetState() == SIMON_STATE_ATTACK_SUBWEAPON && simon->animation_set->at(SIMON_ANI_ATTACK)->IsOver(SIMON_TIME_ATTACK) == false) return;
+	if (simon->GetState() == SIMON_STATE_ATTACK_SIT && simon->animation_set->at(SIMON_ANI_ATTACK_SIT)->IsOver(SIMON_TIME_ATTACK) == false) return;
+	if (simon->GetState() == SIMON_STATE_CHANGE_COLOR && simon->animation_set->at(SIMON_ANI_CHANGE_COLOR)->IsOver(SIMON_TIME_CHANGE_COLOR) == false) return;
+
 	
-	
-	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_A))
+
+	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
 	{
 			simon->SetOrientation(1);
 			simon->SetState(SIMON_STATE_WALKING);
 	}
-	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_A))
+	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
 	{
 		simon->SetOrientation(-1);
 		simon->SetState(SIMON_STATE_WALKING);
@@ -345,7 +460,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 	else if (game->IsKeyDown(DIK_DOWN)) {
 		if (game->IsKeyDown(DIK_RIGHT)) { simon->SetOrientation(1); }
 		else if (game->IsKeyDown(DIK_LEFT)) simon->SetOrientation(-1); 
-		simon->SetState(SIMON_STATE_DUCK);
+		simon->SetState(SIMON_STATE_SIT);
 	}
 	else
 		simon->SetState(SIMON_STATE_IDLE);

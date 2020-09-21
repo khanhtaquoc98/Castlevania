@@ -126,12 +126,19 @@
   <ItemGroup>
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="Brick.cpp" />
-    <ClCompile Include="Koopas.cpp" />
+    <ClCompile Include="ItemBigHeart.cpp" />
+    <ClCompile Include="ItemChain.cpp" />
+    <ClCompile Include="ItemDagger.cpp" />
+    <ClCompile Include="Items.cpp" />
+    <ClCompile Include="ItemSmallHeart.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="Dagger.cpp" />
+    <ClCompile Include="SubWeapons.cpp" />
+    <ClCompile Include="Torch.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Goomba.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Simon.cpp" />
     <ClCompile Include="PlayScence.cpp" />
@@ -143,12 +150,19 @@
   <ItemGroup>
     <ClInclude Include="Animations.h" />
     <ClInclude Include="Brick.h" />
-    <ClInclude Include="Koopas.h" />
+    <ClInclude Include="ItemBigHeart.h" />
+    <ClInclude Include="ItemChain.h" />
+    <ClInclude Include="ItemDagger.h" />
+    <ClInclude Include="Items.h" />
+    <ClInclude Include="ItemSmallHeart.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Portal.h" />
+    <ClInclude Include="Dagger.h" />
+    <ClInclude Include="SubWeapons.h" />
+    <ClInclude Include="Torch.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Goomba.h" />
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Simon.h" />
     <ClInclude Include="PlayScence.h" />

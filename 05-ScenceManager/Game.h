@@ -9,7 +9,7 @@
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
-
+#include "Simon.h"
 #include "Scence.h"
 
 using namespace std;
@@ -47,6 +47,11 @@ class CGame
 	void _ParseSection_SETTINGS(string line);
 	void _ParseSection_SCENES(string line);
 
+	void _ParseSection_TEXTURES(string line);
+	void _ParseSection_SPRITES(string line);
+	void _ParseSection_ANIMATIONS(string line);
+	void _ParseSection_ANIMATION_SETS(string line);
+
 public:
 	void InitKeyboard();
 	void SetKeyHandler(LPKEYEVENTHANDLER handler) { keyHandler = handler; }
@@ -83,6 +88,8 @@ public:
 	LPD3DXSPRITE GetSpriteHandler() { return this->spriteHandler; }
 
 	void SetCamPos(float x, float y) { cam_x = x; cam_y = y; }
+
+	bool InCamera(LPGAMEOBJECT obj);
 
 	static CGame * GetInstance();
 

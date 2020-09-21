@@ -34,7 +34,7 @@ public:
 	void Add(int spriteId, DWORD time = 0);
 
 	void Render(float x, float y,int nx, int alpha = 255);
-	void RenderByFrame(int frameID, int nx, float x, float y, int alpha); //Render with frame custom
+	void RenderByFrame(int frameID, int nx, float x, float y, int alpha); //Render with frame orther
 	int GetCurrentFrame() {
 		return currentFrame;
 	}

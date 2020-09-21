@@ -25,6 +25,19 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 /*
 	Extension of original SweptAABB to deal with two moving objects
 */
+bool CGameObject::CheckCollision(LPGAMEOBJECT obj)
+{
+	float left, top, right, bottom;
+	float objLeft, objTop, objRight, objBottom;
+
+	GetBoundingBox(left, top, right, bottom);
+	obj->GetBoundingBox(objLeft, objTop, objRight, objBottom);
+
+	if (left < objRight && right > objLeft && top < objBottom && bottom > objTop)
+		return true;
+	return false;
+}
+
 LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 {
 	float sl, st, sr, sb;		// static object bbox
@@ -130,8 +143,8 @@ void CGameObject::RenderBoundingBox()
 	rect.bottom = (int)b - (int)t;
 
 	//CGame::GetInstance()->Draw(x, y,nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 32);
-	//x,y == left and top of simon
-	CGame::GetInstance()->Draw(l, t, nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 32);
+	//x,y == left and top of obj
+	CGame::GetInstance()->Draw(l, t, nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 40);
 }
 
 

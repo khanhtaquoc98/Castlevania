@@ -1,13 +1,26 @@
-#include <algorithm>
+﻿#include <algorithm>
 #include <assert.h>
 #include "Utils.h"
-
+#include "ItemBigHeart.h"
+#include "ItemChain.h"
 #include "Simon.h"
 #include "Game.h"
-
-#include "Goomba.h"
-#include "Whip.h"
+#include "Torch.h"
+#include "Brick.h"
 #include "Portal.h"
+#include "Dagger.h"
+#include "SubWeapons.h"
+#include "ItemDagger.h"
+
+CSimon* CSimon::__instance = NULL;
+
+
+CSimon* CSimon::GetInstance()
+{
+	if (__instance == NULL)
+		__instance = new CSimon();
+	return __instance;
+}
 
 CSimon::CSimon(float x, float y) : CGameObject()
 {
@@ -32,6 +45,26 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 	// Simple fall down
 	vy += MARIO_GRAVITY*dt;
+
+	for (UINT i = 0; i < coObjects->size(); i++)
+	{
+		LPGAMEOBJECT coliObject = coObjects->at(i);
+
+		if (this->CheckCollision(coliObject)) {
+			if (dynamic_cast<CItemBigHeart*>(coliObject)) {
+				coliObject->SetVisible(false);
+			}
+			else if(dynamic_cast<CItemChain*>(coliObject)) {
+				coliObject->SetVisible(false);
+				this->SetState(SIMON_STATE_CHANGE_COLOR);
+				this->animation_set->at(SIMON_ANI_CHANGE_COLOR)->SetAniStartTime(GetTickCount());
+				whip->UpItemWhip();
+			}
+			else if (dynamic_cast<CItemDagger*>(coliObject)) {
+				coliObject->SetVisible(false);
+			}
+		}
+	}
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -69,12 +102,8 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		//	x += nx*abs(rdx); 
 		
 		// block every object first!
-		x += min_tx*dx + nx*0.4f;
-		y += min_ty*dy + ny*0.4f;
-
-		if (nx!=0) vx = 0;
-		if (ny!=0) vy = 0;
-
+		x += min_tx*dx + nx*0.2f;
+		y += min_ty*dy + ny*0.2f;
 
 		//
 		// Collision logic with other objects
@@ -83,57 +112,68 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CGoomba *>(e->obj)) // if e->obj is Goomba 
+			if (dynamic_cast<CTorch*>(e->obj))
 			{
-				CGoomba *goomba = dynamic_cast<CGoomba *>(e->obj);
-
-				// jump on top >> kill Goomba and deflect a bit 
-				if (e->ny < 0)
-				{
-					if (goomba->GetState()!= GOOMBA_STATE_DIE)
-					{
-						goomba->SetState(GOOMBA_STATE_DIE);
-						vy = -MARIO_JUMP_DEFLECT_SPEED;
-					}
-				}
-				else if (e->nx != 0)
-				{
-					if (untouchable==0)
-					{
-						if (goomba->GetState()!=GOOMBA_STATE_DIE)
-						{
-								SetState(SIMON_STATE_DIE);
-						}
-					}
-				}
-			} // if Goomba
-			else if (dynamic_cast<CPortal *>(e->obj))
+				if (e->nx != 0) x += dx;
+				if (e->ny != 0) y += dy;
+			}
+			else if (dynamic_cast<CItemBigHeart*>(e->obj)) {
+				e->obj->SetVisible(false);
+				if (e->nx != 0) x += dx;
+				if (e->ny != 0) y += dy;
+			}
+			else if (dynamic_cast<CItemChain*>(e->obj)) {
+				e->obj->SetVisible(false);
+				this->SetState(SIMON_STATE_CHANGE_COLOR);
+				whip->UpItemWhip();
+			}
+			else if (dynamic_cast<CItemDagger*>(e->obj)) {
+				e->obj->SetVisible(false);
+			}
+			else if (dynamic_cast<CPortal*>(e->obj))
 			{
-				CPortal *p = dynamic_cast<CPortal *>(e->obj);
+				CPortal* p = dynamic_cast<CPortal*>(e->obj);
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			}
+			else {
+				if (nx != 0) vx = 0;
+				if (ny != 0) vy = 0;
+			}
+
 		}
 	}
+
 
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
-	if (state == SIMON_STATE_STANDING || state == SIMON_STATE_STANDING_SIT)
+	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT)
 	{
 		whip->SetOrientation(nx);
-		whip->SetPositionWhip(D3DXVECTOR2(x,y), state == SIMON_STATE_STANDING ? true : false);
+		whip->SetPositionWhip(D3DXVECTOR2(x,y), state == SIMON_STATE_ATTACK ? true : false);
+		if (animation_set->at(SIMON_ANI_ATTACK)->GetCurrentFrame() == 2 ||
+			animation_set->at(SIMON_ANI_ATTACK_SIT)->GetCurrentFrame() == 2) {
+			whip->Update(dt, coObjects);
+		}
 	}
+	if (state == SIMON_STATE_ATTACK_SUBWEAPON) {
+		if (animation_set->at(SIMON_ANI_ATTACK)->GetCurrentFrame() == 2) {
+			CSubWeapons::GetInstance()->UseSubWeapon(41);
+		}
+	}
+
 }
 
 void CSimon::Render()
 {
-	int ani = -1;
-	if (state == SIMON_STATE_DIE)
-		ani = SIMON_ANI_DIE;
-	else if (state == SIMON_STATE_DUCK) ani = SIMON_ANI_DUCK;
+	int ani = -1; 
+	if (state == SIMON_STATE_DIE) ani = SIMON_ANI_DIE;
+	else if (state == SIMON_STATE_SIT) ani = SIMON_ANI_DUCK;
 	else if (state == SIMON_STATE_JUMP) ani = SIMON_ANI_JUMP;
-	else if (state == SIMON_STATE_STANDING) ani = SIMON_ANI_STANDING;
-	else if (state == SIMON_STATE_STANDING_SIT) ani = SIMON_ANI_STANDING_SIT;
+	else if (state == SIMON_STATE_JUMP_ATTACK) ani = SIMON_ANI_ATTACK;
+	else if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SUBWEAPON) ani = SIMON_ANI_ATTACK;
+	else if (state == SIMON_STATE_ATTACK_SIT) ani = SIMON_ANI_ATTACK_SIT;
+	else if (state == SIMON_STATE_CHANGE_COLOR) ani = SIMON_ANI_CHANGE_COLOR;
 	else
 	{
 		if (vx == 0)
@@ -144,68 +184,91 @@ void CSimon::Render()
 			ani = SIMON_ANI_WALKING;
 		}
 	}
-	
+		
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 
 	animation_set->at(ani)->Render(x, y, nx, alpha);
 	RenderBoundingBox();
 
-	if (state == SIMON_STATE_STANDING || state == SIMON_STATE_STANDING_SIT) {
+	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK) {
 		whip->RenderbyFrame(animation_set->at(ani)->GetCurrentFrame());
 	}
+	
 }
 
 void CSimon::SetState(int state)
 {
 	CGameObject::SetState(state);
-
 	switch (state)
 	{
-	case SIMON_STATE_WALKING:
-		if (nx > 0) {
-			vx = MARIO_WALKING_SPEED;
+		case SIMON_STATE_WALKING:
+			if (nx > 0) {
+				vx = MARIO_WALKING_SPEED;
+			}
+			else {
+				vx = -MARIO_WALKING_SPEED;
+			}
+			break;
+		case SIMON_STATE_JUMP:
+			// TODO: need to check if Mario is *current* on a platform before allowing to jump again
+				vy = -MARIO_JUMP_SPEED_Y;
+			break; 
+		case SIMON_STATE_JUMP_ATTACK:
+			animation_set->at(SIMON_ANI_ATTACK)->Reset();
+			animation_set->at(SIMON_ANI_ATTACK)->SetAniStartTime(GetTickCount());
+			break;
+		case SIMON_STATE_SIT:
+			vx = 0;
+			break;
+		case SIMON_STATE_ATTACK: {
+			animation_set->at(SIMON_ANI_ATTACK)->Reset();
+			animation_set->at(SIMON_ANI_ATTACK)->SetAniStartTime(GetTickCount());
+			break;
 		}
-		else {
-			vx = -MARIO_WALKING_SPEED;
+		case SIMON_STATE_ATTACK_SUBWEAPON: {
+			animation_set->at(SIMON_ANI_ATTACK)->Reset();
+			animation_set->at(SIMON_ANI_ATTACK)->SetAniStartTime(GetTickCount());
+			break;
+		}	
+		case SIMON_STATE_ATTACK_SIT: {
+			animation_set->at(SIMON_ANI_ATTACK_SIT)->Reset();
+			animation_set->at(SIMON_ANI_ATTACK_SIT)->SetAniStartTime(GetTickCount());
+			break;
 		}
-		break;
-	case SIMON_STATE_JUMP:
-		// TODO: need to check if Mario is *current* on a platform before allowing to jump again
-			vy = -MARIO_JUMP_SPEED_Y;
-		break; 
-	case SIMON_STATE_DUCK:
-		vx = 0;
-		break;
-	case SIMON_STATE_STANDING: {
-		animation_set->at(SIMON_ANI_STANDING)->Reset();
-		animation_set->at(SIMON_ANI_STANDING)->SetAniStartTime(GetTickCount());
-		break;
-	}
-	case SIMON_STATE_STANDING_SIT: {
-		animation_set->at(SIMON_ANI_STANDING_SIT)->Reset();
-		animation_set->at(SIMON_ANI_STANDING_SIT)->SetAniStartTime(GetTickCount());
-		break;
-	}
-	case SIMON_STATE_IDLE:
-		vx = 0;
-		break;
-	case SIMON_STATE_DIE:
-		vy = -MARIO_DIE_DEFLECT_SPEED;
-		break;
+		case SIMON_STATE_IDLE:
+			vx = 0;
+			break;
+		case SIMON_STATE_CHANGE_COLOR:
+			vx = 0;
+			animation_set->at(SIMON_ANI_CHANGE_COLOR)->Reset();
+			animation_set->at(SIMON_ANI_CHANGE_COLOR)->SetAniStartTime(GetTickCount());
+			break;
+		case SIMON_STATE_DIE:
+			vy = -MARIO_DIE_DEFLECT_SPEED;
+			break;
+		
 	}
 }
 
 void CSimon::GetBoundingBox(float &left, float &top, float &right, float &bottom)
 {
+	if (state == SIMON_STATE_SIT || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP) {
+		top = y + 7;
+		bottom = top + 23; // 23 == Chiều cao của simon khi ngồi
+	}
+	else {
+		top = y;
+		bottom = top + SIMON_BBOX_HEIGHT;
+	}
+		
+
 	if (nx > 0) {
 		left = x + 8;
 	}
 	else left = x + 6;
 	
-	top = y; 
 	right = left + SIMON_BBOX_WIDTH;
-	bottom = top + SIMON_BBOX_HEIGHT;
 }
 
 /*

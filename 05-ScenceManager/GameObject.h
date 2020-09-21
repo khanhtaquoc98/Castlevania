@@ -56,7 +56,12 @@ public:
 	float vx;
 	float vy;
 
+	int itemID;
+
 	int nx;	 //right = 1; left = -1
+
+	bool visible; //true == visible
+	DWORD tStartVisible;
 
 	int state;
 
@@ -67,7 +72,6 @@ public:
 public: 
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void GetPosition(float& x, float& y) { x = this->x; y = this->y; }
-
 
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
 	void GetSpeed(float &vx, float &vy) { vx = this->vx; vy = this->vy; }
@@ -82,7 +86,11 @@ public:
 	int GetOrientation() { return nx; }
 	void ReDirection() { this->nx = -nx; this->vx = -vx; }
 
-	bool isOnGround() { return vy == 0; }
+	void SetVisible(bool visible) { this->visible = visible; }
+	bool isVisible() { return visible; }
+
+	void SetItem(int itemID) { this->itemID = itemID; }
+	int GetItem() { return itemID; }
 
 	int GetState() { return this->state; }
 
@@ -90,6 +98,7 @@ public:
 
 	void SetAnimationSet(LPANIMATION_SET ani_set) { animation_set = ani_set; }
 
+	bool CheckCollision(LPGAMEOBJECT obj);
 	LPCOLLISIONEVENT SweptAABBEx(LPGAMEOBJECT coO);
 	void CalcPotentialCollisions(vector<LPGAMEOBJECT> *coObjects, vector<LPCOLLISIONEVENT> &coEvents);
 	void FilterCollision(

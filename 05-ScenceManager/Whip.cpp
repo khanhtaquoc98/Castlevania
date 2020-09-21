@@ -1,5 +1,8 @@
 #include "Whip.h"
 #include "Simon.h"
+#include "Torch.h"
+#include "Items.h"
+
 
 CWhip::CWhip():CGameObject()
 {
@@ -8,12 +11,28 @@ CWhip::CWhip():CGameObject()
 
 void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	for (UINT i = 0; i < coObjects->size(); i++) 
+	{	
+		LPGAMEOBJECT coliObject = coObjects->at(i);
+
+		if (this->CheckCollision(coliObject)) {
+			if (dynamic_cast<CTorch*>(coliObject)) {
+				coObjects->at(i)->SetState(TORCH_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			
+		}
+	}
 }
 
 void CWhip::RenderbyFrame(int currentFrame)
 {
-	CAnimationSets::GetInstance()->Get(WHIP_ANI_SET)->at(state)->RenderByFrame(currentFrame, nx, x, y,255);
-	RenderBoundingBox();
+	int StateWhip = CWhip::GetInstance()->GetState();
+	CAnimationSets::GetInstance()->Get(WHIP_ANI_SET)->at(StateWhip)->RenderByFrame(currentFrame, nx, x, y,255);
+	if (currentFrame == 2) {
+		RenderBoundingBox();
+	}
+	
 }
 
 void CWhip::SetState(int state)
@@ -21,15 +40,38 @@ void CWhip::SetState(int state)
 	this->state = state;
 }
 
+
+
 void CWhip::GetBoundingBox(float& left, float& top, float& right, float& bottom) {
-	top = y + 4;
-	bottom = top + 8;
-	if (nx > 0) left = x + 70;
-	else
+	float xSimon, ySimon;
+	CSimon::GetInstance()->GetPosition(xSimon, ySimon);
+	switch (CWhip::GetInstance()->GetState()){
+	case NORMAL_WHIP:
 	{
-		left = x + 26;
+		top = ySimon + 6;
+		if (nx > 0) left = xSimon + 28;
+		else left = xSimon - 20;
+		right = left + 24; //width normal whip
+		bottom = top + 8;  // height normal whip
+		break;
 	}
-	right = left + 24;
+	case SHORT_CHAIN: {
+		top = ySimon + 7;
+		if (nx > 0) left = xSimon + 29;
+		else left = xSimon - 19;
+		right = left + 23; 
+		bottom = top + 6;
+		break;
+	} 
+	case LONG_CHAIN: {
+		top = ySimon + 7;
+		if (nx > 0) left = xSimon + 27;
+		else left = xSimon - 33;
+		right = left + 38;
+		bottom = top + 6;
+		break;
+	}
+	}
 }
 
 void CWhip::SetPositionWhip(D3DXVECTOR2 simonPosition, bool isStanding)
@@ -47,7 +89,23 @@ void CWhip::SetPositionWhip(D3DXVECTOR2 simonPosition, bool isStanding)
 		else simonPosition.y += 8.0f;
 	}
 
-	SetPosition(simonPosition.x, simonPosition.y);
+	this->SetPosition(simonPosition.x, simonPosition.y);
+}
+
+void CWhip::UpItemWhip()
+{
+	switch (CWhip::GetInstance()->GetState())
+	{
+	case NORMAL_WHIP:
+		CWhip::GetInstance()->SetState(SHORT_CHAIN);
+		break;
+	case SHORT_CHAIN:
+		CWhip::GetInstance()->SetState(LONG_CHAIN);
+		break;
+	default:
+		CWhip::GetInstance()->SetState(NORMAL_WHIP);
+		break;
+	}
 }
 
 
