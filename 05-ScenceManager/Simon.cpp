@@ -45,7 +45,6 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 	// Simple fall down
 	vy += MARIO_GRAVITY*dt;
-	DebugOut(L"OnGroudn: %d\n", OnGroud);
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
 		LPGAMEOBJECT coliObject = coObjects->at(i);
@@ -62,6 +61,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			}
 			else if (dynamic_cast<CItemDagger*>(coliObject)) {
 				coliObject->SetVisible(false);
+				this->SetWeapon(SUBWEAPON_DAGGER);
 			}
 		}
 	}
@@ -129,6 +129,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			}
 			else if (dynamic_cast<CItemDagger*>(e->obj)) {
 				e->obj->SetVisible(false);
+				this->SetWeapon(SUBWEAPON_DAGGER);
 			}
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
