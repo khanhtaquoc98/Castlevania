@@ -80,13 +80,13 @@ void CWhip::SetPositionWhip(D3DXVECTOR2 simonPosition, bool isStanding)
 	{
 		simonPosition.x -= 42.0f;
 		if (isStanding) simonPosition.y -= 4.0f;
-		simonPosition.y += 8.0f;
+		simonPosition.y += 9.0f;
 	}
 	else
 	{
 		simonPosition.x -= 46.0f;
 		if (isStanding) simonPosition.y += 4.0f;
-		else simonPosition.y += 8.0f;
+		else simonPosition.y += 9.0f;
 	}
 
 	this->SetPosition(simonPosition.x, simonPosition.y);

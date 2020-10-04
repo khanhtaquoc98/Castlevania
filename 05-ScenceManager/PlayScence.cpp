@@ -243,7 +243,7 @@ void CPlayScene::_ParseSection_INFO_MAP(string line){
 	if (tokens.size() < 3) return; // skip invalid lines 
 	widthMap = atoi(tokens[0].c_str());
 	colTileImage = atoi(tokens[1].c_str());
-	 idTexture = atoi(tokens[2].c_str());
+	idTexture = atoi(tokens[2].c_str());
 }
 
 #define TILE_WIDTH 16;
@@ -420,8 +420,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			simon->SetState(SIMON_STATE_ATTACK_SIT);
 		break;
 	case DIK_X:
+		//if (simon->vy != 0) return;
 		if (simon->GetState() == SIMON_STATE_ATTACK || simon->GetState() == SIMON_STATE_ATTACK_SIT) return;
 		if (simon->GetState() == SIMON_STATE_IDLE || simon->GetState() == SIMON_STATE_WALKING) {
+			if(simon->IsOnGroud() == true)
 			simon->SetState(SIMON_STATE_JUMP);
 		}
 		break;
@@ -444,7 +446,6 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 	if (simon->GetState() == SIMON_STATE_ATTACK_SUBWEAPON && simon->animation_set->at(SIMON_ANI_ATTACK)->IsOver(SIMON_TIME_ATTACK) == false) return;
 	if (simon->GetState() == SIMON_STATE_ATTACK_SIT && simon->animation_set->at(SIMON_ANI_ATTACK_SIT)->IsOver(SIMON_TIME_ATTACK) == false) return;
 	if (simon->GetState() == SIMON_STATE_CHANGE_COLOR && simon->animation_set->at(SIMON_ANI_CHANGE_COLOR)->IsOver(SIMON_TIME_CHANGE_COLOR) == false) return;
-
 	
 
 	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))

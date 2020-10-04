@@ -45,7 +45,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 	// Simple fall down
 	vy += MARIO_GRAVITY*dt;
-
+	DebugOut(L"OnGroudn: %d\n", OnGroud);
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
 		LPGAMEOBJECT coliObject = coObjects->at(i);
@@ -138,7 +138,9 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			else {
 				if (nx != 0) vx = 0;
 				if (ny != 0) vy = 0;
+				OnGroud = true;
 			}
+
 
 		}
 	}
@@ -147,10 +149,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
-	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT)
+	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK)
 	{
 		whip->SetOrientation(nx);
-		whip->SetPositionWhip(D3DXVECTOR2(x,y), state == SIMON_STATE_ATTACK ? true : false);
+		whip->SetPositionWhip(D3DXVECTOR2(x,y), state != SIMON_STATE_ATTACK_SIT ? true : false);
 		if (animation_set->at(SIMON_ANI_ATTACK)->GetCurrentFrame() == 2 ||
 			animation_set->at(SIMON_ANI_ATTACK_SIT)->GetCurrentFrame() == 2) {
 			whip->Update(dt, coObjects);
@@ -215,6 +217,7 @@ void CSimon::SetState(int state)
 				vy = -MARIO_JUMP_SPEED_Y;
 			break; 
 		case SIMON_STATE_JUMP_ATTACK:
+			OnGroud = false;
 			animation_set->at(SIMON_ANI_ATTACK)->Reset();
 			animation_set->at(SIMON_ANI_ATTACK)->SetAniStartTime(GetTickCount());
 			break;
