@@ -16,7 +16,7 @@ void CItems::CheckAndDrop(LPGAMEOBJECT object)
 
 void CItems::Drop(int itemType, float x, float y)
 {
-	for (auto i = items[itemType].begin(); i != items[itemType].end(); ++i)
+	for (auto i = items[itemType].begin(); i != items[itemType].end(); i++)
 	{
 		if ((*i)->isVisible() == false) {
 			(*i)->SetPosition(x, y);

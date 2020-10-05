@@ -126,6 +126,7 @@
   <ItemGroup>
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="Candle.cpp" />
     <ClCompile Include="ItemBigHeart.cpp" />
     <ClCompile Include="ItemChain.cpp" />
     <ClCompile Include="ItemDagger.cpp" />
@@ -150,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="Animations.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="Candle.h" />
     <ClInclude Include="ItemBigHeart.h" />
     <ClInclude Include="ItemChain.h" />
     <ClInclude Include="ItemDagger.h" />

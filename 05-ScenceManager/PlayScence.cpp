@@ -7,9 +7,11 @@
 #include "Sprites.h"
 #include "Portal.h"
 #include "Torch.h"
+#include "Candle.h"
 #include "Simon.h"
 #include "Items.h"
 #include "ItemBigHeart.h"
+#include "ItemSmallHeart.h"
 #include "ItemChain.h"
 #include "ItemDagger.h"
 #include "Dagger.h"
@@ -46,6 +48,8 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define OBJECT_ITEM_BIG_HEART		6
 #define OBJECT_ITEM_CHAIN		7
 #define OBJECT_ITEM_DAGGER		8
+#define OBJECT_TYPE_CANDLE		9
+#define OBJECT_ITEM_SMALL_HEART	10
 
 #define OBJECT_SUBWEAPON_DAGGER	41
 
@@ -197,6 +201,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			obj->SetVisible(true);
 			break;
 		}
+	case OBJECT_TYPE_CANDLE:
+		{
+			obj = new CCandle();
+			int IdItem = atoi(tokens[4].c_str());
+			obj->SetItem(IdItem);
+			obj->SetVisible(true);
+			break;
+		}
 	case OBJECT_ITEM_BIG_HEART:
 		{
 			obj = new CItemBigHeart();
@@ -204,6 +216,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			obj->SetVisible(false);
 			break;
 		}
+	case OBJECT_ITEM_SMALL_HEART:
+	{
+		obj = new CItemSmallHeart();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_SMALL_HEART, obj);
+		obj->SetVisible(false);
+		break;
+	}
 	case OBJECT_ITEM_CHAIN:
 	{
 		obj = new CItemChain();

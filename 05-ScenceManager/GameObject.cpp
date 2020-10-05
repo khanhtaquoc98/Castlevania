@@ -144,7 +144,7 @@ void CGameObject::RenderBoundingBox()
 
 	//CGame::GetInstance()->Draw(x, y,nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 32);
 	//x,y == left and top of obj
-	CGame::GetInstance()->Draw(l, t, nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 40);
+	CGame::GetInstance()->Draw(l, t, nx, bbox, rect.left, rect.top, rect.right, rect.bottom, 100);
 }
 
 

@@ -13,7 +13,7 @@
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
-# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,
+# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,9=candle, 10=smallheartitem
 # SIMON
 0	0	0	1
 #WHIP
@@ -29,6 +29,7 @@
 5	344	130	41	7
 5	474	130	41	6
 5	600	130	41	8
+
 #bigheart
 6	90	130	91
 6	474	130	91

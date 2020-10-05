@@ -2,10 +2,12 @@
 #include <assert.h>
 #include "Utils.h"
 #include "ItemBigHeart.h"
+#include "ItemSmallHeart.h"
 #include "ItemChain.h"
 #include "Simon.h"
 #include "Game.h"
 #include "Torch.h"
+#include "Candle.h"
 #include "Brick.h"
 #include "Portal.h"
 #include "Dagger.h"
@@ -51,6 +53,9 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 		if (this->CheckCollision(coliObject)) {
 			if (dynamic_cast<CItemBigHeart*>(coliObject)) {
+				coliObject->SetVisible(false);
+			}
+			else if (dynamic_cast<CItemSmallHeart*>(coliObject)) {
 				coliObject->SetVisible(false);
 			}
 			else if(dynamic_cast<CItemChain*>(coliObject)) {
@@ -112,12 +117,12 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CTorch*>(e->obj))
+			if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj))
 			{
 				if (e->nx != 0) x += dx;
 				if (e->ny != 0) y += dy;
 			}
-			else if (dynamic_cast<CItemBigHeart*>(e->obj)) {
+			else if (dynamic_cast<CItemBigHeart*>(e->obj) || dynamic_cast<CItemSmallHeart*>(e->obj)) {
 				e->obj->SetVisible(false);
 				if (e->nx != 0) x += dx;
 				if (e->ny != 0) y += dy;
@@ -138,7 +143,9 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			}
 			else {
 				if (nx != 0) vx = 0;
-				if (ny != 0) vy = 0;
+				if (ny != 0) {
+					vy = 0;
+				}
 				OnGroud = true;
 			}
 
@@ -215,6 +222,7 @@ void CSimon::SetState(int state)
 			break;
 		case SIMON_STATE_JUMP:
 			// TODO: need to check if Mario is *current* on a platform before allowing to jump again
+			OnGroud = false;
 				vy = -MARIO_JUMP_SPEED_Y;
 			break; 
 		case SIMON_STATE_JUMP_ATTACK:

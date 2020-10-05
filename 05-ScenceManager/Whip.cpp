@@ -1,6 +1,7 @@
 #include "Whip.h"
 #include "Simon.h"
 #include "Torch.h"
+#include "Candle.h"
 #include "Items.h"
 
 
@@ -19,6 +20,10 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (dynamic_cast<CTorch*>(coliObject)) {
 				coObjects->at(i)->SetState(TORCH_STATE_DESTROYED);
 				coObjects->at(i)->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			if (dynamic_cast<CCandle*>(coliObject)) {
+				coObjects->at(i)->SetState(CANDLE_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			
 		}
