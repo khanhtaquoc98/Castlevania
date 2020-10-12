@@ -13,6 +13,7 @@
 #include "Dagger.h"
 #include "SubWeapons.h"
 #include "ItemDagger.h"
+#include "StairBottom.h"
 
 CSimon* CSimon::__instance = NULL;
 
@@ -46,30 +47,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	if (x <= -6) x = -6;
 
 	// Simple fall down
-	vy += MARIO_GRAVITY*dt;
-	for (UINT i = 0; i < coObjects->size(); i++)
-	{
-		LPGAMEOBJECT coliObject = coObjects->at(i);
-
-		if (this->CheckCollision(coliObject)) {
-			if (dynamic_cast<CItemBigHeart*>(coliObject)) {
-				coliObject->SetVisible(false);
-			}
-			else if (dynamic_cast<CItemSmallHeart*>(coliObject)) {
-				coliObject->SetVisible(false);
-			}
-			else if(dynamic_cast<CItemChain*>(coliObject)) {
-				coliObject->SetVisible(false);
-				this->SetState(SIMON_STATE_CHANGE_COLOR);
-				this->animation_set->at(SIMON_ANI_CHANGE_COLOR)->SetAniStartTime(GetTickCount());
-				whip->UpItemWhip();
-			}
-			else if (dynamic_cast<CItemDagger*>(coliObject)) {
-				coliObject->SetVisible(false);
-				this->SetWeapon(SUBWEAPON_DAGGER);
-			}
-		}
-	}
+	vy += MARIO_GRAVITY * dt;
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -85,6 +63,39 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
+	}
+
+	for (UINT i = 0; i < coObjects->size(); i++)
+	{
+		LPGAMEOBJECT coliObject = coObjects->at(i);
+
+		if (this->CheckCollision(coliObject)) {
+			if (dynamic_cast<CItemBigHeart*>(coliObject)) {
+				coliObject->SetVisible(false);
+			}
+			else if (dynamic_cast<CItemSmallHeart*>(coliObject)) {
+				coliObject->SetVisible(false);
+			}
+			else if (dynamic_cast<CItemChain*>(coliObject)) {
+				coliObject->SetVisible(false);
+				this->SetState(SIMON_STATE_CHANGE_COLOR);
+				this->animation_set->at(SIMON_ANI_CHANGE_COLOR)->SetAniStartTime(GetTickCount());
+				whip->UpItemWhip();
+			}
+			else if (dynamic_cast<CItemDagger*>(coliObject)) {
+				coliObject->SetVisible(false);
+				this->SetWeapon(SUBWEAPON_DAGGER);
+			}
+			else if (dynamic_cast<CStairBottom*>(coliObject) && this->isOnStair == false) {
+				if(this->CheckStair(coliObject)) {
+					this->canGoStair = true;
+					this->nxCanGoStair = coliObject->nx;
+				}
+			}
+			else if (!dynamic_cast<CStairBottom*>(coliObject) && this->IsOnStair() == false) {
+				this->canGoStair = false;
+			}
+		}
 	}
 
 	// No collision occured, proceed normally
@@ -113,19 +124,26 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		//
 		// Collision logic with other objects
 		//
+
+
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj))
+			if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj) || dynamic_cast<CStairBottom*>(e->obj))
 			{
 				if (e->nx != 0) x += dx;
 				if (e->ny != 0) y += dy;
 			}
-			else if (dynamic_cast<CItemBigHeart*>(e->obj) || dynamic_cast<CItemSmallHeart*>(e->obj)) {
+			else if (dynamic_cast<CItemBigHeart*>(e->obj)) {
 				e->obj->SetVisible(false);
-				if (e->nx != 0) x += dx;
-				if (e->ny != 0) y += dy;
+			}
+			else if (dynamic_cast<CItemSmallHeart*>(e->obj)) {
+				if (e->nx != 0 || e->ny != 0)
+				{
+					y = y - 0.2f;
+					e->obj->SetVisible(false);
+				}
 			}
 			else if (dynamic_cast<CItemChain*>(e->obj)) {
 				e->obj->SetVisible(false);
@@ -143,13 +161,9 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			}
 			else {
 				if (nx != 0) vx = 0;
-				if (ny != 0) {
-					vy = 0;
-				}
+				if (ny != 0) vy = 0;
 				OnGroud = true;
 			}
-
-
 		}
 	}
 
@@ -172,6 +186,9 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		}
 	}
 
+	DebugOut(L"vy: %d\n", this->vy);
+	DebugOut(L"isOnStair: %d\n", this->isOnStair);
+	DebugOut(L"canGoStair: %d\n", this->canGoStair);
 }
 
 void CSimon::Render()
@@ -184,6 +201,8 @@ void CSimon::Render()
 	else if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SUBWEAPON) ani = SIMON_ANI_ATTACK;
 	else if (state == SIMON_STATE_ATTACK_SIT) ani = SIMON_ANI_ATTACK_SIT;
 	else if (state == SIMON_STATE_CHANGE_COLOR) ani = SIMON_ANI_CHANGE_COLOR;
+	else if (state == SIMON_STATE_GO_UPSTAIR) ani = SIMON_ANI_GO_UPSTAIR;
+	else if (state == SIMON_STATE_IDLE_UPSTAIR) ani = SIMON_ANI_IDLE_UPSTAIR;
 	else
 	{
 		if (vx == 0)
@@ -213,52 +232,97 @@ void CSimon::SetState(int state)
 	switch (state)
 	{
 		case SIMON_STATE_WALKING:
+		{
 			if (nx > 0) {
 				vx = MARIO_WALKING_SPEED;
 			}
 			else {
 				vx = -MARIO_WALKING_SPEED;
 			}
+			isOnStair = false;
 			break;
+		}
+			
 		case SIMON_STATE_JUMP:
 			// TODO: need to check if Mario is *current* on a platform before allowing to jump again
 			OnGroud = false;
-				vy = -MARIO_JUMP_SPEED_Y;
+			isOnStair = false;
+			vy = -MARIO_JUMP_SPEED_Y;
 			break; 
 		case SIMON_STATE_JUMP_ATTACK:
 			OnGroud = false;
+			isOnStair = false;
 			animation_set->at(SIMON_ANI_ATTACK)->Reset();
 			animation_set->at(SIMON_ANI_ATTACK)->SetAniStartTime(GetTickCount());
 			break;
 		case SIMON_STATE_SIT:
+			isOnStair = false;
 			vx = 0;
 			break;
 		case SIMON_STATE_ATTACK: {
+			isOnStair = false;
 			animation_set->at(SIMON_ANI_ATTACK)->Reset();
 			animation_set->at(SIMON_ANI_ATTACK)->SetAniStartTime(GetTickCount());
 			break;
 		}
 		case SIMON_STATE_ATTACK_SUBWEAPON: {
+			isOnStair = false;
 			animation_set->at(SIMON_ANI_ATTACK)->Reset();
 			animation_set->at(SIMON_ANI_ATTACK)->SetAniStartTime(GetTickCount());
 			break;
 		}	
 		case SIMON_STATE_ATTACK_SIT: {
+			isOnStair = false;
 			animation_set->at(SIMON_ANI_ATTACK_SIT)->Reset();
 			animation_set->at(SIMON_ANI_ATTACK_SIT)->SetAniStartTime(GetTickCount());
 			break;
 		}
 		case SIMON_STATE_IDLE:
+			isOnStair = false;
 			vx = 0;
 			break;
 		case SIMON_STATE_CHANGE_COLOR:
+			isOnStair = false;
 			vx = 0;
 			animation_set->at(SIMON_ANI_CHANGE_COLOR)->Reset();
 			animation_set->at(SIMON_ANI_CHANGE_COLOR)->SetAniStartTime(GetTickCount());
 			break;
+		case SIMON_STATE_IDLE_UPSTAIR:
+		{
+			isOnStair = true;
+			vx = 0;
+			vy = 0;
+			break;
+		}
+		case SIMON_STATE_IDLE_DOWNSTAIR:
+		{
+			isOnStair = true;
+			vx = 0;
+			vy = 0;
+			break;
+		}
+		case SIMON_STATE_GO_UPSTAIR:
+		{
+			nx = nxCanGoStair;
+			isOnStair = true;
+			if (nx > 0) {
+				vx = 0.04f;
+				vy = -0.04f;
+			}
+			else
+			{
+				//simon đi lên hướng trái
+				vx = -MARIO_WALKING_SPEED;
+				vy = MARIO_WALKING_SPEED;
+			}
+			//vx = this->nx * 0.0058f;
+			//vy = -0.006;
+			break;
+		}
 		case SIMON_STATE_DIE:
 			vy = -MARIO_DIE_DEFLECT_SPEED;
 			break;
+
 		
 	}
 }

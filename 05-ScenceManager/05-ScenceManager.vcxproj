@@ -126,15 +126,18 @@
   <ItemGroup>
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="Brick4Leopard.cpp" />
     <ClCompile Include="Candle.cpp" />
     <ClCompile Include="ItemBigHeart.cpp" />
     <ClCompile Include="ItemChain.cpp" />
     <ClCompile Include="ItemDagger.cpp" />
     <ClCompile Include="Items.cpp" />
     <ClCompile Include="ItemSmallHeart.cpp" />
+    <ClCompile Include="Leopard.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Dagger.cpp" />
+    <ClCompile Include="StairBottom.cpp" />
     <ClCompile Include="SubWeapons.cpp" />
     <ClCompile Include="Torch.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -151,15 +154,18 @@
   <ItemGroup>
     <ClInclude Include="Animations.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="Brick4Leopard.h" />
     <ClInclude Include="Candle.h" />
     <ClInclude Include="ItemBigHeart.h" />
     <ClInclude Include="ItemChain.h" />
     <ClInclude Include="ItemDagger.h" />
     <ClInclude Include="Items.h" />
     <ClInclude Include="ItemSmallHeart.h" />
+    <ClInclude Include="Leopard.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Dagger.h" />
+    <ClInclude Include="StairBottom.h" />
     <ClInclude Include="SubWeapons.h" />
     <ClInclude Include="Torch.h" />
     <ClInclude Include="Utils.h" />

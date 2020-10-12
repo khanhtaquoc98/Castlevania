@@ -17,6 +17,9 @@
 #include "Dagger.h"
 #include "SubWeapons.h"
 #include "Map.h"
+#include "Leopard.h"
+#include "Brick4Leopard.h"
+#include "StairBottom.h"
 
 using namespace std;
 
@@ -54,6 +57,11 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define OBJECT_SUBWEAPON_DAGGER	41
 
 #define OBJECT_TYPE_PORTAL	50
+
+#define OBJECT_TYPE_LEOPARD	11
+#define OBJECT_TYPE_BRICK_4_LEOPARD	12
+
+#define OBJECT_TYPE_STAIR_BOTTOM 20
 
 #define MAX_SCENE_LINE 1024
 
@@ -244,6 +252,34 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_DAGGER, obj);
 		break;
 	}
+	case OBJECT_TYPE_LEOPARD:
+	{
+		obj = new CLeopard();
+		obj->SetVisible(true);
+		break;
+	}
+	case OBJECT_TYPE_BRICK_4_LEOPARD:
+	{
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+		obj = new CBrick4Leopard();
+		obj->SetWidth(width);
+		obj->SetHeight(height);
+		obj->SetVisible(true);
+		break;
+	}
+	case OBJECT_TYPE_STAIR_BOTTOM:
+	{
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+		int nx = atoi(tokens[6].c_str());
+		obj = new CStairBottom();
+		obj->SetWidth(width);
+		obj->SetHeight(height);
+		obj->nx = nx;
+		obj->SetVisible(true);
+		break;
+	}
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -389,6 +425,7 @@ void CPlayScene::Render()
 {
 	for (int i = 0; i < tileMaps.size(); i++)
 		tileMaps[i]->Render();
+
 	for (int i = 0; i < objects.size(); i++) {
 		if (!dynamic_cast<CSimon*>(objects[i]) && objects[i]->isVisible() == true) 
 			objects[i]->Render();
@@ -469,21 +506,36 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 	if (simon->GetState() == SIMON_STATE_CHANGE_COLOR && simon->animation_set->at(SIMON_ANI_CHANGE_COLOR)->IsOver(SIMON_TIME_CHANGE_COLOR) == false) return;
 	
 
-	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
-	{
+	if (simon->IsOnStair() == false) {
+		if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
+		{
 			simon->SetOrientation(1);
 			simon->SetState(SIMON_STATE_WALKING);
+		}
+		else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
+		{
+			simon->SetOrientation(-1);
+			simon->SetState(SIMON_STATE_WALKING);
+		}
+		else if (game->IsKeyDown(DIK_DOWN)) {
+			if (game->IsKeyDown(DIK_RIGHT)) { simon->SetOrientation(1); }
+			else if (game->IsKeyDown(DIK_LEFT)) simon->SetOrientation(-1);
+			simon->SetState(SIMON_STATE_SIT);
+		}
+		else if (game->IsKeyDown(DIK_UP) && simon->CanGoStair() == true) {
+			simon->SetState(SIMON_STATE_GO_UPSTAIR);
+
+		}
+		else
+			simon->SetState(SIMON_STATE_IDLE);
 	}
-	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
-	{
-		simon->SetOrientation(-1);
-		simon->SetState(SIMON_STATE_WALKING);
+	else {
+		if (game->IsKeyDown(DIK_UP)) {
+			simon->SetState(SIMON_STATE_GO_UPSTAIR);
+		}
+		else
+		{
+			simon->SetState(SIMON_STATE_IDLE_UPSTAIR);
+		}
 	}
-	else if (game->IsKeyDown(DIK_DOWN)) {
-		if (game->IsKeyDown(DIK_RIGHT)) { simon->SetOrientation(1); }
-		else if (game->IsKeyDown(DIK_LEFT)) simon->SetOrientation(-1); 
-		simon->SetState(SIMON_STATE_SIT);
-	}
-	else
-		simon->SetState(SIMON_STATE_IDLE);
 }

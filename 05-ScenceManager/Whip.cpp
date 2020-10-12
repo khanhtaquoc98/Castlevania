@@ -3,6 +3,7 @@
 #include "Torch.h"
 #include "Candle.h"
 #include "Items.h"
+#include "Leopard.h"
 
 
 CWhip::CWhip():CGameObject()
@@ -21,7 +22,11 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				coObjects->at(i)->SetState(TORCH_STATE_DESTROYED);
 				coObjects->at(i)->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
-			if (dynamic_cast<CCandle*>(coliObject)) {
+			else if (dynamic_cast<CCandle*>(coliObject)) {
+				coObjects->at(i)->SetState(CANDLE_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CLeopard*>(coliObject)) {
 				coObjects->at(i)->SetState(CANDLE_STATE_DESTROYED);
 				coObjects->at(i)->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}

@@ -38,6 +38,20 @@ bool CGameObject::CheckCollision(LPGAMEOBJECT obj)
 	return false;
 }
 
+bool CGameObject::CheckStair(LPGAMEOBJECT obj)
+{
+	float left, top, right, bottom;
+	float objLeft, objTop, objRight, objBottom;
+
+	GetBoundingBox(left, top, right, bottom);
+	obj->GetBoundingBox(objLeft, objTop, objRight, objBottom);
+
+	if (abs(left - objLeft) <= 4 && abs(right - objRight) <= 4) {
+		return true;
+	}
+	else return false;
+}
+
 LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 {
 	float sl, st, sr, sb;		// static object bbox

@@ -25,6 +25,12 @@
     <Filter Include="Items\Item">
       <UniqueIdentifier>{c1da2425-0869-4236-9ebd-c808041b4cc2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Enemies">
+      <UniqueIdentifier>{a3beef93-d898-4786-868f-d388b081969e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ObjectCheck">
+      <UniqueIdentifier>{8afea247-87e0-42c5-93d4-c5edc26d2b9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animations.cpp">
@@ -92,6 +98,15 @@
       <Filter>Weapons</Filter>
     </ClCompile>
     <ClCompile Include="Candle.cpp">
+      <Filter>ObjectStatic</Filter>
+    </ClCompile>
+    <ClCompile Include="Leopard.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Brick4Leopard.cpp">
+      <Filter>ObjectCheck</Filter>
+    </ClCompile>
+    <ClCompile Include="StairBottom.cpp">
       <Filter>ObjectStatic</Filter>
     </ClCompile>
   </ItemGroup>
@@ -163,6 +178,15 @@
       <Filter>Weapons</Filter>
     </ClInclude>
     <ClInclude Include="Candle.h">
+      <Filter>ObjectStatic</Filter>
+    </ClInclude>
+    <ClInclude Include="Leopard.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Brick4Leopard.h">
+      <Filter>ObjectCheck</Filter>
+    </ClInclude>
+    <ClInclude Include="StairBottom.h">
       <Filter>ObjectStatic</Filter>
     </ClInclude>
   </ItemGroup>

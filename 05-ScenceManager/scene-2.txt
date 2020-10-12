@@ -13,16 +13,17 @@
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
-# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem,8=daggeritem,9=candle, 10=smallheartitem
+# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem,8=daggeritem,9=candle, 10=smallheartitem,11=leopard, 12=brick4leopard, 20=//
+
 # SIMON
-0	0	0	1
+0	500	0	1
 #WHIP
 4	0	0	2
 #BRICK 
-1	0	162	31	1920	1
+1	0	162	31	1920	16	
 1	688	98	31	48	1
 1	752	66	31	160	1
-1	864	98	31	96	1
+1	930	98	31	96	1
 1	1406	66	31	272	1
 1	1678	98	31	48	1
 1	1822	82	31	32	1
@@ -91,10 +92,24 @@
 9	1838	18	42	10
 9	1886	130	42	10
 
+#LEOPARD
+11	689	10	46
+11	878	10	46
+11	943	10	46
+
+#BRICK4LEOPARD
+12	687	96	31	1	1
+12	752	64	31	1	1
+12	912	64	31	1	1
+12	930	96	31	1	1
+12	1026	96	31	1	1
+
+#STAIR_BOTTOM
+20	611	149	31	16	20	1
 
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
-#50	722	60	0	750	144	50
+#50	700	60	0	750	144	50
 
 [INFO_MAP]
 #widthMap	ColTile	idTexture
