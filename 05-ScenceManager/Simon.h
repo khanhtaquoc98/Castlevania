@@ -70,6 +70,8 @@ class CSimon : public CGameObject
 	bool canGoStair;
 	
 public: 
+
+	float simonGoStair;
 	void SetWeapon(int CurrentWeapon) { this->currentWeapon = CurrentWeapon; }
 	int GetWeapon() { return currentWeapon; }
 

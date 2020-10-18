@@ -107,7 +107,7 @@
       <Filter>ObjectCheck</Filter>
     </ClCompile>
     <ClCompile Include="StairBottom.cpp">
-      <Filter>ObjectStatic</Filter>
+      <Filter>ObjectCheck</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -187,7 +187,7 @@
       <Filter>ObjectCheck</Filter>
     </ClInclude>
     <ClInclude Include="StairBottom.h">
-      <Filter>ObjectStatic</Filter>
+      <Filter>ObjectCheck</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

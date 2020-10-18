@@ -38,6 +38,9 @@ public:
 	int GetCurrentFrame() {
 		return currentFrame;
 	}
+	void SetCurrentFrame(int frame) {
+		currentFrame = frame;
+	}
 	void Reset() { currentFrame = -1; }
 	void SetAniStartTime(DWORD t) { aniStartTime = t; }
 	bool IsOver(DWORD dt) { return GetTickCount() - aniStartTime >= dt; };

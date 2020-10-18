@@ -47,7 +47,9 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	if (x <= -6) x = -6;
 
 	// Simple fall down
-	vy += MARIO_GRAVITY * dt;
+	if (isOnStair == false) {
+		vy += MARIO_GRAVITY * dt;
+	}
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -90,6 +92,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				if(this->CheckStair(coliObject)) {
 					this->canGoStair = true;
 					this->nxCanGoStair = coliObject->nx;
+					this->simonGoStair = coliObject->simonXStair;
 				}
 			}
 			else if (!dynamic_cast<CStairBottom*>(coliObject) && this->IsOnStair() == false) {
@@ -160,9 +163,11 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			}
 			else {
-				if (nx != 0) vx = 0;
-				if (ny != 0) vy = 0;
-				OnGroud = true;
+				if (isOnStair == false) {
+					if (nx != 0) vx = 0;
+					if (ny != 0) vy = 0;
+					OnGroud = true;
+				}
 			}
 		}
 	}
@@ -186,9 +191,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		}
 	}
 
-	DebugOut(L"vy: %d\n", this->vy);
-	DebugOut(L"isOnStair: %d\n", this->isOnStair);
-	DebugOut(L"canGoStair: %d\n", this->canGoStair);
+
+	//DebugOut(L"vy: %d, vx: %d\n", this->vy, this->vx);
+	//DebugOut(L"isOnStair: %d\n", this->isOnStair);
+	//DebugOut(L"canGoStair: %d\n", this->canGoStair);
 }
 
 void CSimon::Render()
@@ -312,8 +318,8 @@ void CSimon::SetState(int state)
 			else
 			{
 				//simon đi lên hướng trái
-				vx = -MARIO_WALKING_SPEED;
-				vy = MARIO_WALKING_SPEED;
+				vx = -0.04f;
+				vy = -0.04f;
 			}
 			//vx = this->nx * 0.0058f;
 			//vy = -0.006;

@@ -56,6 +56,9 @@ public:
 	float vx;
 	float vy;
 
+
+	float simonXStair;
+
 	int itemID;
 
 	int nx;	 //right = 1; left = -1

@@ -273,11 +273,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int width = atoi(tokens[4].c_str());
 		int height = atoi(tokens[5].c_str());
 		int nx = atoi(tokens[6].c_str());
+		float simonXGoUpStair = atoi(tokens[7].c_str());
 		obj = new CStairBottom();
 		obj->SetWidth(width);
 		obj->SetHeight(height);
 		obj->nx = nx;
 		obj->SetVisible(true);
+		obj->simonXStair = simonXGoUpStair;
 		break;
 	}
 	default:
@@ -453,6 +455,21 @@ void CPlayScene::Unload()
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
 
+void CPlayScenceKeyHandler::OnKeyUp(int KeyCode) {
+	CSimon* simon = ((CPlayScene*)scence)->GetPlayer();
+
+	switch (KeyCode)
+	{
+	case DIK_UP:
+		if (simon->IsOnStair()) {
+		simon->GetState() == SIMON_STATE_IDLE_UPSTAIR;
+		}
+		break;
+	}
+
+	
+}
+
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
@@ -485,6 +502,15 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			simon->SetState(SIMON_STATE_JUMP);
 		}
 		break;
+	case DIK_UP:
+		if (simon->IsOnStair() && simon->GetState() == SIMON_STATE_GO_UPSTAIR) {
+			simon->animation_set->at(SIMON_ANI_GO_UPSTAIR)->SetAniStartTime(GetTickCount());
+			simon->SetState(SIMON_STATE_GO_UPSTAIR);
+		} else
+		if (simon->IsOnStair() == false && simon->CanGoStair()) {
+			simon->x = simon->simonGoStair;
+		}
+		break;
 	case DIK_R: 
 		simon->Reset();
 		break;
@@ -504,6 +530,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 	if (simon->GetState() == SIMON_STATE_ATTACK_SUBWEAPON && simon->animation_set->at(SIMON_ANI_ATTACK)->IsOver(SIMON_TIME_ATTACK) == false) return;
 	if (simon->GetState() == SIMON_STATE_ATTACK_SIT && simon->animation_set->at(SIMON_ANI_ATTACK_SIT)->IsOver(SIMON_TIME_ATTACK) == false) return;
 	if (simon->GetState() == SIMON_STATE_CHANGE_COLOR && simon->animation_set->at(SIMON_ANI_CHANGE_COLOR)->IsOver(SIMON_TIME_CHANGE_COLOR) == false) return;
+	if (simon->GetState() == SIMON_STATE_GO_UPSTAIR && simon->animation_set->at(SIMON_ANI_GO_UPSTAIR)->IsOver(200) == false) return;
 	
 
 	if (simon->IsOnStair() == false) {
@@ -523,8 +550,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 			simon->SetState(SIMON_STATE_SIT);
 		}
 		else if (game->IsKeyDown(DIK_UP) && simon->CanGoStair() == true) {
+			simon->x = simon->simonGoStair;
 			simon->SetState(SIMON_STATE_GO_UPSTAIR);
-
 		}
 		else
 			simon->SetState(SIMON_STATE_IDLE);
