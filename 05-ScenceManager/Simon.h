@@ -67,10 +67,11 @@ class CSimon : public CGameObject
 
 	int directionStair;
 	bool isOnStair;
-	bool canGoStair;
+	
 	
 public: 
-
+	bool canGoUpStair;
+	bool canGoDownStair;
 	float simonGoStair;
 	void SetWeapon(int CurrentWeapon) { this->currentWeapon = CurrentWeapon; }
 	int GetWeapon() { return currentWeapon; }
@@ -78,7 +79,6 @@ public:
 	bool IsOnGroud() { return OnGroud; }
 
 	bool IsOnStair() { return isOnStair; }
-	bool CanGoStair() { return canGoStair; }
 	int nxCanGoStair;
 
 	static CSimon* GetInstance();

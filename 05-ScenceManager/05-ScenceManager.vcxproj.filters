@@ -109,6 +109,9 @@
     <ClCompile Include="StairBottom.cpp">
       <Filter>ObjectCheck</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Game\Castlevania\05-ScenceManager\StairTop.cpp">
+      <Filter>ObjectCheck</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animations.h">
@@ -187,6 +190,9 @@
       <Filter>ObjectCheck</Filter>
     </ClInclude>
     <ClInclude Include="StairBottom.h">
+      <Filter>ObjectCheck</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game\Castlevania\05-ScenceManager\StairTop.h">
       <Filter>ObjectCheck</Filter>
     </ClInclude>
   </ItemGroup>

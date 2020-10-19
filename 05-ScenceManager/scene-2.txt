@@ -105,7 +105,9 @@
 12	1026	96	31	1	1
 
 #STAIR_BOTTOM
-20	611	149	31	16	20	1	605
+20	611	160	31	16	1	1	605
+#STAIR_TOP
+21	680	44	31	16	24	-1	676
 
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
