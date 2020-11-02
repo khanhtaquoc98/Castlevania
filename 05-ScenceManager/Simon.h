@@ -5,7 +5,7 @@
 
 #define MARIO_WALKING_SPEED		0.058f 
 //0.1f
-#define MARIO_JUMP_SPEED_Y		0.22f
+#define MARIO_JUMP_SPEED_Y		0.2f
 #define MARIO_JUMP_DEFLECT_SPEED 0.188f
 #define MARIO_GRAVITY			0.0006f
 #define MARIO_DIE_DEFLECT_SPEED	 0.5f
@@ -48,7 +48,7 @@
 #define SIMON_BBOX_WIDTH  16
 #define SIMON_BBOX_HEIGHT 30
 
-#define SUBWEAPON_DAGGER 1
+#define SUBWEAPON_DAGGER 41
 
 #define MARIO_UNTOUCHABLE_TIME 5000
 
@@ -67,10 +67,11 @@ class CSimon : public CGameObject
 
 	int directionStair;
 	bool isOnStair;
-	bool canGoStair;
+	
 	
 public: 
-
+	bool canGoUpStair;
+	bool canGoDownStair;
 	float simonGoStair;
 	void SetWeapon(int CurrentWeapon) { this->currentWeapon = CurrentWeapon; }
 	int GetWeapon() { return currentWeapon; }
@@ -78,7 +79,6 @@ public:
 	bool IsOnGroud() { return OnGroud; }
 
 	bool IsOnStair() { return isOnStair; }
-	bool CanGoStair() { return canGoStair; }
 	int nxCanGoStair;
 
 	static CSimon* GetInstance();

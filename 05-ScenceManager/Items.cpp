@@ -14,6 +14,23 @@ void CItems::CheckAndDrop(LPGAMEOBJECT object)
 	Drop(itemType, x, y);
 }
 
+void CItems::CheckAndDropMoney(LPGAMEOBJECT object)
+{
+	int itemType = object->GetItem();
+	DropMoney(itemType);
+}
+
+void CItems::DropMoney(int itemType) {
+	for (auto i = items[itemType].begin(); i != items[itemType].end(); i++)
+	{
+		if ((*i)->isVisible() == false) {
+			(*i)->SetVisible(true);
+			(*i)->tStartVisible = GetTickCount();
+			break;
+		}
+	}
+}
+
 void CItems::Drop(int itemType, float x, float y)
 {
 	for (auto i = items[itemType].begin(); i != items[itemType].end(); i++)

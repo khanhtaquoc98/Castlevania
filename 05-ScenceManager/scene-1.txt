@@ -13,7 +13,7 @@
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
-# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,9=candle, 10=smallheartitem
+# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,9=candle, 10=smallheartitem, 80=Brick4MoneyRed, 81=MoneyBagRed
 # SIMON
 0	0	0	1
 #WHIP
@@ -36,13 +36,26 @@
 
 #_Chain
 7	224	130	92
-7	344	130	91
+7	344	130	92
+
 #_Dagger 
 8	600	130	93
 
+#Brick4MoneyBagRed
+80	714	116	31	16	30	81
+#MoneyBagRed
+81	625	162	96
+
+#Point effects
+99	645	145	990	3
+
+
+#BIRCK_HIDE
+84	624	162	32
+
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
-50	722	60	0	750	144	50
+#50	722	60	0	750	144	50
 
 [INFO_MAP]
 #widthMap	ColTile	idTexture

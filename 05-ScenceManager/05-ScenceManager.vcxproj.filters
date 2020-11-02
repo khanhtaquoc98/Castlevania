@@ -31,6 +31,9 @@
     <Filter Include="ObjectCheck">
       <UniqueIdentifier>{8afea247-87e0-42c5-93d4-c5edc26d2b9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{a4eca972-c9f7-4500-9af2-509577076ae9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animations.cpp">
@@ -108,6 +111,27 @@
     </ClCompile>
     <ClCompile Include="StairBottom.cpp">
       <Filter>ObjectCheck</Filter>
+    </ClCompile>
+    <ClCompile Include="StairTop.cpp">
+      <Filter>ObjectCheck</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemMoneyBagPurple.cpp">
+      <Filter>Items\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemMoneyBagRed.cpp">
+      <Filter>Items\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemMoneyBagYellow.cpp">
+      <Filter>Items\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Brick4MoneyRed.cpp">
+      <Filter>ObjectCheck</Filter>
+    </ClCompile>
+    <ClCompile Include="BrickHide.cpp">
+      <Filter>ObjectStatic</Filter>
+    </ClCompile>
+    <ClCompile Include="PointEffect.cpp">
+      <Filter>Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +212,27 @@
     </ClInclude>
     <ClInclude Include="StairBottom.h">
       <Filter>ObjectCheck</Filter>
+    </ClInclude>
+    <ClInclude Include="StairTop.h">
+      <Filter>ObjectCheck</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemMoneyBagPurple.h">
+      <Filter>Items\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemMoneyBagRed.h">
+      <Filter>Items\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemMoneyBagYellow.h">
+      <Filter>Items\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Brick4MoneyRed.h">
+      <Filter>ObjectCheck</Filter>
+    </ClInclude>
+    <ClInclude Include="BrickHide.h">
+      <Filter>ObjectStatic</Filter>
+    </ClInclude>
+    <ClInclude Include="PointEffect.h">
+      <Filter>Effect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,11 +19,18 @@
 #include "Map.h"
 #include "Leopard.h"
 #include "Brick4Leopard.h"
+#include "Brick4MoneyRed.h"
+#include "ItemMoneyBagRed.h"
 #include "StairBottom.h"
+#include "StairTop.h"
+#include "BrickHide.h"
+#include "PointEffect.h"
+#include "ItemMoneyBagPurple.h"
+#include "ItemMoneyBagYellow.h"
 
 using namespace std;
 
-CPlayScene::CPlayScene(int id, LPCWSTR filePath):
+CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 	CScene(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
@@ -63,6 +70,15 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 
 #define OBJECT_TYPE_STAIR_BOTTOM 20
 
+#define OBJECT_TYPE_STAIR_TOP	21
+
+#define OBJECT_TYPE_BRICK_4_MONEY_RED 80
+#define OBJECT_TYPE_ITEM_MONEY_RED 81
+#define OBJECT_TYPE_ITEM_MONEY_YELLOW 82
+#define OBJECT_TYPE_ITEM_MONEY_PURPLE 83
+#define OBJECT_TYPE_BRICK_HIDE	84
+#define OBJECT_TYPE_POINT_EFFECT	99
+
 #define MAX_SCENE_LINE 1024
 
 
@@ -98,7 +114,7 @@ void CPlayScene::_ParseSection_SPRITES(string line)
 	if (tex == NULL)
 	{
 		DebugOut(L"[ERROR] Texture ID %d not found!\n", texID);
-		return; 
+		return;
 	}
 
 	CSprites::GetInstance()->Add(ID, l, t, r, b, tex);
@@ -118,7 +134,7 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 	for (int i = 1; i < tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
 	{
 		int sprite_id = atoi(tokens[i].c_str());
-		int frame_time = atoi(tokens[i+1].c_str());
+		int frame_time = atoi(tokens[i + 1].c_str());
 		ani->Add(sprite_id, frame_time);
 	}
 
@@ -135,12 +151,12 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 
 	LPANIMATION_SET s = new CAnimationSet();
 
-	CAnimations *animations = CAnimations::GetInstance();
+	CAnimations* animations = CAnimations::GetInstance();
 
 	for (int i = 1; i < tokens.size(); i++)
 	{
 		int ani_id = atoi(tokens[i].c_str());
-		
+
 		LPANIMATION ani = animations->Get(ani_id);
 		s->push_back(ani);
 	}
@@ -149,7 +165,7 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 }
 
 /*
-	Parse a line in section [OBJECTS] 
+	Parse a line in section [OBJECTS]
 */
 void CPlayScene::_ParseSection_OBJECTS(string line)
 {
@@ -165,14 +181,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	int ani_set_id = atoi(tokens[3].c_str());
 
-	CAnimationSets * animation_sets = CAnimationSets::GetInstance();
+	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 
-	CGameObject *obj = NULL;
+	CGameObject* obj = NULL;
 
 	switch (object_type)
 	{
 	case OBJECT_TYPE_SIMON:
-		if (player!=NULL) 
+		if (player != NULL)
 		{
 			DebugOut(L"[ERROR] MARIO object was created before!\n");
 			return;
@@ -182,48 +198,48 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(true);
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
-	case OBJECT_TYPE_BRICK: 
+	case OBJECT_TYPE_BRICK:
 	{
 		int width = atoi(tokens[4].c_str());
 		int height = atoi(tokens[5].c_str());
-		obj = new CBrick(); 
+		obj = new CBrick();
 		obj->SetWidth(width);
 		obj->SetHeight(height);
 		obj->SetVisible(true);
-		break; 
+		break;
 	}
 	case OBJECT_TYPE_PORTAL:
-		{	
-			float r = atof(tokens[4].c_str());
-			float b = atof(tokens[5].c_str());
-			int scene_id = atoi(tokens[6].c_str());
-			obj = new CPortal(x, y, r, b, scene_id);
-			obj->SetVisible(true);
-		}
-		break;
+	{
+		float r = atof(tokens[4].c_str());
+		float b = atof(tokens[5].c_str());
+		int scene_id = atoi(tokens[6].c_str());
+		obj = new CPortal(x, y, r, b, scene_id);
+		obj->SetVisible(true);
+	}
+	break;
 	case OBJECT_TYPE_TORCH:
-		{
-			obj = new CTorch();
-			int IdItem = atoi(tokens[4].c_str());
-			obj->SetItem(IdItem);
-			obj->SetVisible(true);
-			break;
-		}
+	{
+		obj = new CTorch();
+		int IdItem = atoi(tokens[4].c_str());
+		obj->SetItem(IdItem);
+		obj->SetVisible(true);
+		break;
+	}
 	case OBJECT_TYPE_CANDLE:
-		{
-			obj = new CCandle();
-			int IdItem = atoi(tokens[4].c_str());
-			obj->SetItem(IdItem);
-			obj->SetVisible(true);
-			break;
-		}
+	{
+		obj = new CCandle();
+		int IdItem = atoi(tokens[4].c_str());
+		obj->SetItem(IdItem);
+		obj->SetVisible(true);
+		break;
+	}
 	case OBJECT_ITEM_BIG_HEART:
-		{
-			obj = new CItemBigHeart();
-			CItems::GetInstance()->AddItem(OBJECT_ITEM_BIG_HEART, obj);
-			obj->SetVisible(false);
-			break;
-		}
+	{
+		obj = new CItemBigHeart();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_BIG_HEART, obj);
+		obj->SetVisible(false);
+		break;
+	}
 	case OBJECT_ITEM_SMALL_HEART:
 	{
 		obj = new CItemSmallHeart();
@@ -246,7 +262,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 	case OBJECT_SUBWEAPON_DAGGER:
-	{	
+	{
 		obj = new CDagger();
 		obj->SetVisible(false);
 		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_DAGGER, obj);
@@ -282,6 +298,68 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->simonXStair = simonXGoUpStair;
 		break;
 	}
+	case OBJECT_TYPE_STAIR_TOP:
+	{
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+		int nx = atoi(tokens[6].c_str());
+		float simonXDownStair = atoi(tokens[7].c_str());
+		obj = new CStairTop();
+		obj->SetWidth(width);
+		obj->SetHeight(height);
+		obj->nx = nx;
+		obj->SetVisible(true);
+		obj->simonXStair = simonXDownStair;
+		break;
+	}
+	case OBJECT_TYPE_BRICK_4_MONEY_RED:
+	{
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+		obj = new CBrick4MoneyRed();
+		int IdItem = atoi(tokens[6].c_str());
+		obj->SetItem(IdItem);
+		obj->SetWidth(width);
+		obj->SetHeight(height);
+		obj->SetVisible(true);
+		break;
+	}
+	case OBJECT_TYPE_ITEM_MONEY_RED:
+	{
+		obj = new CItemMoneyBagRed();
+		CItems::GetInstance()->AddItem(OBJECT_TYPE_ITEM_MONEY_RED, obj);
+		obj->SetVisible(false);
+		break;
+	}
+	case OBJECT_TYPE_ITEM_MONEY_PURPLE:
+	{
+		obj = new CItemMoneyBagPurple();
+		CItems::GetInstance()->AddItem(OBJECT_TYPE_ITEM_MONEY_PURPLE, obj);
+		obj->SetVisible(false);
+		break;
+	}
+	case OBJECT_TYPE_ITEM_MONEY_YELLOW:
+	{
+		obj = new CItemMoneyBagYellow();
+		CItems::GetInstance()->AddItem(OBJECT_TYPE_ITEM_MONEY_YELLOW, obj);
+		obj->SetVisible(false);
+		break;
+	}
+	case OBJECT_TYPE_POINT_EFFECT:
+	{
+		obj = new PointEffect();
+		int typePoint = atoi(tokens[4].c_str());
+		PointEffects::GetInstance()->AddPointEffect(typePoint, obj);
+		obj->SetVisible(false);
+		break;
+	}
+	case OBJECT_TYPE_BRICK_HIDE:
+	{
+		obj = new CBrickHide();
+		obj->SetVisible(true);
+		break;
+	}
+		
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -295,7 +373,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	objects.push_back(obj);
 }
 
-void CPlayScene::_ParseSection_INFO_MAP(string line){
+void CPlayScene::_ParseSection_INFO_MAP(string line) {
 	vector<string> tokens = split(line);
 	if (tokens.size() < 3) return; // skip invalid lines 
 	widthMap = atoi(tokens[0].c_str());
@@ -307,7 +385,7 @@ void CPlayScene::_ParseSection_INFO_MAP(string line){
 
 void CPlayScene::_ParseSection_TILE_MAP(string line) {
 	vector<string> tokens = split(line);
-	
+
 	for (int i = 0; i < tokens.size(); i++) {
 		int index = atoi(tokens[i].c_str());
 		RECT Tile;
@@ -331,7 +409,7 @@ void CPlayScene::Load()
 	f.open(sceneFilePath);
 
 	// current resource section flag
-	int section = SCENE_SECTION_UNKNOWN;					
+	int section = SCENE_SECTION_UNKNOWN;
 
 	char str[MAX_SCENE_LINE];
 	while (f.getline(str, MAX_SCENE_LINE))
@@ -341,34 +419,38 @@ void CPlayScene::Load()
 		if (line[0] == '#') continue;	// skip comment lines	
 
 		if (line == "[TEXTURES]") { section = SCENE_SECTION_TEXTURES; continue; }
-		if (line == "[SPRITES]") { 
-			section = SCENE_SECTION_SPRITES; continue; }
-		if (line == "[ANIMATIONS]") { 
-			section = SCENE_SECTION_ANIMATIONS; continue; }
-		if (line == "[ANIMATION_SETS]") { 
-			section = SCENE_SECTION_ANIMATION_SETS; continue; }
-		if (line == "[OBJECTS]") { 
-			section = SCENE_SECTION_OBJECTS; continue; }
+		if (line == "[SPRITES]") {
+			section = SCENE_SECTION_SPRITES; continue;
+		}
+		if (line == "[ANIMATIONS]") {
+			section = SCENE_SECTION_ANIMATIONS; continue;
+		}
+		if (line == "[ANIMATION_SETS]") {
+			section = SCENE_SECTION_ANIMATION_SETS; continue;
+		}
+		if (line == "[OBJECTS]") {
+			section = SCENE_SECTION_OBJECTS; continue;
+		}
 		if (line == "[INFO_MAP]") {
 			section = SCENE_SECTION_INFO_MAP; continue;
 		}
 		if (line == "[TILE_MAP]") {
 			section = SCENE_SECTION_TILE_MAP; continue;
 		}
-		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }	
+		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }
 
 		//
 		// data section
 		//
 		switch (section)
-		{ 
-			case SCENE_SECTION_TEXTURES: _ParseSection_TEXTURES(line); break;
-			case SCENE_SECTION_SPRITES: _ParseSection_SPRITES(line); break;
-			case SCENE_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
-			case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
-			case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
-			case SCENE_SECTION_INFO_MAP: _ParseSection_INFO_MAP(line); break;
-			case SCENE_SECTION_TILE_MAP: _ParseSection_TILE_MAP(line); break;
+		{
+		case SCENE_SECTION_TEXTURES: _ParseSection_TEXTURES(line); break;
+		case SCENE_SECTION_SPRITES: _ParseSection_SPRITES(line); break;
+		case SCENE_SECTION_ANIMATIONS: _ParseSection_ANIMATIONS(line); break;
+		case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
+		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
+		case SCENE_SECTION_INFO_MAP: _ParseSection_INFO_MAP(line); break;
+		case SCENE_SECTION_TILE_MAP: _ParseSection_TILE_MAP(line); break;
 		}
 	}
 
@@ -400,14 +482,14 @@ void CPlayScene::Update(DWORD dt)
 	}
 
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
-	if (player == NULL) return; 
+	if (player == NULL) return;
 
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
 
-	CGame *game = CGame::GetInstance();
-	if (cx < game->GetScreenWidth() /2 ) {
+	CGame* game = CGame::GetInstance();
+	if (cx < game->GetScreenWidth() / 2) {
 		cx = 0.0f;
 	}
 	else if (cx > this->widthMap - game->GetScreenWidth() / 2) {
@@ -429,11 +511,11 @@ void CPlayScene::Render()
 		tileMaps[i]->Render();
 
 	for (int i = 0; i < objects.size(); i++) {
-		if (!dynamic_cast<CSimon*>(objects[i]) && objects[i]->isVisible() == true) 
+		if (!dynamic_cast<CSimon*>(objects[i]) && objects[i]->isVisible() == true && !dynamic_cast<CBrickHide*>(objects[i]))
 			objects[i]->Render();
 	}
 	for (int i = 0; i < objects.size(); i++) {
-		if (dynamic_cast<CSimon*>(objects[i]))
+		if (dynamic_cast<CSimon*>(objects[i]) || dynamic_cast<CBrickHide*>(objects[i]))
 			objects[i]->Render();
 	}
 }
@@ -448,7 +530,7 @@ void CPlayScene::Unload()
 		/*if (!dynamic_cast<CSimon*>(objects[i]))*/
 		delete objects[i];
 	}
-		
+
 	objects.clear();
 	player = NULL;
 
@@ -458,23 +540,15 @@ void CPlayScene::Unload()
 void CPlayScenceKeyHandler::OnKeyUp(int KeyCode) {
 	CSimon* simon = ((CPlayScene*)scence)->GetPlayer();
 
-	switch (KeyCode)
-	{
-	case DIK_UP:
-		if (simon->IsOnStair()) {
-		simon->GetState() == SIMON_STATE_IDLE_UPSTAIR;
-		}
-		break;
-	}
 
-	
+
 }
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
-	CSimon *simon = ((CPlayScene*)scence)->GetPlayer();
+	CSimon* simon = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
 	case DIK_Q:
@@ -483,13 +557,13 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_Z:
 		if (simon->GetState() == SIMON_STATE_JUMP) {
 			simon->SetState(SIMON_STATE_JUMP_ATTACK);
-		} 
+		}
 		else if (simon->GetState() == SIMON_STATE_IDLE) {
 			if (CGame::GetInstance()->IsKeyDown(DIK_UP) && simon->GetWeapon() != 0) {
 				simon->SetState(SIMON_STATE_ATTACK_SUBWEAPON);
 			}
 			else
-			simon->SetState(SIMON_STATE_ATTACK);
+				simon->SetState(SIMON_STATE_ATTACK);
 		}
 		else if (simon->GetState() == SIMON_STATE_SIT)
 			simon->SetState(SIMON_STATE_ATTACK_SIT);
@@ -498,29 +572,53 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		//if (simon->vy != 0) return;
 		if (simon->GetState() == SIMON_STATE_ATTACK || simon->GetState() == SIMON_STATE_ATTACK_SIT) return;
 		if (simon->GetState() == SIMON_STATE_IDLE || simon->GetState() == SIMON_STATE_WALKING) {
-			if(simon->IsOnGroud() == true)
-			simon->SetState(SIMON_STATE_JUMP);
+			if (simon->IsOnGroud() == true)
+				simon->SetState(SIMON_STATE_JUMP);
 		}
 		break;
 	case DIK_UP:
 		if (simon->IsOnStair() && simon->GetState() == SIMON_STATE_GO_UPSTAIR) {
 			simon->animation_set->at(SIMON_ANI_GO_UPSTAIR)->SetAniStartTime(GetTickCount());
 			simon->SetState(SIMON_STATE_GO_UPSTAIR);
-		} else
-		if (simon->IsOnStair() == false && simon->CanGoStair()) {
+		}
+		else if (simon->IsOnStair() == false && simon->canGoUpStair) {
 			simon->x = simon->simonGoStair;
 		}
+		else if (simon->IsOnStair() && (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR || simon->GetState() == SIMON_STATE_IDLE_DOWNSTAIR)) {
+			simon->nxCanGoStair *= -1;
+			simon->SetState(SIMON_STATE_IDLE_UPSTAIR);
+		}
 		break;
-	case DIK_R: 
+	case DIK_DOWN:
+	{
+		if (simon->IsOnStair()) {
+			if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR) {
+				simon->animation_set->at(SIMON_ANI_GO_DOWNSTAIR)->SetAniStartTime(GetTickCount());
+				simon->SetState(SIMON_STATE_GO_DOWNSTAIR);
+			}
+			else if ((simon->GetState() == SIMON_STATE_GO_UPSTAIR || simon->GetState() == SIMON_STATE_IDLE_UPSTAIR)) {
+				simon->nxCanGoStair *= -1;
+				//simon->animation_set->at(SIMON_ANI_IDLE_DOWNSTAIR)->SetAniStartTime(GetTickCount());
+				simon->SetState(SIMON_STATE_IDLE_DOWNSTAIR);
+			}
+		}
+		else if (simon->IsOnStair() == false && simon->canGoDownStair) {
+			simon->x = simon->simonGoStair;
+			simon->SetState(SIMON_STATE_GO_DOWNSTAIR);
+		}
+		
+		break;
+	}
+	case DIK_R:
 		simon->Reset();
 		break;
 	}
 }
 
-void CPlayScenceKeyHandler::KeyState(BYTE *states)
+void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
-	CGame *game = CGame::GetInstance();
-	CSimon *simon = ((CPlayScene*)scence)->GetPlayer();
+	CGame* game = CGame::GetInstance();
+	CSimon* simon = ((CPlayScene*)scence)->GetPlayer();
 
 	// disable control key when Mario die 
 	if (simon->GetState() == SIMON_STATE_DIE) return;
@@ -531,7 +629,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 	if (simon->GetState() == SIMON_STATE_ATTACK_SIT && simon->animation_set->at(SIMON_ANI_ATTACK_SIT)->IsOver(SIMON_TIME_ATTACK) == false) return;
 	if (simon->GetState() == SIMON_STATE_CHANGE_COLOR && simon->animation_set->at(SIMON_ANI_CHANGE_COLOR)->IsOver(SIMON_TIME_CHANGE_COLOR) == false) return;
 	if (simon->GetState() == SIMON_STATE_GO_UPSTAIR && simon->animation_set->at(SIMON_ANI_GO_UPSTAIR)->IsOver(200) == false) return;
-	
+	if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR && simon->animation_set->at(SIMON_ANI_GO_DOWNSTAIR)->IsOver(200) == false) return;
+
 
 	if (simon->IsOnStair() == false) {
 		if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
@@ -544,12 +643,20 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 			simon->SetOrientation(-1);
 			simon->SetState(SIMON_STATE_WALKING);
 		}
-		else if (game->IsKeyDown(DIK_DOWN)) {
-			if (game->IsKeyDown(DIK_RIGHT)) { simon->SetOrientation(1); }
-			else if (game->IsKeyDown(DIK_LEFT)) simon->SetOrientation(-1);
-			simon->SetState(SIMON_STATE_SIT);
+		else if (game->IsKeyDown(DIK_DOWN) ) {
+			if (simon->canGoDownStair == false && simon->canGoUpStair == false) {
+				if (game->IsKeyDown(DIK_RIGHT)) { simon->SetOrientation(1); }
+				else if (game->IsKeyDown(DIK_LEFT)) simon->SetOrientation(-1);
+				simon->SetState(SIMON_STATE_SIT);
+			}
+			else {
+				if (simon->canGoDownStair) {
+					simon->x = simon->simonGoStair;
+					simon->SetState(SIMON_STATE_GO_DOWNSTAIR);
+				}
+			}
 		}
-		else if (game->IsKeyDown(DIK_UP) && simon->CanGoStair() == true) {
+		else if (game->IsKeyDown(DIK_UP) && simon->canGoUpStair == true) {
 			simon->x = simon->simonGoStair;
 			simon->SetState(SIMON_STATE_GO_UPSTAIR);
 		}
@@ -557,12 +664,28 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 			simon->SetState(SIMON_STATE_IDLE);
 	}
 	else {
-		if (game->IsKeyDown(DIK_UP)) {
+		simon->canGoDownStair = true;
+		simon->canGoUpStair = true;
+		if (game->IsKeyDown(DIK_UP) ) {
+			if (simon->GetState() == SIMON_STATE_IDLE_DOWNSTAIR) {
+				simon->nxCanGoStair *= -1;
+			}
 			simon->SetState(SIMON_STATE_GO_UPSTAIR);
 		}
-		else
+		else if (game->IsKeyDown(DIK_DOWN)) {
+			if (simon->GetState() == SIMON_STATE_IDLE_UPSTAIR) {
+				simon->nxCanGoStair *= -1;
+			}
+			simon->SetState(SIMON_STATE_GO_DOWNSTAIR);
+		}
+		else 
 		{
-			simon->SetState(SIMON_STATE_IDLE_UPSTAIR);
+			if (simon->GetState() == SIMON_STATE_GO_UPSTAIR) {
+				simon->SetState(SIMON_STATE_IDLE_UPSTAIR);
+			}
+			else if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR) {
+				simon->SetState(SIMON_STATE_IDLE_DOWNSTAIR);
+			}
 		}
 	}
 }

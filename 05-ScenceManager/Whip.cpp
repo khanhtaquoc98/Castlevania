@@ -13,6 +13,13 @@ CWhip::CWhip():CGameObject()
 
 void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
+
+	coEvents.clear();
+
+	CalcPotentialCollisions(coObjects, coEvents);
+
 	for (UINT i = 0; i < coObjects->size(); i++) 
 	{	
 		LPGAMEOBJECT coliObject = coObjects->at(i);
@@ -31,6 +38,54 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				coObjects->at(i)->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			
+		}
+	}
+
+	if (coEvents.size() == 0)
+	{
+		x += dx;
+		y += dy;
+	}
+	else
+	{
+		float min_tx, min_ty, nx = 0, ny;
+		float rdx = 0;
+		float rdy = 0;
+
+		// TODO: This is a very ugly designed function!!!!
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+
+		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
+		//if (rdx != 0 && rdx!=dx)
+		//	x += nx*abs(rdx); 
+
+		// block every object first!
+		x += min_tx * dx + nx * 0.2f;
+		y += min_ty * dy + ny * 0.2f;
+
+		//
+		// Collision logic with other objects
+		//
+
+
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[i];
+
+			if (dynamic_cast<CTorch*>(e->obj))
+			{
+				e->obj->SetState(TORCH_STATE_DESTROYED);
+				e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CCandle*>(e->obj)) {
+				e->obj->SetState(CANDLE_STATE_DESTROYED);
+				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CLeopard*>(e->obj)) {
+				e->obj->SetState(CANDLE_STATE_DESTROYED);
+				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+
 		}
 	}
 }
@@ -89,14 +144,14 @@ void CWhip::SetPositionWhip(D3DXVECTOR2 simonPosition, bool isStanding)
 	if (nx > 0)
 	{
 		simonPosition.x -= 42.0f;
-		if (isStanding) simonPosition.y -= 4.0f;
-		simonPosition.y += 9.0f;
+		if (isStanding) simonPosition.y += 3.6f;
+		else simonPosition.y += 12.0f;
 	}
 	else
 	{
-		simonPosition.x -= 46.0f;
-		if (isStanding) simonPosition.y += 4.0f;
-		else simonPosition.y += 9.0f;
+		simonPosition.x -= 48.0f;
+		if (isStanding) simonPosition.y += 3.6f;
+		else simonPosition.y += 12.0f;
 	}
 
 	this->SetPosition(simonPosition.x, simonPosition.y);

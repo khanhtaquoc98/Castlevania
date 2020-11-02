@@ -10,7 +10,9 @@ class CItems
 public:
 	void AddItem(int itemType, LPGAMEOBJECT item);
 	void CheckAndDrop(LPGAMEOBJECT object);
+	void CheckAndDropMoney(LPGAMEOBJECT object);
 	void Drop(int itemType, float x, float y);
+	void DropMoney(int itemType);
 	CItems() {};
 	static CItems* GetInstance();
 
