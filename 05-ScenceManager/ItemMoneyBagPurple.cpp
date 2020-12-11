@@ -13,7 +13,7 @@ void CItemMoneyBagPurple::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	CGameObject::Update(dt);
 	vy += ITEM_GRAVITY * dt;// simple fall down
-
+	
 	if (this->isVisible() == true && this->tStartVisible != 0) {
 		if (GetTickCount() - this->tStartVisible > TIME_VISIBLE_ITEM_MONEY_PURPLE)
 			this->SetVisible(false);
@@ -45,7 +45,6 @@ void CItemMoneyBagPurple::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (dynamic_cast<CBrick*>(e->obj))
 			{
-				// Block brick
 				if (e->ny != 0)
 				{
 					y += 0.4f * e->ny;

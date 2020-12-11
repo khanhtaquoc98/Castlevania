@@ -1,14 +1,6 @@
-[TEXTURES]
-# id	left	top	right	bottom	texture_id
-[SPRITES]
-
-
-# ani_id	sprite1_id	time1	sprite2_id	time2	...
-[ANIMATIONS]
-
-
-[ANIMATION_SETS]
-
+[INFO_MAP]
+#widthMap	ColTile	idTexture spaceHUD
+1728	20	94	40
 
 
 [OBJECTS]
@@ -25,10 +17,6 @@
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
 #50	722	60	0	750	144	50
-
-[INFO_MAP]
-#widthMap	ColTile	idTexture
-1728	20	94
 
 [TILE_MAP]
 1	1	1	1	2	3	1	1	2	3	1	1	1	1	1	1	1	1	4	4	5	6	5	6	7	8	9	10	5	6	7	8	11	12	5	6	7	8	13	14	15	16	17	18	5	6	19	20	7	8	17	18	5	6	19	20	7	8	17	18	5	6	21	22	11	12	23	24

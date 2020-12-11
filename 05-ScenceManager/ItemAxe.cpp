@@ -1,32 +1,23 @@
-#include "ItemMoneyBagRed.h"
+#include "ItemAxe.h"
 #include "Brick.h"
 #include "Items.h"
 
 
-CItemMoneyBagRed::CItemMoneyBagRed()
+CItemAxe::CItemAxe()
 {
 	this->visible = false;
 }
 
-void CItemMoneyBagRed::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CItemAxe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 
 	CGameObject::Update(dt);
-	if (y == 198)
-	{
-		vy += ITEM_GRAVITY * dt;// simple fall down
-		if (this->isVisible() == true && this->tStartVisible != 0) {
-			if (GetTickCount() - this->tStartVisible > 3000)
-				this->SetVisible(false);
-		}
+	vy += ITEM_GRAVITY * dt;// simple fall down
+	if (this->isVisible() == true && this->tStartVisible != 0) {
+		if (GetTickCount() - this->tStartVisible > TIME_VISIBLE_ITEM_BIG_HEART)
+			this->SetVisible(false);
 	}
-	else {
-		if (y > 198) {
-			vy -= 0.0001;
-		}
-		else vy = 0;
-	}
-	
+
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -67,15 +58,15 @@ void CItemMoneyBagRed::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
-void CItemMoneyBagRed::Render()
+void CItemAxe::Render()
 {
 	animation_set->at(0)->Render(x, y, 1);
 }
 
-void CItemMoneyBagRed::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+void CItemAxe::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	left = x;
 	top = y;
-	right = x + ITEM_BAG_WIDTH;
-	bottom = y + ITEM_BAG_HEIGHT;
+	right = x + ITEM_AXE_WIDTH;
+	bottom = y + ITEM_AXE_HEIGHT;
 }

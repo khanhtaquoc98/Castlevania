@@ -10,7 +10,7 @@ void CSubWeapons::UseSubWeapon(int TypeWeapon)
 {
 	switch (TypeWeapon)
 	{
-	case 41: // OBJECT_SUBWEAPON_DAGGER
+	case  OBJECT_SUBWEAPON_DAGGER: // OBJECT_SUBWEAPON_DAGGER
 	{
 		LPGAMEOBJECT dagger = GetSubWeapon(TypeWeapon);
 		if (dagger == NULL) return;
@@ -23,6 +23,23 @@ void CSubWeapons::UseSubWeapon(int TypeWeapon)
 		}
 		else {
 			dagger->SetPosition(xSimon - 6, ySimon + 7);
+		}
+
+		break;
+	}
+	case  OBJECT_SUBWEAPON_HOYLYWATER: 
+	{
+		LPGAMEOBJECT holywater = GetSubWeapon(TypeWeapon);
+		if (holywater == NULL) return;
+		holywater->SetVisible(true);
+		holywater->SetOrientation(CSimon::GetInstance()->GetOrientation());
+		float xSimon, ySimon;
+		CSimon::GetInstance()->GetPosition(xSimon, ySimon);
+		if (CSimon::GetInstance()->GetOrientation() > 0) {
+			holywater->SetPosition(xSimon + 16, ySimon + 7);
+		}
+		else {
+			holywater->SetPosition(xSimon - 6, ySimon + 7);
 		}
 
 		break;

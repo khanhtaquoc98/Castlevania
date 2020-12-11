@@ -14,7 +14,10 @@
 #include "ItemSmallHeart.h"
 #include "ItemChain.h"
 #include "ItemDagger.h"
+#include "ItemHolyWater.h"
+#include "ItemCross.h"
 #include "Dagger.h"
+#include "HolyWater.h"
 #include "SubWeapons.h"
 #include "Map.h"
 #include "Leopard.h"
@@ -27,6 +30,9 @@
 #include "PointEffect.h"
 #include "ItemMoneyBagPurple.h"
 #include "ItemMoneyBagYellow.h"
+#include "WallPieces.h"
+#include "BrickOpenDoor.h"
+#include "Door.h"
 
 using namespace std;
 
@@ -54,14 +60,20 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_BRICK	1
 #define OBJECT_TYPE_WHIP	4
 #define OBJECT_TYPE_TORCH	5
-
 #define OBJECT_ITEM_BIG_HEART		6
 #define OBJECT_ITEM_CHAIN		7
 #define OBJECT_ITEM_DAGGER		8
 #define OBJECT_TYPE_CANDLE		9
 #define OBJECT_ITEM_SMALL_HEART	10
+#define OBJECT_ITEM_HOLY_WATER 16
+#define OBJECT_ITEM_AXE 17
+#define OBJECT_ITEM_CROSS 18
+#define	OBJECT_DOOR	32
+#define	OBJECT_ITEM_BRICK_OPEN_DOOR	33
+#define OBJECT_TYPE_WALL_PIECES		34
 
 #define OBJECT_SUBWEAPON_DAGGER	41
+#define OBJECT_SUBWEAPON_HOYLYWATER	72
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -69,7 +81,6 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_BRICK_4_LEOPARD	12
 
 #define OBJECT_TYPE_STAIR_BOTTOM 20
-
 #define OBJECT_TYPE_STAIR_TOP	21
 
 #define OBJECT_TYPE_BRICK_4_MONEY_RED 80
@@ -177,7 +188,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	int object_type = atoi(tokens[0].c_str());
 	float x = atof(tokens[1].c_str());
-	float y = atof(tokens[2].c_str());
+	float y = atof(tokens[2].c_str()) + spaceHUD;
 
 	int ani_set_id = atoi(tokens[3].c_str());
 
@@ -233,6 +244,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(true);
 		break;
 	}
+	case OBJECT_TYPE_WALL_PIECES:
+	{
+		obj = new CWallPiece();
+		obj->SetVisible(false);
+		CWallPieces::GetInstance()->AddPiece((CWallPiece*)obj);
+		break;
+	}
 	case OBJECT_ITEM_BIG_HEART:
 	{
 		obj = new CItemBigHeart();
@@ -244,6 +262,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		obj = new CItemSmallHeart();
 		CItems::GetInstance()->AddItem(OBJECT_ITEM_SMALL_HEART, obj);
+		obj->SetVisible(false);
+		break;
+	}	
+	case OBJECT_ITEM_CROSS: {
+		obj = new CItemCross();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_CROSS, obj);
 		obj->SetVisible(false);
 		break;
 	}
@@ -261,11 +285,25 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(false);
 		break;
 	}
+	case OBJECT_ITEM_HOLY_WATER:
+	{
+		obj = new CItemHolyWater();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_HOLY_WATER, obj);
+		obj->SetVisible(false);
+		break;
+	}
 	case OBJECT_SUBWEAPON_DAGGER:
 	{
 		obj = new CDagger();
 		obj->SetVisible(false);
 		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_DAGGER, obj);
+		break;
+	}
+	case OBJECT_SUBWEAPON_HOYLYWATER:
+	{
+		obj = new CHolyWater();
+		obj->SetVisible(false);
+		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_HOYLYWATER, obj);
 		break;
 	}
 	case OBJECT_TYPE_LEOPARD:
@@ -279,6 +317,22 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int width = atoi(tokens[4].c_str());
 		int height = atoi(tokens[5].c_str());
 		obj = new CBrick4Leopard();
+		obj->SetWidth(width);
+		obj->SetHeight(height);
+		obj->SetVisible(true);
+		break;
+	}
+	case OBJECT_DOOR:
+	{
+		obj = new CDoor();
+		obj->SetVisible(true);
+		break;
+	}
+	case OBJECT_ITEM_BRICK_OPEN_DOOR:
+	{
+		int width = atoi(tokens[4].c_str());
+		int height = atoi(tokens[5].c_str());
+		obj = new CBrickOpenDoor();
 		obj->SetWidth(width);
 		obj->SetHeight(height);
 		obj->SetVisible(true);
@@ -356,6 +410,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_BRICK_HIDE:
 	{
 		obj = new CBrickHide();
+		int IdItem = atoi(tokens[4].c_str());
+		obj->SetItem(IdItem);
 		obj->SetVisible(true);
 		break;
 	}
@@ -379,6 +435,7 @@ void CPlayScene::_ParseSection_INFO_MAP(string line) {
 	widthMap = atoi(tokens[0].c_str());
 	colTileImage = atoi(tokens[1].c_str());
 	idTexture = atoi(tokens[2].c_str());
+	spaceHUD = atoi(tokens[3].c_str());
 }
 
 #define TILE_WIDTH 16;
@@ -395,7 +452,7 @@ void CPlayScene::_ParseSection_TILE_MAP(string line) {
 		Tile.top = index / colTileImage * 16;
 		Tile.right = Tile.left + 16;
 		Tile.bottom = Tile.top + 16;
-		CMap* map = new CMap(x, y, idTexture, Tile.left, Tile.top, Tile.right, Tile.bottom);
+		CMap* map = new CMap(x, y + spaceHUD, idTexture, Tile.left, Tile.top, Tile.right, Tile.bottom);
 		tileMaps.push_back(map);
 	}
 	rowTile += 16;
@@ -499,7 +556,6 @@ void CPlayScene::Update(DWORD dt)
 	{
 		cx -= game->GetScreenWidth() / 2;
 		cy -= game->GetScreenHeight() / 2;
-
 	}
 
 	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
@@ -515,7 +571,9 @@ void CPlayScene::Render()
 			objects[i]->Render();
 	}
 	for (int i = 0; i < objects.size(); i++) {
-		if (dynamic_cast<CSimon*>(objects[i]) || dynamic_cast<CBrickHide*>(objects[i]))
+		if (dynamic_cast<CSimon*>(objects[i]))
+			objects[i]->Render();
+		if(dynamic_cast<CBrickHide*>(objects[i]) && objects[i]->visible)
 			objects[i]->Render();
 	}
 }
@@ -551,8 +609,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	CSimon* simon = ((CPlayScene*)scence)->GetPlayer();
 	switch (KeyCode)
 	{
-	case DIK_Q:
+	case DIK_1:
 		simon->SetWeapon(SUBWEAPON_DAGGER);
+		break;
+	case DIK_2:
+		simon->SetWeapon(SUBWEAPON_HOLYWATER);
 		break;
 	case DIK_Z:
 		if (simon->GetState() == SIMON_STATE_JUMP) {

@@ -4,6 +4,8 @@
 #include "Candle.h"
 #include "Items.h"
 #include "Leopard.h"
+#include "BrickHide.h"
+#include "WallPieces.h"
 
 
 CWhip::CWhip():CGameObject()
@@ -36,6 +38,11 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (dynamic_cast<CLeopard*>(coliObject)) {
 				coObjects->at(i)->SetState(CANDLE_STATE_DESTROYED);
 				coObjects->at(i)->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CBrickHide*>(coliObject)) {
+				coObjects->at(i)->SetVisible(false);
+				CItems::GetInstance()->CheckAndDrop(coObjects->at(i));
+				CWallPieces::GetInstance()->DropPiece(coObjects->at(i)->x, coObjects->at(i)->y);
 			}
 			
 		}
@@ -84,6 +91,10 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (dynamic_cast<CLeopard*>(e->obj)) {
 				e->obj->SetState(CANDLE_STATE_DESTROYED);
 				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CBrickHide*>(e->obj)) {
+				e->obj->SetVisible(false);
+				CItems::GetInstance()->CheckAndDrop(e->obj);
 			}
 
 		}

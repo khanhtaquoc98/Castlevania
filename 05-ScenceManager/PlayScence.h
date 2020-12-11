@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Game.h"
 #include "Textures.h"
 #include "Scence.h"
@@ -18,6 +18,8 @@ protected:
 
 	vector<LPGAMEOBJECT> objects;
 	vector<LMap> tileMaps;
+
+	int spaceHUD; //Chiều cao của bảng 
 
 	int widthMap;
 	int idTexture;

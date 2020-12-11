@@ -76,9 +76,6 @@
     <ClCompile Include="Brick.cpp">
       <Filter>ObjectStatic</Filter>
     </ClCompile>
-    <ClCompile Include="Items.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
     <ClCompile Include="ItemBigHeart.cpp">
       <Filter>Items\Item</Filter>
     </ClCompile>
@@ -132,6 +129,33 @@
     </ClCompile>
     <ClCompile Include="PointEffect.cpp">
       <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="HolyWater.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Axe.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="WallPieces.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemAxe.cpp">
+      <Filter>Items\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemHolyWater.cpp">
+      <Filter>Items\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Items.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemCross.cpp">
+      <Filter>Items\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="BrickOpenDoor.cpp">
+      <Filter>ObjectCheck</Filter>
+    </ClCompile>
+    <ClCompile Include="Door.cpp">
+      <Filter>ObjectStatic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -233,6 +257,30 @@
     </ClInclude>
     <ClInclude Include="PointEffect.h">
       <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="HolyWater.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Axe.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="WallPieces.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemAxe.h">
+      <Filter>Items\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemHolyWater.h">
+      <Filter>Items\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemCross.h">
+      <Filter>Items\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="BrickOpenDoor.h">
+      <Filter>ObjectCheck</Filter>
+    </ClInclude>
+    <ClInclude Include="Door.h">
+      <Filter>ObjectStatic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

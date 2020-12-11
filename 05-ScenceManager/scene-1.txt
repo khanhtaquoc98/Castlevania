@@ -1,13 +1,7 @@
-[TEXTURES]
-# id	left	top	right	bottom	texture_id
-[SPRITES]
 
-
-# ani_id	sprite1_id	time1	sprite2_id	time2	...
-[ANIMATIONS]
-
-
-[ANIMATION_SETS]
+[INFO_MAP]
+#widthMap	ColTile	idTexture	spaceHUD
+768	20	91	52
 
 
 
@@ -15,9 +9,11 @@
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,9=candle, 10=smallheartitem, 80=Brick4MoneyRed, 81=MoneyBagRed
 # SIMON
-0	0	0	1
+0	630	0	1
 #WHIP
 4	0	0	2
+#holywater	
+72	0	0	72
 #Dagger
 41	0	0	21
 #BRICK 
@@ -51,15 +47,15 @@
 
 
 #BIRCK_HIDE
-84	624	162	32
+84	624	160	32	99
 
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
 #50	722	60	0	750	144	50
 
 [INFO_MAP]
-#widthMap	ColTile	idTexture
-768	20	91
+#widthMap	ColTile	idTexture	spaceHUD
+768	20	91	52
 
 [TILE_MAP]
 1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	3	4	3	4	5	6

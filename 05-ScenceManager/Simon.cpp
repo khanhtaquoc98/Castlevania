@@ -17,12 +17,15 @@
 #include "StairTop.h"
 #include "Brick4Leopard.h"
 #include "Brick4MoneyRed.h"
+#include "BrickOpenDoor.h"
 #include "BrickHide.h"
 #include "ItemMoneyBagRed.h"
 #include "ItemMoneyBagPurple.h"
 #include "Items.h"
 #include "PointEffect.h"
 #include "ItemMoneyBagYellow.h"
+#include "WallPieces.h"
+#include "Door.h"
 
 CSimon* CSimon::__instance = NULL;
 
@@ -124,7 +127,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						this->canGoUpStair = false;
 						this->canGoDownStair = true;
 						this->SetState(SIMON_STATE_IDLE);
-						this->simonGoStair = coliObject->simonXStair;
+						this->simonGoStair = coliObject->simonXStair ;
 						this->nxCanGoStair = coliObject->nx;
 					}
 				}
@@ -191,10 +194,18 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
 			if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj) || dynamic_cast<CStairBottom*>(e->obj) 
-				|| dynamic_cast<CStairTop*>(e->obj) || dynamic_cast<CBrick4Leopard*>(e->obj) || dynamic_cast<CBrickHide*>(e->obj))
+				|| dynamic_cast<CStairTop*>(e->obj) || dynamic_cast<CBrick4Leopard*>(e->obj) || dynamic_cast<CBrickHide*>(e->obj)
+				|| dynamic_cast<CWallPiece*>(e->obj))
 			{
 				if (e->nx != 0) x += dx;
 				if (e->ny != 0) y += dy;
+				if (e->nx != 0 || e->ny != 0)
+					y = y - 0.2f;
+			}
+			else if (dynamic_cast<CDoor*>(e->obj)) {
+				vx = vy = 0;
+				e->obj->animation_set->at(0)->SetAniStartTime(GetTickCount());
+				e->obj->SetState(DOOR_STATE_OPEN);
 			}
 			else if (dynamic_cast<CBrick4MoneyRed*>(e->obj)) {
 				if (e->nx != 0) x += dx;
@@ -237,17 +248,12 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			}
-			/*else if (dynamic_cast<CStairTop*>(e->obj) && this->isOnStair == true) {
-				this->vy = 0;
-				this->isOnStair = false;
-				this->OnGroud = true;
-				this->SetState(SIMON_STATE_IDLE);
-			}*/
+			
 			else {
 				if (isOnStair == false) {
 					if (nx != 0) vx = 0;
 					if (ny != 0) vy = 0;
-					OnGroud = true;
+						OnGroud = true;
 				}
 			}
 		}
@@ -268,17 +274,17 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	if (state == SIMON_STATE_ATTACK_SUBWEAPON) {
 		if (animation_set->at(SIMON_ANI_ATTACK)->GetCurrentFrame() == 2) {
-			CSubWeapons::GetInstance()->UseSubWeapon(41);
+			CSubWeapons::GetInstance()->UseSubWeapon(currentWeapon);
 		}
 	}
 
 
-	DebugOut(L"vy: %d, vx: %d\n", this->vy, this->vx);
+	/*DebugOut(L"vy: %d, vx: %d\n", this->vy, this->vx);
 	DebugOut(L"isOnStair: %d\n", this->isOnStair);
 	DebugOut(L"canGoUpStair: %d\n", this->canGoUpStair);
 	DebugOut(L"state: %d\n", this->GetState());
 	DebugOut(L"canGoDownStair: %d\n", this->canGoDownStair);
-	DebugOut(L"nxGoStair: %d\n", this->nxCanGoStair);
+	DebugOut(L"nxGoStair: %d\n", this->nxCanGoStair);*/
 }
 
 void CSimon::Render()
@@ -315,7 +321,6 @@ void CSimon::Render()
 	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK) {
 		whip->RenderbyFrame(animation_set->at(ani)->GetCurrentFrame());
 	}
-
 }
 
 void CSimon::SetState(int state)
@@ -418,14 +423,14 @@ void CSimon::SetState(int state)
 		nx = nxCanGoStair;
 		this->isOnStair = true;
 		if (nx > 0) {
-			vx = 0.041f;
-			vy = +0.038f;
+			vx = 0.032f;
+			vy = +0.032f;
 		}
 		else
 		{
 			//simon đi lên hướng trái
-			vx = -0.041f;
-			vy = 0.038f;
+			vx = -0.032f;
+			vy = 0.032f;
 		}
 		break;
 	}
