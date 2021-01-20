@@ -151,11 +151,11 @@
     <ClCompile Include="ItemCross.cpp">
       <Filter>Items\Item</Filter>
     </ClCompile>
-    <ClCompile Include="BrickOpenDoor.cpp">
-      <Filter>ObjectCheck</Filter>
+    <ClCompile Include="ItemInvisibility.cpp">
+      <Filter>Items\Item</Filter>
     </ClCompile>
-    <ClCompile Include="Door.cpp">
-      <Filter>ObjectStatic</Filter>
+    <ClCompile Include="ItemDouble.cpp">
+      <Filter>Items\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -276,11 +276,11 @@
     <ClInclude Include="ItemCross.h">
       <Filter>Items\Item</Filter>
     </ClInclude>
-    <ClInclude Include="BrickOpenDoor.h">
-      <Filter>ObjectCheck</Filter>
+    <ClInclude Include="ItemInvisibility.h">
+      <Filter>Items\Item</Filter>
     </ClInclude>
-    <ClInclude Include="Door.h">
-      <Filter>ObjectStatic</Filter>
+    <ClInclude Include="ItemDouble.h">
+      <Filter>Items\Item</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

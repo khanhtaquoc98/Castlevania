@@ -80,6 +80,7 @@ public:
 	bool IsOnGroud() { return OnGroud; }
 
 	bool IsOnStair() { return isOnStair; }
+	void SetOnStair(bool isOnStair) {  this->isOnStair = isOnStair; }
 	int nxCanGoStair;
 
 	static CSimon* GetInstance();

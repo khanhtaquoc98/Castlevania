@@ -3,8 +3,6 @@
 #widthMap	ColTile	idTexture	spaceHUD
 768	20	91	52
 
-
-
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,9=candle, 10=smallheartitem, 80=Brick4MoneyRed, 81=MoneyBagRed
@@ -40,18 +38,17 @@
 #Brick4MoneyBagRed
 80	714	116	31	16	30	81
 #MoneyBagRed
-81	625	162	96
+81	625	162	96	198
 
 #Point effects
 99	645	145	990	3
-
 
 #BIRCK_HIDE
 84	624	160	32	99
 
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
-#50	722	60	0	750	144	50
+50	688	146	0	704	162	2
 
 [INFO_MAP]
 #widthMap	ColTile	idTexture	spaceHUD

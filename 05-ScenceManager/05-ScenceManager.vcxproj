@@ -130,16 +130,16 @@
     <ClCompile Include="Brick4Leopard.cpp" />
     <ClCompile Include="Brick4MoneyRed.cpp" />
     <ClCompile Include="BrickHide.cpp" />
-    <ClCompile Include="BrickOpenDoor.cpp" />
     <ClCompile Include="Candle.cpp" />
-    <ClCompile Include="Door.cpp" />
     <ClCompile Include="HolyWater.cpp" />
     <ClCompile Include="ItemAxe.cpp" />
     <ClCompile Include="ItemBigHeart.cpp" />
     <ClCompile Include="ItemChain.cpp" />
     <ClCompile Include="ItemCross.cpp" />
     <ClCompile Include="ItemDagger.cpp" />
+    <ClCompile Include="ItemDouble.cpp" />
     <ClCompile Include="ItemHolyWater.cpp" />
+    <ClCompile Include="ItemInvisibility.cpp" />
     <ClCompile Include="ItemMoneyBagPurple.cpp" />
     <ClCompile Include="ItemMoneyBagRed.cpp" />
     <ClCompile Include="ItemMoneyBagYellow.cpp" />
@@ -173,9 +173,8 @@
     <ClInclude Include="Brick4Leopard.h" />
     <ClInclude Include="Brick4MoneyRed.h" />
     <ClInclude Include="BrickHide.h" />
-    <ClInclude Include="BrickOpenDoor.h" />
     <ClInclude Include="Candle.h" />
-    <ClInclude Include="Door.h" />
+    <ClInclude Include="ItemDouble.h" />
     <ClInclude Include="HolyWater.h" />
     <ClInclude Include="ItemAxe.h" />
     <ClInclude Include="ItemBigHeart.h" />
@@ -183,6 +182,7 @@
     <ClInclude Include="ItemCross.h" />
     <ClInclude Include="ItemDagger.h" />
     <ClInclude Include="ItemHolyWater.h" />
+    <ClInclude Include="ItemInvisibility.h" />
     <ClInclude Include="ItemMoneyBagPurple.h" />
     <ClInclude Include="ItemMoneyBagRed.h" />
     <ClInclude Include="ItemMoneyBagYellow.h" />

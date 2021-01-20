@@ -10,12 +10,15 @@
 #include "Candle.h"
 #include "Simon.h"
 #include "Items.h"
+#include "ItemAxe.h"
 #include "ItemBigHeart.h"
 #include "ItemSmallHeart.h"
 #include "ItemChain.h"
 #include "ItemDagger.h"
 #include "ItemHolyWater.h"
 #include "ItemCross.h"
+#include "ItemInvisibility.h"
+#include "ItemDouble.h"
 #include "Dagger.h"
 #include "HolyWater.h"
 #include "SubWeapons.h"
@@ -31,8 +34,6 @@
 #include "ItemMoneyBagPurple.h"
 #include "ItemMoneyBagYellow.h"
 #include "WallPieces.h"
-#include "BrickOpenDoor.h"
-#include "Door.h"
 
 using namespace std;
 
@@ -68,9 +69,9 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_ITEM_HOLY_WATER 16
 #define OBJECT_ITEM_AXE 17
 #define OBJECT_ITEM_CROSS 18
-#define	OBJECT_DOOR	32
-#define	OBJECT_ITEM_BRICK_OPEN_DOOR	33
-#define OBJECT_TYPE_WALL_PIECES		34
+#define OBJECT_ITEM_INVISIBILITY 19
+#define OBJECT_ITEM_DOUBLE 199
+#define OBJECT_TYPE_WALL_PIECES		30
 
 #define OBJECT_SUBWEAPON_DAGGER	41
 #define OBJECT_SUBWEAPON_HOYLYWATER	72
@@ -221,8 +222,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	case OBJECT_TYPE_PORTAL:
 	{
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
+		float r = atoi(tokens[4].c_str());
+		float b = atoi(tokens[5].c_str()) + spaceHUD;
 		int scene_id = atoi(tokens[6].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
 		obj->SetVisible(true);
@@ -271,6 +272,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(false);
 		break;
 	}
+	case OBJECT_ITEM_INVISIBILITY: {
+		obj = new CItemInvisibility();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_INVISIBILITY, obj);
+		obj->SetVisible(false);
+		break;
+	}
 	case OBJECT_ITEM_CHAIN:
 	{
 		obj = new CItemChain();
@@ -285,10 +292,22 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(false);
 		break;
 	}
+	case OBJECT_ITEM_AXE: {
+		obj = new CItemAxe();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_AXE, obj);
+		obj->SetVisible(false);
+		break;
+	}
 	case OBJECT_ITEM_HOLY_WATER:
 	{
 		obj = new CItemHolyWater();
 		CItems::GetInstance()->AddItem(OBJECT_ITEM_HOLY_WATER, obj);
+		obj->SetVisible(false);
+		break;
+	}
+	case OBJECT_ITEM_DOUBLE: {
+		obj = new CItemDouble();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_DOUBLE, obj);
 		obj->SetVisible(false);
 		break;
 	}
@@ -317,22 +336,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int width = atoi(tokens[4].c_str());
 		int height = atoi(tokens[5].c_str());
 		obj = new CBrick4Leopard();
-		obj->SetWidth(width);
-		obj->SetHeight(height);
-		obj->SetVisible(true);
-		break;
-	}
-	case OBJECT_DOOR:
-	{
-		obj = new CDoor();
-		obj->SetVisible(true);
-		break;
-	}
-	case OBJECT_ITEM_BRICK_OPEN_DOOR:
-	{
-		int width = atoi(tokens[4].c_str());
-		int height = atoi(tokens[5].c_str());
-		obj = new CBrickOpenDoor();
 		obj->SetWidth(width);
 		obj->SetHeight(height);
 		obj->SetVisible(true);
@@ -381,8 +384,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_ITEM_MONEY_RED:
 	{
 		obj = new CItemMoneyBagRed();
+		int yCheck = atoi(tokens[4].c_str());
 		CItems::GetInstance()->AddItem(OBJECT_TYPE_ITEM_MONEY_RED, obj);
 		obj->SetVisible(false);
+		obj->SetyCheck(yCheck);
 		break;
 	}
 	case OBJECT_TYPE_ITEM_MONEY_PURPLE:
@@ -585,7 +590,7 @@ void CPlayScene::Unload()
 {
 	for (int i = 0; i < objects.size(); i++)
 	{
-		/*if (!dynamic_cast<CSimon*>(objects[i]))*/
+		if (!dynamic_cast<CSimon*>(objects[i]))
 		delete objects[i];
 	}
 
@@ -712,6 +717,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			}
 			else {
 				if (simon->canGoDownStair) {
+					simon->SetOnStair(true);
 					simon->x = simon->simonGoStair;
 					simon->SetState(SIMON_STATE_GO_DOWNSTAIR);
 				}
@@ -719,9 +725,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		else if (game->IsKeyDown(DIK_UP) && simon->canGoUpStair == true) {
 			simon->x = simon->simonGoStair;
+			simon->SetOnStair(true);
 			simon->SetState(SIMON_STATE_GO_UPSTAIR);
 		}
-		else
+		else 
 			simon->SetState(SIMON_STATE_IDLE);
 	}
 	else {

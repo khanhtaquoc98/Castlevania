@@ -1,21 +1,24 @@
 [SETTINGS]
 start	2
-
 #scene list
 [SCENES]
 1	scene-1.txt
 2	scene-2.txt
-4	scene-4.txt
+3	scene-3.txt
+4	scene-4-1.txt
+5	scene-5.txt
 
 [TEXTURES]
 1	resources\simon.png	116	116	116	
 2	resources\whip.png	255	0	255
 30 	resources\bbox.png	255	4	255
 31 	resources\brickhide2.png	255	255	255
-91	resources\1.png		255	255	255
+32 	resources\brickhide3.png	255	255	255
+91	resources\scence1.png	255	255	255
 92	resources\scence2.png	255	255	255
-92	resources\scence3.png	255	255	255
-94	resources\scene4.png	255	255	255
+93	resources\scence3.png	0	128	0
+94	resources\scence4.png	255	255	255
+95	resources\5.1.png	255	255	255
 40	resources\Objects.png	116	116	116
 50	resources\Enemies.png	116	116	116	
 
@@ -99,6 +102,10 @@ start	2
 50002	160	32	176	48	91
 #BRICK_HIDE_2
 50003	0	0	16	16	31
+#BRICK_HIDE_3
+50004	0	0	16	16	32
+#BRICK_HIDE_4
+50005	0	16	16	32	32
 # ==== TORCH =========
 #torch
 40001	175	1	191	33	40
@@ -143,6 +150,8 @@ start	2
 90013	104	18	119	34	40
 #_Cross
 90014	35	35	51	51	40
+#_Double
+90015	121	19	135	33	40
 #============= Wall pieces ===============
 44402	56	69	63	77	40
 #============= Point effects =============
@@ -218,6 +227,10 @@ start	2
 702	50002	100
 #BRICK_HIDE_2
 703	50003	100
+#BRICK_HIDE_3
+704	50004	100
+#BRICK_HIDE_4
+705	50005	100
 #=======DOOR==========
 432	40032	400	40033	400
 # ==== TORCH =========
@@ -257,6 +270,8 @@ start	2
 913	90013	100
 #_Cross
 914	90014	100
+#_Double
+915	90015	100
 #============= Wall pieces ============
 442	44402	100
 #=========== Point effects ============
@@ -289,6 +304,10 @@ start	2
 32	702
 #BIRCK_HIDE_2
 33	703
+#BRICK_HIDE_3
+34	704
+#BRICK_HIDE_4
+35	705
 #==== TORCH =========
 41	401	402
 #===== CANDLE =======
@@ -324,9 +343,10 @@ start	2
 913	913
 #_Cross
 914	914
-
+#_Double
+915	915
 #Wall pieces
-34	442
+30	442
 #Point effects
 990	991	992	993	994	995
 

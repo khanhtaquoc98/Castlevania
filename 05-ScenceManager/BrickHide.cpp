@@ -17,7 +17,7 @@ void CBrickHide::Update(DWORD dt, vector<LPGAMEOBJECT>* coObject)
 
 void CBrickHide::GetBoundingBox(float& left, float& top, float& right, float& bottom) {
 	left = x;
-	top = y;
+	top = y + 2;
 	bottom = top + 14;
 	right = left + 16;
 }

@@ -35,7 +35,7 @@ void CItems::Drop(int itemType, float x, float y)
 {
 	for (auto i = items[itemType].begin(); i != items[itemType].end(); i++)
 	{
-		if ((*i)->isVisible() == false) {
+		if ((*i)->isVisible() == false && (*i)->x == x && (*i)->y == y) {
 			(*i)->SetPosition(x, y);
 			(*i)->SetVisible(true);
 			(*i)->tStartVisible = GetTickCount();

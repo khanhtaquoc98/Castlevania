@@ -18,35 +18,36 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
-	coEvents.clear();
-
-	CalcPotentialCollisions(coObjects, coEvents);
-
-	for (UINT i = 0; i < coObjects->size(); i++) 
-	{	
+	for (UINT i = 0; i < coObjects->size(); i++)
+	{
 		LPGAMEOBJECT coliObject = coObjects->at(i);
 
 		if (this->CheckCollision(coliObject)) {
 			if (dynamic_cast<CTorch*>(coliObject)) {
-				coObjects->at(i)->SetState(TORCH_STATE_DESTROYED);
-				coObjects->at(i)->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+				coliObject->SetState(TORCH_STATE_DESTROYED);
+				coliObject->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CCandle*>(coliObject)) {
-				coObjects->at(i)->SetState(CANDLE_STATE_DESTROYED);
-				coObjects->at(i)->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+				coliObject->SetState(CANDLE_STATE_DESTROYED);
+				coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CLeopard*>(coliObject)) {
-				coObjects->at(i)->SetState(CANDLE_STATE_DESTROYED);
-				coObjects->at(i)->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+				coliObject->SetState(CANDLE_STATE_DESTROYED);
+				coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CBrickHide*>(coliObject)) {
-				coObjects->at(i)->SetVisible(false);
-				CItems::GetInstance()->CheckAndDrop(coObjects->at(i));
-				CWallPieces::GetInstance()->DropPiece(coObjects->at(i)->x, coObjects->at(i)->y);
+				CWallPieces::GetInstance()->DropPiece(coliObject->x, coliObject->y);
+				coliObject->SetVisible(false);
+				CItems::GetInstance()->CheckAndDrop(coliObject);
 			}
-			
+
 		}
 	}
+
+	coEvents.clear();
+
+	CalcPotentialCollisions(coObjects, coEvents);
+
 
 	if (coEvents.size() == 0)
 	{
@@ -92,10 +93,11 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				e->obj->SetState(CANDLE_STATE_DESTROYED);
 				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
-			else if (dynamic_cast<CBrickHide*>(e->obj)) {
+			/*else if (dynamic_cast<CBrickHide*>(e->obj)) {
 				e->obj->SetVisible(false);
 				CItems::GetInstance()->CheckAndDrop(e->obj);
-			}
+				CWallPieces::GetInstance()->DropPiece(e->obj->x, e->obj->y);
+			}*/
 
 		}
 	}
@@ -105,6 +107,7 @@ void CWhip::RenderbyFrame(int currentFrame)
 {
 	int StateWhip = CWhip::GetInstance()->GetState();
 	CAnimationSets::GetInstance()->Get(WHIP_ANI_SET)->at(StateWhip)->RenderByFrame(currentFrame, nx, x, y,255);
+
 	if (currentFrame == 2) {
 		RenderBoundingBox();
 	}
@@ -121,10 +124,12 @@ void CWhip::SetState(int state)
 void CWhip::GetBoundingBox(float& left, float& top, float& right, float& bottom) {
 	float xSimon, ySimon;
 	CSimon::GetInstance()->GetPosition(xSimon, ySimon);
+	int state = CSimon::GetInstance()->GetState();
 	switch (CWhip::GetInstance()->GetState()){
 	case NORMAL_WHIP:
 	{
-		top = ySimon + 6;
+		if (state == SIMON_STATE_SIT || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP) top = ySimon + 16;
+		else top = ySimon + 6;
 		if (nx > 0) left = xSimon + 28;
 		else left = xSimon - 20;
 		right = left + 24; //width normal whip
@@ -132,7 +137,8 @@ void CWhip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		break;
 	}
 	case SHORT_CHAIN: {
-		top = ySimon + 7;
+		if (state == SIMON_STATE_SIT || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP) top = ySimon + 16;
+		else top = ySimon + 7;
 		if (nx > 0) left = xSimon + 29;
 		else left = xSimon - 19;
 		right = left + 23; 
@@ -140,7 +146,8 @@ void CWhip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		break;
 	} 
 	case LONG_CHAIN: {
-		top = ySimon + 7;
+		if (state == SIMON_STATE_SIT || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP) top = ySimon + 16;
+		else top = ySimon + 7;
 		if (nx > 0) left = xSimon + 27;
 		else left = xSimon - 33;
 		right = left + 38;

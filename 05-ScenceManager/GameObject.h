@@ -56,7 +56,7 @@ public:
 	float vx;
 	float vy;
 
-
+	float yCheck; //ycheckMoneyRed
 	float simonXStair;
 
 	int itemID;
@@ -84,6 +84,9 @@ public:
 
 	void SetHeight(int h) { this->height = h; }
 	void GetHeight(int& h) { h = this->height; }
+
+	void SetyCheck(int ycheck) { this->yCheck = ycheck; }
+	void GetyCheck(int& ycheck) { ycheck = this->yCheck; }
 
 	void SetOrientation(int nx) { this->nx = nx; }
 	int GetOrientation() { return nx; }
