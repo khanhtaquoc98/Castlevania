@@ -1,23 +1,24 @@
 
 [INFO_MAP]
 #widthMap	ColTile	idTexture
-512	20	94	40
+512	20	94	56
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,
 
 #BIRCK_HIDE
-84	464	80	33	83
+84	464	80	33	0
+84	352	80	33	0
 
 #Wall pieces
-34	462	80	34	
-34	464	81	34
-34	466	82	34
-34	468	83	34
+30	464	80	30	
+30	466	81	30
+30	468	82	30
+30	470	83	30
 
 # SIMON
-0	380	0	1
+0	365	-14	1
 #WHIP
 4	0	0	2
 #holywater	
@@ -28,12 +29,16 @@
 73	0	0	73
 #BRICK 
 1	0	82	31	224	1
-1	96	50	31	32	1
-1	256	82	31	32	1
+1	96	50	31	32	16
+1	256	82	31	32	16
 1	320	82	31	140	1
-1	480	114	31	32	1
-1	448	144	31	32	1
+1	480	114	31	32	16
+1	448	144	31	32	16
 1	506	0	31	16	200
+
+#STAIR_BOTTOM
+20	95	47	31	16	1	-1	90
+20	447	78	31	16	1	-1	442
 
 #Candle
 9	28	19	42	82
@@ -55,14 +60,15 @@
 10	412	19	94
 10	492	19	94
 
+
 #Brick4MoneyBagRed
 80	450	120	31	16	16	81
 #MoneyBagRed
-81	354	80	96	106	
+81	354	80	96	122	
 #Point effects
 99	354	145	990	3
 #BIRCK_HIDE
-84	352	80	33	81
+
 
 #pointEffects
 99	35	145	990	0
@@ -71,7 +77,8 @@
 
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
-#50	722	60	0	750	144	50
+50	40	-7	0	54	0	31
+50	350	-7	0	362	0	32
 
 [TILE_MAP]
 1	2	3	4	5	6	1	2	6	6	6	6	1	2	6	6	1	2	6	6	7	8	3	4	5	6	6	6	7	8	9	10

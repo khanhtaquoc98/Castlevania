@@ -178,6 +178,9 @@
     <ClCompile Include="GAudio.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Boss.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animations.h">
@@ -320,6 +323,9 @@
     </ClInclude>
     <ClInclude Include="GAudio.h">
       <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Boss.h">
+      <Filter>Enemies</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

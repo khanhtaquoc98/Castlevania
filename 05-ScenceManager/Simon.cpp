@@ -358,7 +358,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	
-	DebugOut(L" vx: %d\n", this->vx);
+	//DebugOut(L" vx: %d\n", this->vx);
 	/*DebugOut(L"canGoUpStair: %d\n", this->canGoUpStair);
 	DebugOut(L"state: %d\n", this->GetState());
 	DebugOut(L"canGoDownStair: %d\n", this->canGoDownStair);
@@ -380,6 +380,8 @@ void CSimon::Render()
 	else if (state == SIMON_STATE_GO_DOWNSTAIR) ani = SIMON_ANI_GO_DOWNSTAIR;
 	else if (state == SIMON_STATE_IDLE_DOWNSTAIR) ani = SIMON_ANI_IDLE_DOWNSTAIR;
 	else if (state == SIMON_STATE_HURT_DEATH) ani = SIMON_ANI_HURT_DEATH;
+	else if (state == SIMON_STATE_ATTACK_DOWNSTAIR) ani = SIMON_ANI_ATTACK_DOWNSTAIR;
+	else if (state == SIMON_STATE_ATTACK_UPSTAIR) ani = SIMON_ANI_ATTACK_UPSTAIR;
 	else
 	{
 		if (vx == 0)
@@ -511,6 +513,26 @@ void CSimon::SetState(int state)
 			vx = -0.038f;
 			vy = 0.038f;
 		}
+		break;
+	}
+	case SIMON_STATE_ATTACK_UPSTAIR:
+	{
+		animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->Reset();
+		animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->SetAniStartTime(GetTickCount());
+		vx = 0;
+		vy = 0;
+		this->isOnStair = true;
+
+		break;
+	}
+	case SIMON_STATE_ATTACK_DOWNSTAIR:
+	{
+		animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->Reset();
+		animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->SetAniStartTime(GetTickCount());
+		vx = 0;
+		vy = 0;
+		this->isOnStair = true;
+
 		break;
 	}
 	case SIMON_STATE_DIE:

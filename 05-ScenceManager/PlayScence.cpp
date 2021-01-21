@@ -36,6 +36,7 @@
 #include "ItemMoneyBagYellow.h"
 #include "WallPieces.h"
 #include "Board.h"
+#include "Boss.h"
 
 using namespace std;
 
@@ -93,6 +94,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_ITEM_MONEY_PURPLE 83
 #define OBJECT_TYPE_BRICK_HIDE	84
 #define OBJECT_TYPE_POINT_EFFECT	99
+#define OBJECT_TYPE_BOSS	51
 
 #define MAX_SCENE_LINE 1024
 
@@ -430,6 +432,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(true);
 		break;
 	}
+
+	case OBJECT_TYPE_BOSS:
+	{
+		obj = new CBoss(player);
+		obj->SetVisible(true);
+		break;
+	}
 		
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
@@ -669,18 +678,34 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		simon->SetWeapon(SUBWEAPON_AXE);
 		break;
 	case DIK_Z:
-		if (simon->GetState() == SIMON_STATE_JUMP) {
-			simon->SetState(SIMON_STATE_JUMP_ATTACK);
-		}
-		else if (simon->GetState() == SIMON_STATE_IDLE) {
-			if (CGame::GetInstance()->IsKeyDown(DIK_UP) && simon->GetWeapon() != 0) {
-				simon->SetState(SIMON_STATE_ATTACK_SUBWEAPON);
+		if (simon->IsOnStair()) {
+			if (simon->GetState() == SIMON_STATE_IDLE_UPSTAIR || simon->GetState() == SIMON_STATE_GO_UPSTAIR)
+			{
+				simon->SetState(SIMON_STATE_ATTACK_UPSTAIR);
+				simon->animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->Reset();
+				simon->animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->SetAniStartTime(GetTickCount());
 			}
-			else
-				simon->SetState(SIMON_STATE_ATTACK);
+			if (simon->GetState() == SIMON_STATE_IDLE_DOWNSTAIR || simon->GetState() == SIMON_STATE_GO_DOWNSTAIR)
+			{
+				simon->SetState(SIMON_STATE_ATTACK_DOWNSTAIR);
+				simon->animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->Reset();
+				simon->animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->SetAniStartTime(GetTickCount());
+			}
 		}
-		else if (simon->GetState() == SIMON_STATE_SIT)
-			simon->SetState(SIMON_STATE_ATTACK_SIT);
+		else {
+			if (simon->GetState() == SIMON_STATE_JUMP) {
+				simon->SetState(SIMON_STATE_JUMP_ATTACK);
+			}
+			else if (simon->GetState() == SIMON_STATE_IDLE) {
+				if (CGame::GetInstance()->IsKeyDown(DIK_UP) && simon->GetWeapon() != 0) {
+					simon->SetState(SIMON_STATE_ATTACK_SUBWEAPON);
+				}
+				else
+					simon->SetState(SIMON_STATE_ATTACK);
+			}
+			else if (simon->GetState() == SIMON_STATE_SIT)
+				simon->SetState(SIMON_STATE_ATTACK_SIT);
+		}
 		break;
 	case DIK_X:
 		//if (simon->vy != 0) return;
@@ -754,6 +779,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (simon->GetState() == SIMON_STATE_GO_UPSTAIR && simon->animation_set->at(SIMON_ANI_GO_UPSTAIR)->IsOver(200) == false) return;
 	if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR && simon->animation_set->at(SIMON_ANI_GO_DOWNSTAIR)->IsOver(200) == false) return;
 	if (simon->GetState() == SIMON_STATE_HURT_DEATH && simon->animation_set->at(SIMON_ANI_HURT_DEATH)->IsOver(300) == false) return;
+	if (simon->GetState() == SIMON_STATE_ATTACK_DOWNSTAIR && simon->animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->IsOver(300) == false) return;
+	if (simon->GetState() == SIMON_STATE_ATTACK_UPSTAIR && simon->animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->IsOver(300) == false) return;
 
 	if (simon->IsOnStair() == false) {
 		if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
@@ -805,10 +832,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		else 
 		{
-			if (simon->GetState() == SIMON_STATE_GO_UPSTAIR) {
+			if (simon->GetState() == SIMON_STATE_GO_UPSTAIR || simon->GetState() == SIMON_STATE_ATTACK_UPSTAIR) {
 				simon->SetState(SIMON_STATE_IDLE_UPSTAIR);
 			}
-			else if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR) {
+			else if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR || simon->GetState() == SIMON_STATE_ATTACK_DOWNSTAIR) {
 				simon->SetState(SIMON_STATE_IDLE_DOWNSTAIR);
 			}
 		}

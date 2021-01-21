@@ -6,6 +6,7 @@
 #include "Leopard.h"
 #include "BrickHide.h"
 #include "WallPieces.h"
+#include "Boss.h"
 
 
 CWhip::CWhip():CGameObject()
@@ -34,6 +35,10 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (dynamic_cast<CLeopard*>(coliObject)) {
 				coliObject->SetState(CANDLE_STATE_DESTROYED);
 				coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CBoss*>(coliObject)) {
+				coliObject->SetState(DEAD);
+				//coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CBrickHide*>(coliObject)) {
 				coliObject->SetVisible(false);

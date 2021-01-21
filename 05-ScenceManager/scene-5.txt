@@ -5,9 +5,10 @@
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
-# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,
+# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem ,8=daggeritem,81=boss
 #BIRCK_HIDE
 84	688	144	33	199
+
 
 #Wall pieces
 30	688	144	30	
@@ -16,7 +17,7 @@
 30	694	147	30
 
 # SIMON
-0	760	0	1
+0	0	0	1
 #WHIP
 4	0	0	2
 #WHIP
@@ -33,7 +34,15 @@
 1	128	113	31	176	1
 1	672	145	31	16	16
 1	720	113	31	48	1
+#STAIR_TOP
+21	715	69	31	10	16	-1	707
+21	293	67	31	10	16	1	292
+21	101	36	31	10	16	1	100
 
+#STAIR_BOTTOM
+20	677	142	31	16	1	1	671
+20	368	174	31	16	1	-1	360
+20	144	110	31	16	1	-1	136
 #Item
 
 10	28	115	94
@@ -63,6 +72,9 @@
 9	603	147	42	10
 9	667	115	42	10
 9	731	115	42	10
+
+#BOSS
+51	614	24	81
 
 # --- SCENE PORTAL ----
 # type	l	t	ani_set_id	r	b	scene_id
