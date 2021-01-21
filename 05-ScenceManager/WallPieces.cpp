@@ -42,7 +42,7 @@ void CWallPieces::DropPiece(float x, float y)
 
 	for (int j = 0; j < 4; j++) // Each group has 4 pieces
 	{
-		for (; i < pieces.size(); i++)
+		for (i; i < pieces.size(); i++)
 		{
 			if (pieces[i]->isVisible() == false)
 			{

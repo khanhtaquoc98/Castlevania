@@ -36,8 +36,8 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CBrickHide*>(coliObject)) {
-				CWallPieces::GetInstance()->DropPiece(coliObject->x, coliObject->y);
 				coliObject->SetVisible(false);
+				CWallPieces::GetInstance()->DropPiece(coliObject->x, coliObject->y);
 				CItems::GetInstance()->CheckAndDrop(coliObject);
 			}
 
@@ -49,58 +49,58 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CalcPotentialCollisions(coObjects, coEvents);
 
 
-	if (coEvents.size() == 0)
-	{
-		x += dx;
-		y += dy;
-	}
-	else
-	{
-		float min_tx, min_ty, nx = 0, ny;
-		float rdx = 0;
-		float rdy = 0;
+	//if (coEvents.size() == 0)
+	//{
+	//	x += dx;
+	//	y += dy;
+	//}
+	//else
+	//{
+	//	float min_tx, min_ty, nx = 0, ny;
+	//	float rdx = 0;
+	//	float rdy = 0;
 
-		// TODO: This is a very ugly designed function!!!!
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+	//	// TODO: This is a very ugly designed function!!!!
+	//	FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
-		//if (rdx != 0 && rdx!=dx)
-		//	x += nx*abs(rdx); 
+	//	// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
+	//	//if (rdx != 0 && rdx!=dx)
+	//	//	x += nx*abs(rdx); 
 
-		// block every object first!
-		x += min_tx * dx + nx * 0.2f;
-		y += min_ty * dy + ny * 0.2f;
+	//	// block every object first!
+	//	x += min_tx * dx + nx * 0.2f;
+	//	y += min_ty * dy + ny * 0.2f;
 
-		//
-		// Collision logic with other objects
-		//
+	//	//
+	//	// Collision logic with other objects
+	//	//
 
 
-		for (UINT i = 0; i < coEventsResult.size(); i++)
-		{
-			LPCOLLISIONEVENT e = coEventsResult[i];
+	//	for (UINT i = 0; i < coEventsResult.size(); i++)
+	//	{
+	//		LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CTorch*>(e->obj))
-			{
-				e->obj->SetState(TORCH_STATE_DESTROYED);
-				e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			}
-			else if (dynamic_cast<CCandle*>(e->obj)) {
-				e->obj->SetState(CANDLE_STATE_DESTROYED);
-				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			}
-			else if (dynamic_cast<CLeopard*>(e->obj)) {
-				e->obj->SetState(CANDLE_STATE_DESTROYED);
-				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			}
-			/*else if (dynamic_cast<CBrickHide*>(e->obj)) {
-				e->obj->SetVisible(false);
-				CItems::GetInstance()->CheckAndDrop(e->obj);
-				CWallPieces::GetInstance()->DropPiece(e->obj->x, e->obj->y);
-			}*/
+	//		if (dynamic_cast<CTorch*>(e->obj))
+	//		{
+	//			e->obj->SetState(TORCH_STATE_DESTROYED);
+	//			e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+	//		}
+	//		else if (dynamic_cast<CCandle*>(e->obj)) {
+	//			e->obj->SetState(CANDLE_STATE_DESTROYED);
+	//			e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+	//		}
+	//		else if (dynamic_cast<CLeopard*>(e->obj)) {
+	//			e->obj->SetState(CANDLE_STATE_DESTROYED);
+	//			e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+	//		}
+	//		/*else if (dynamic_cast<CBrickHide*>(e->obj)) {
+	//			e->obj->SetVisible(false);
+	//			CWallPieces::GetInstance()->DropPiece(e->obj->x, e->obj->y);
+	//			CItems::GetInstance()->CheckAndDrop(e->obj);
+	//		}*/
 
-		}
-	}
+	//	}
+	//}
 }
 
 void CWhip::RenderbyFrame(int currentFrame)

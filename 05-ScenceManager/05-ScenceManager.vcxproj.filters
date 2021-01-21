@@ -34,6 +34,12 @@
     <Filter Include="Effect">
       <UniqueIdentifier>{a4eca972-c9f7-4500-9af2-509577076ae9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HUD">
+      <UniqueIdentifier>{3ac716c8-0821-4192-99dd-ff91721a3eb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{25da8059-7a9b-402c-8186-ea545d88208c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animations.cpp">
@@ -156,6 +162,21 @@
     </ClCompile>
     <ClCompile Include="ItemDouble.cpp">
       <Filter>Items\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Code.cpp">
+      <Filter>HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="dsutil.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="GAudio.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -281,6 +302,24 @@
     </ClInclude>
     <ClInclude Include="ItemDouble.h">
       <Filter>Items\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Code.h">
+      <Filter>HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Board.h">
+      <Filter>HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="dsutil.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="dxutil.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="GAudio.h">
+      <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 #include "Game.h"
 #include <math.h>
 #include "Utils.h"
+#include "StairBottom.h"
 
 void CLeopard::SetState(int state)
 {
@@ -50,7 +51,7 @@ void CLeopard::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	 vy += LEOPARD_GRAVITY * dt;// Simple fall down
 
-	if (state == LEOPARD_STATE_SIT && (abs(CSimon::GetInstance()->x - (this->x + 32)) >= 150)) {
+	if (state == LEOPARD_STATE_SIT && (abs(CSimon::GetInstance()->x - (this->x + 32)) >= 300)) {
 		this->SetOrientation(-CSimon::GetInstance()->GetOrientation());
 	}
 
@@ -106,12 +107,11 @@ void CLeopard::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			LPCOLLISIONEVENT e = coEventsResult[i];
 			if (dynamic_cast<CBrick4Leopard*>(e->obj))
 			{
-				if (e->nx != 0) x += dx;
-				if (e->ny != 0) y += dy;
+				this->SetState(LEOPARD_STATE_JUMP);
+				isJump = true;
 			}
 			else if (dynamic_cast<CBrick*>(e->obj)) {
 				if (ny != 0) vy = 0;
-				
 				if (isJump) {
 					this->SetState(LEOPARD_SPEED_RUN);
 					isJump = false;
@@ -125,8 +125,9 @@ void CLeopard::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 			else {
+				y = y - 2;
+				if (e->ny <= 0) y += dy;
 				if (e->nx != 0) x += dx;
-				if (e->ny != 0) y += dy;
 			}
 		}
 	}

@@ -21,6 +21,7 @@
 #include "ItemDouble.h"
 #include "Dagger.h"
 #include "HolyWater.h"
+#include "Axe.h"
 #include "SubWeapons.h"
 #include "Map.h"
 #include "Leopard.h"
@@ -34,6 +35,7 @@
 #include "ItemMoneyBagPurple.h"
 #include "ItemMoneyBagYellow.h"
 #include "WallPieces.h"
+#include "Board.h"
 
 using namespace std;
 
@@ -75,6 +77,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 
 #define OBJECT_SUBWEAPON_DAGGER	41
 #define OBJECT_SUBWEAPON_HOYLYWATER	72
+#define OBJECT_SUBWEAPON_AXE	73
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -325,6 +328,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_HOYLYWATER, obj);
 		break;
 	}
+	case OBJECT_SUBWEAPON_AXE:
+	{
+		obj = new CAxe();
+		obj->SetVisible(false);
+		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_AXE, obj);
+		break;
+	}
 	case OBJECT_TYPE_LEOPARD:
 	{
 		obj = new CLeopard();
@@ -518,6 +528,10 @@ void CPlayScene::Load()
 
 	f.close();
 
+	/*if (CGame::GetInstance()->GetScene() == 3) {
+		player->SetState(SIMON_STATE_IDLE_DOWNSTAIR);
+	}*/
+	HUD = Board::GetInstance();
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
@@ -526,6 +540,7 @@ void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
+
 
 	vector<LPGAMEOBJECT> coObjects;
 
@@ -562,6 +577,7 @@ void CPlayScene::Update(DWORD dt)
 		cx -= game->GetScreenWidth() / 2;
 		cy -= game->GetScreenHeight() / 2;
 	}
+	HUD->Update(dt);
 
 	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
 }
@@ -581,6 +597,8 @@ void CPlayScene::Render()
 		if(dynamic_cast<CBrickHide*>(objects[i]) && objects[i]->visible)
 			objects[i]->Render();
 	}
+
+	HUD->Render();
 }
 
 /*
@@ -593,6 +611,9 @@ void CPlayScene::Unload()
 		if (!dynamic_cast<CSimon*>(objects[i]))
 		delete objects[i];
 	}
+
+	CWallPieces::GetInstance()->Clear();
+	CItems::GetInstance()->Clear();
 
 	objects.clear();
 	player = NULL;
@@ -615,10 +636,37 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_1:
-		simon->SetWeapon(SUBWEAPON_DAGGER);
+		CGame::GetInstance()->SwitchScene(1);
 		break;
 	case DIK_2:
+		CGame::GetInstance()->SwitchScene(2);
+		break;
+	case DIK_3:
+		CGame::GetInstance()->SwitchScene(3);
+		break;
+	case DIK_4:
+		CGame::GetInstance()->SwitchScene(31);
+		break;
+	case DIK_5:
+		CGame::GetInstance()->SwitchScene(32);
+		break;
+	case DIK_6:
+		CGame::GetInstance()->SwitchScene(41);
+		break;
+	case DIK_7:
+		CGame::GetInstance()->SwitchScene(42);
+		break;
+	case DIK_8:
+		CGame::GetInstance()->SwitchScene(5);
+		break;
+	case DIK_A:
+		simon->SetWeapon(SUBWEAPON_DAGGER);
+		break;
+	case DIK_S:
 		simon->SetWeapon(SUBWEAPON_HOLYWATER);
+		break;
+	case DIK_D:
+		simon->SetWeapon(SUBWEAPON_AXE);
 		break;
 	case DIK_Z:
 		if (simon->GetState() == SIMON_STATE_JUMP) {
@@ -648,7 +696,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			simon->SetState(SIMON_STATE_GO_UPSTAIR);
 		}
 		else if (simon->IsOnStair() == false && simon->canGoUpStair) {
-			simon->x = simon->simonGoStair;
+			if (simon->x != simon->simonGoStair) {
+				simon->x > simon->simonGoStair ? simon->SetOrientation(-1) : simon->SetOrientation(1);
+				simon->vx = 0.0001;
+				simon->SetState(SIMON_STATE_WALKING);
+			}
+			//simon->x = simon->simonGoStair;
 		}
 		else if (simon->IsOnStair() && (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR || simon->GetState() == SIMON_STATE_IDLE_DOWNSTAIR)) {
 			simon->nxCanGoStair *= -1;
@@ -669,7 +722,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			}
 		}
 		else if (simon->IsOnStair() == false && simon->canGoDownStair) {
-			simon->x = simon->simonGoStair;
+			if (simon->x != simon->simonGoStair) {
+				simon->x > simon->simonGoStair ? simon->SetOrientation(-1) : simon->SetOrientation(1);
+				simon->vx = 0.0001;
+				simon->SetState(SIMON_STATE_WALKING);
+			} else
 			simon->SetState(SIMON_STATE_GO_DOWNSTAIR);
 		}
 		
@@ -696,7 +753,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (simon->GetState() == SIMON_STATE_CHANGE_COLOR && simon->animation_set->at(SIMON_ANI_CHANGE_COLOR)->IsOver(SIMON_TIME_CHANGE_COLOR) == false) return;
 	if (simon->GetState() == SIMON_STATE_GO_UPSTAIR && simon->animation_set->at(SIMON_ANI_GO_UPSTAIR)->IsOver(200) == false) return;
 	if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR && simon->animation_set->at(SIMON_ANI_GO_DOWNSTAIR)->IsOver(200) == false) return;
-
+	if (simon->GetState() == SIMON_STATE_HURT_DEATH && simon->animation_set->at(SIMON_ANI_HURT_DEATH)->IsOver(300) == false) return;
 
 	if (simon->IsOnStair() == false) {
 		if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
@@ -735,13 +792,13 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		simon->canGoDownStair = true;
 		simon->canGoUpStair = true;
 		if (game->IsKeyDown(DIK_UP) ) {
-			if (simon->GetState() == SIMON_STATE_IDLE_DOWNSTAIR) {
+			if (simon->GetState() == SIMON_STATE_IDLE_DOWNSTAIR || simon->GetState() == SIMON_STATE_GO_DOWNSTAIR) {
 				simon->nxCanGoStair *= -1;
 			}
 			simon->SetState(SIMON_STATE_GO_UPSTAIR);
 		}
 		else if (game->IsKeyDown(DIK_DOWN)) {
-			if (simon->GetState() == SIMON_STATE_IDLE_UPSTAIR) {
+			if (simon->GetState() == SIMON_STATE_IDLE_UPSTAIR || simon->GetState() == SIMON_STATE_GO_UPSTAIR) {
 				simon->nxCanGoStair *= -1;
 			}
 			simon->SetState(SIMON_STATE_GO_DOWNSTAIR);

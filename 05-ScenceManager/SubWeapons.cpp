@@ -44,6 +44,23 @@ void CSubWeapons::UseSubWeapon(int TypeWeapon)
 
 		break;
 	}
+	case  OBJECT_SUBWEAPON_AXE:
+	{
+		LPGAMEOBJECT axe = GetSubWeapon(TypeWeapon);
+		if (axe == NULL) return;
+		axe->SetVisible(true);
+		axe->SetOrientation(CSimon::GetInstance()->GetOrientation());
+		float xSimon, ySimon;
+		CSimon::GetInstance()->GetPosition(xSimon, ySimon);
+		if (CSimon::GetInstance()->GetOrientation() > 0) {
+			axe->SetPosition(xSimon + 16, ySimon);
+		}
+		else {
+			axe->SetPosition(xSimon - 6, ySimon);
+		}
+
+		break;
+	}
 	default:
 		break;
 	}

@@ -9,12 +9,13 @@
 #include "Koopas.h"
 #include "Whip.h"
 #include "Map.h"
-
+#include "Board.h"
 
 class CPlayScene: public CScene
 {
 protected: 
 	CSimon *player;					// A play scene has to have player, right? 
+	Board *HUD;
 
 	vector<LPGAMEOBJECT> objects;
 	vector<LMap> tileMaps;
@@ -43,6 +44,7 @@ public:
 	virtual void Render();
 	virtual void Unload();
 
+	
 	CSimon * GetPlayer() { return player; } 
 
 	//friend class CPlayScenceKeyHandler;

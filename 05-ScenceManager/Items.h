@@ -5,9 +5,11 @@
 
 class CItems
 {
+
 	unordered_map<int, vector<LPGAMEOBJECT>> items;
 	static CItems* __instance;
 public:
+	void Clear() { items.clear(); }
 	void AddItem(int itemType, LPGAMEOBJECT item);
 	void CheckAndDrop(LPGAMEOBJECT object);
 	void CheckAndDropMoney(LPGAMEOBJECT object);

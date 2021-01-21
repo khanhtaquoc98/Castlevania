@@ -11,6 +11,7 @@
 #include "Brick.h"
 #include "Portal.h"
 #include "Dagger.h"
+#include "ItemHolyWater.h"
 #include "SubWeapons.h"
 #include "ItemDagger.h"
 #include "StairBottom.h"
@@ -24,6 +25,9 @@
 #include "PointEffect.h"
 #include "ItemMoneyBagYellow.h"
 #include "WallPieces.h"
+#include "ItemAxe.h"
+#include "ItemCross.h"
+#include "Leopard.h"
 
 CSimon* CSimon::__instance = NULL;
 
@@ -47,6 +51,7 @@ CSimon::CSimon(float x, float y) : CGameObject()
 	this->x = x;
 	this->y = y;
 
+
 	whip = new CWhip();
 }
 
@@ -55,6 +60,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 	if (x <= -6) x = -6;
+
 
 	// Simple fall down
 	if (isOnStair == false) {
@@ -67,7 +73,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	coEvents.clear();
 
 	// turn off collision when die 
-	if (state != SIMON_STATE_DIE)
+	if (state != SIMON_STATE_DIE )
 		CalcPotentialCollisions(coObjects, coEvents);
 
 	// reset untouchable timer if untouchable time has passed
@@ -83,7 +89,32 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		if (this->CheckCollision(coliObject)) {
 			if (isOnStair == true) {
-				
+				if (dynamic_cast<CStairBottom*>(coliObject)  && this->OnGroud == false) {
+					this->isOnStair = false;
+					this->canGoDownStair = false;
+					this->canGoUpStair = true;
+					this->simonXStair = coliObject->simonXStair;
+					this->nxCanGoStair = coliObject->nx;
+					this->OnGroud = true;
+					this->SetState(SIMON_STATE_IDLE);
+				}
+				else if (dynamic_cast<CStairTop*>(coliObject) && this->OnGroud == false) {
+					this->isOnStair = false;
+					this->OnGroud = true;
+					this->canGoUpStair = false;
+					this->canGoDownStair = true;
+					this->SetState(SIMON_STATE_IDLE);
+					this->simonGoStair = coliObject->simonXStair;
+					this->nxCanGoStair = coliObject->nx;
+				}
+				else if (dynamic_cast<CPortal*>(coliObject))
+				{
+					CPortal* p = dynamic_cast<CPortal*>(coliObject);
+					CGame::GetInstance()->SwitchScene(p->GetSceneId());
+				}
+				else if (dynamic_cast<CLeopard*>(coliObject)) {
+					StartUntouchable();
+				}
 			}
 			else {
 				if (dynamic_cast<CItemBigHeart*>(coliObject)) {
@@ -114,13 +145,21 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					this->canGoDownStair = true;
 					this->canGoUpStair = false;
 				}
+				else if (dynamic_cast<CCandle*>(coliObject)) {
+
+				}
 				else if (dynamic_cast<CItemMoneyBagPurple*>(coliObject)) {
 					coliObject->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_1000);
 				}
 				else if (dynamic_cast<CItemMoneyBagYellow*>(coliObject)) {
+					 y = y - 0.2f;
 					coliObject->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_700);
+				}
+				else if (dynamic_cast<CLeopard*>(coliObject)) {
+					this->SetState(SIMON_STATE_HURT_DEATH);
+					StartUntouchable();
 				}
 				else {
 					this->canGoUpStair = false;
@@ -189,15 +228,25 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					this->simonGoStair = e->obj->simonXStair;
 					this->nxCanGoStair = e->obj->nx;
 				}
-			}
-			else {
-				if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj) || dynamic_cast<CStairBottom*>(e->obj)
-					|| dynamic_cast<CStairTop*>(e->obj) || dynamic_cast<CBrick4Leopard*>(e->obj)
-					|| dynamic_cast<CWallPiece*>(e->obj))
+				else if (dynamic_cast<CPortal*>(e->obj))
 				{
+					CPortal* p = dynamic_cast<CPortal*>(e->obj);
+					CGame::GetInstance()->SwitchScene(p->GetSceneId());
+				}
+				else if (dynamic_cast<CLeopard*>(e->obj)) {
 					if (e->nx != 0) x += dx;
 					if (e->ny != 0) y += dy;
 					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
+					StartUntouchable();
+				}
+			}
+			else {
+				if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj) || dynamic_cast<CBrick4Leopard*>(e->obj)
+					|| dynamic_cast<CWallPiece*>(e->obj) || dynamic_cast<PointEffect*>(e->obj))
+				{
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
+					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;	
 				}
 				else if (dynamic_cast<CBrick4MoneyRed*>(e->obj)) {
 					if (e->nx != 0) x += dx;
@@ -217,7 +266,11 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_700);
 				}
 				else if (dynamic_cast<CItemBigHeart*>(e->obj)) {
-					e->obj->SetVisible(false);
+					if (e->nx != 0 || e->ny != 0)
+					{
+						y = y - 0.2f;
+						e->obj->SetVisible(false);
+					}
 				}
 				else if (dynamic_cast<CItemSmallHeart*>(e->obj)) {
 					if (e->nx != 0 || e->ny != 0)
@@ -235,28 +288,50 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					e->obj->SetVisible(false);
 					this->SetWeapon(SUBWEAPON_DAGGER);
 				}
+				else if (dynamic_cast<CItemHolyWater*>(e->obj)) {
+					e->obj->SetVisible(false);
+					this->SetWeapon(SUBWEAPON_HOLYWATER);
+				}
+				else if (dynamic_cast<CItemCross*>(e->obj)) {
+					e->obj->SetVisible(false);
+				}
+				else if (dynamic_cast<CItemAxe*>(e->obj)) {
+					e->obj->SetVisible(false);
+					this->SetWeapon(SUBWEAPON_AXE);
+				}
 				else if (dynamic_cast<CPortal*>(e->obj))
 				{
 					CPortal* p = dynamic_cast<CPortal*>(e->obj);
 					CGame::GetInstance()->SwitchScene(p->GetSceneId());
 				}
 				else if (dynamic_cast<CStairBottom*>(e->obj)) {
-						this->canGoUpStair = true;
-						this->nxCanGoStair = e->obj->nx;
-						this->simonGoStair = e->obj->simonXStair;
-						this->canGoDownStair = false;
+					this->canGoUpStair = true;
+					this->nxCanGoStair = e->obj->nx;
+					this->simonGoStair = e->obj->simonXStair;
+					this->canGoDownStair = false;
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
+					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
 				}
 				else if (dynamic_cast<CStairTop*>(e->obj)) {
-						this->nxCanGoStair = e->obj->nx;
-						this->simonGoStair = e->obj->simonXStair;
-						this->canGoDownStair = true;
-						this->canGoUpStair = false;
-					
+					this->nxCanGoStair = e->obj->nx;
+					this->simonGoStair = e->obj->simonXStair;
+					this->canGoDownStair = true;
+					this->canGoUpStair = false; 
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
+					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
+				}
+				else if (dynamic_cast<CLeopard*>(e->obj)) {
+						if (e->nx != 0) x += dx;
+						if (e->ny != 0) y += dy;
+						this->SetState(SIMON_STATE_HURT_DEATH);
+						StartUntouchable();
 				}
 				else {
-						if (nx != 0) vx = 0;
-						if (ny != 0) vy = 0;
-						OnGroud = true;
+					if (nx != 0) vx = 0;
+					if (ny != 0) vy = 0;
+					OnGroud = true;
 				}
 			}
 			
@@ -283,8 +358,8 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	
-	/*DebugOut(L"vy: %d, vx: %d\n", this->vy, this->vx);
-	DebugOut(L"canGoUpStair: %d\n", this->canGoUpStair);
+	DebugOut(L" vx: %d\n", this->vx);
+	/*DebugOut(L"canGoUpStair: %d\n", this->canGoUpStair);
 	DebugOut(L"state: %d\n", this->GetState());
 	DebugOut(L"canGoDownStair: %d\n", this->canGoDownStair);
 	DebugOut(L"nxGoStair: %d\n", this->nxCanGoStair);*/
@@ -304,6 +379,7 @@ void CSimon::Render()
 	else if (state == SIMON_STATE_IDLE_UPSTAIR) ani = SIMON_ANI_IDLE_UPSTAIR;
 	else if (state == SIMON_STATE_GO_DOWNSTAIR) ani = SIMON_ANI_GO_DOWNSTAIR;
 	else if (state == SIMON_STATE_IDLE_DOWNSTAIR) ani = SIMON_ANI_IDLE_DOWNSTAIR;
+	else if (state == SIMON_STATE_HURT_DEATH) ani = SIMON_ANI_HURT_DEATH;
 	else
 	{
 		if (vx == 0)
@@ -438,9 +514,21 @@ void CSimon::SetState(int state)
 		break;
 	}
 	case SIMON_STATE_DIE:
-		vy = -MARIO_DIE_DEFLECT_SPEED;
+		vy = -0.06f;
+		vx = 0;
+		break;
+	
+	case SIMON_STATE_HURT_DEATH: 
+		animation_set->at(SIMON_ANI_HURT_DEATH)->Reset();
+		animation_set->at(SIMON_ANI_HURT_DEATH)->SetAniStartTime(GetTickCount());
+		if (untouchable == 1) {
+			vy = -0.04f;
+			vx = -this->nx * 0.06f;
+		}
+		
 		break;
 	}
+
 }
 
 void CSimon::GetBoundingBox(float& left, float& top, float& right, float& bottom)

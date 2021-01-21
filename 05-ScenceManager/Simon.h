@@ -26,6 +26,7 @@
 #define SIMON_STATE_GO_DOWNSTAIR	1100
 #define	SIMON_STATE_ATTACK_UPSTAIR	1200
 #define SIMON_STATE_ATTACK_DOWNSTAIR	1300
+#define SIMON_STATE_HURT_DEATH	1400
 
 #define SIMON_ANI_IDLE				0
 #define SIMON_ANI_WALKING			1
@@ -41,6 +42,7 @@
 #define SIMON_ANI_GO_DOWNSTAIR		9
 #define SIMON_ANI_ATTACK_UPSTAIR	12
 #define SIMON_ANI_ATTACK_DOWNSTAIR	13
+#define SIMON_ANI_HURT_DEATH	14
 
 #define SIMON_TIME_ATTACK	350
 #define SIMON_TIME_CHANGE_COLOR	1000
@@ -50,8 +52,9 @@
 
 #define SUBWEAPON_DAGGER 41
 #define SUBWEAPON_HOLYWATER	72
+#define SUBWEAPON_AXE	73
 
-#define MARIO_UNTOUCHABLE_TIME 5000
+#define MARIO_UNTOUCHABLE_TIME 800
 
 
 class CSimon : public CGameObject
@@ -69,13 +72,16 @@ class CSimon : public CGameObject
 	int directionStair;
 	bool isOnStair;
 	
-	
+	int numLife = 4;
+	int numHeart = 20;
+	int health = 2;
+	int score;
 public: 
 	bool canGoUpStair;
 	bool canGoDownStair;
 	float simonGoStair;
-	void SetWeapon(int CurrentWeapon) { this->currentWeapon = CurrentWeapon; }
-	int GetWeapon() { return currentWeapon; }
+	
+	
 
 	bool IsOnGroud() { return OnGroud; }
 
@@ -94,4 +100,18 @@ public:
 	void Reset();
 
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
+
+	int GetWeapon() { return currentWeapon; }
+	int GetHealth() { return health; }
+	int GetNumLife() { return numLife; }
+	int GetNumHeart() { return numHeart; }
+	int GetScore() { return score; }
+
+	void SetHealth(int health) { this->health = health; }
+	void SetNumLife(int numLife) { this->numLife = numLife; }
+	void SetNumHeart(int numHeart) { this->numHeart = numHeart; }
+	void SetWeapon(int CurrentWeapon) { this->currentWeapon = CurrentWeapon; }
+	void SetScore(int score) { this->score += score; }
+
+		
 };

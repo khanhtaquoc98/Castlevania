@@ -11,17 +11,21 @@ void CItems::CheckAndDrop(LPGAMEOBJECT object)
 	int itemType = object->GetItem();
 	float x, y;
 	object->GetPosition(x, y);
-	Drop(itemType, x, y);
+	if (itemType > 0) {
+		Drop(itemType, x, y);
+	}
+	
 }
 
 void CItems::CheckAndDropMoney(LPGAMEOBJECT object)
 {
 	int itemType = object->GetItem();
 	DropMoney(itemType);
+	
 }
 
 void CItems::DropMoney(int itemType) {
-	for (auto i = items[itemType].begin(); i != items[itemType].end(); i++)
+	for (auto i = items[81].begin(); i != items[81].end(); i++)
 	{
 		if ((*i)->isVisible() == false) {
 			(*i)->SetVisible(true);
@@ -35,7 +39,7 @@ void CItems::Drop(int itemType, float x, float y)
 {
 	for (auto i = items[itemType].begin(); i != items[itemType].end(); i++)
 	{
-		if ((*i)->isVisible() == false && (*i)->x == x && (*i)->y == y) {
+		if ((*i)->isVisible() == false && (*i)->x == x && (*i)->y== y) {
 			(*i)->SetPosition(x, y);
 			(*i)->SetVisible(true);
 			(*i)->tStartVisible = GetTickCount();

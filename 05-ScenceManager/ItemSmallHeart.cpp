@@ -50,6 +50,10 @@ void CItemSmallHeart::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				vy = vx = 0;
 			}
+			else {
+				if (e->nx != 0) x += dx;
+				if (e->ny != 0) y += dy;
+			}
 		}
 	}
 

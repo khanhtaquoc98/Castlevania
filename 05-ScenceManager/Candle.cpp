@@ -19,8 +19,7 @@ void CCandle::Render() {
 
 void CCandle::Update(DWORD dt, vector<LPGAMEOBJECT>* coObject)
 {
-	if (this->state == CANDLE_STATE_DESTROYED && animation_set->at(CANDLE_ANI_DESTROYED)->IsOver(TIME_TORCH_DESTROYED) &&
-		this->visible == true) {
+	if (this->state == CANDLE_STATE_DESTROYED && animation_set->at(CANDLE_ANI_DESTROYED)->IsOver(TIME_TORCH_DESTROYED) && this->visible == true) {
 		this->SetVisible(false);
 		CItems::GetInstance()->CheckAndDrop(this);
 		return;

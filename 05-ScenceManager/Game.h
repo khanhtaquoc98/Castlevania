@@ -62,6 +62,7 @@ public:
 	void ProcessKeyboard();
 
 	void Load(LPCWSTR gameFile);
+	int GetScene() { return current_scene; }
 	LPSCENE GetCurrentScene() { return scenes[current_scene]; }
 	void SwitchScene(int scene_id);
 
@@ -89,8 +90,15 @@ public:
 	LPD3DXSPRITE GetSpriteHandler() { return this->spriteHandler; }
 
 	void SetCamPos(int x, int y) { cam_x = x; cam_y = y; }
+	void CGame::GetCamPos(float& cx, float& cy)
+	{
+		cx = cam_x;
+		cy = cam_y;
+	}
 
 	bool InCamera(LPGAMEOBJECT obj);
+
+	HWND gethWnd() { return hWnd; }
 
 	static CGame * GetInstance();
 
