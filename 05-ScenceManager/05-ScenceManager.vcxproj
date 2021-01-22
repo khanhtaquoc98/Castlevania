@@ -128,6 +128,7 @@
     <ClCompile Include="Axe.cpp" />
     <ClCompile Include="Bat.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Brick.cpp" />
     <ClCompile Include="Brick4Leopard.cpp" />
     <ClCompile Include="Brick4MoneyRed.cpp" />
@@ -135,7 +136,6 @@
     <ClCompile Include="Candle.cpp" />
     <ClCompile Include="Code.cpp" />
     <ClCompile Include="dsutil.cpp" />
-    <ClCompile Include="Fishman.cpp" />
     <ClCompile Include="GAudio.cpp" />
     <ClCompile Include="HolyWater.cpp" />
     <ClCompile Include="ItemAxe.cpp" />
@@ -151,6 +151,7 @@
     <ClCompile Include="ItemMoneyBagYellow.cpp" />
     <ClCompile Include="Items.cpp" />
     <ClCompile Include="ItemSmallHeart.cpp" />
+    <ClCompile Include="ItemStopWatch.cpp" />
     <ClCompile Include="Leopard.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="PointEffect.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="StairBottom.cpp" />
     <ClCompile Include="StairTop.cpp" />
+    <ClCompile Include="StopWatch.cpp" />
     <ClCompile Include="SubWeapons.cpp" />
     <ClCompile Include="Torch.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -179,6 +181,7 @@
     <ClInclude Include="Axe.h" />
     <ClInclude Include="Bat.h" />
     <ClInclude Include="Board.h" />
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="Brick.h" />
     <ClInclude Include="Brick4Leopard.h" />
     <ClInclude Include="Brick4MoneyRed.h" />
@@ -187,7 +190,6 @@
     <ClInclude Include="Code.h" />
     <ClInclude Include="dsutil.h" />
     <ClInclude Include="dxutil.h" />
-    <ClInclude Include="Fishman.h" />
     <ClInclude Include="GAudio.h" />
     <ClInclude Include="ItemDouble.h" />
     <ClInclude Include="HolyWater.h" />
@@ -203,6 +205,7 @@
     <ClInclude Include="ItemMoneyBagYellow.h" />
     <ClInclude Include="Items.h" />
     <ClInclude Include="ItemSmallHeart.h" />
+    <ClInclude Include="ItemStopWatch.h" />
     <ClInclude Include="Leopard.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="PointEffect.h" />
@@ -211,6 +214,7 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="StairBottom.h" />
     <ClInclude Include="StairTop.h" />
+    <ClInclude Include="StopWatch.h" />
     <ClInclude Include="SubWeapons.h" />
     <ClInclude Include="Torch.h" />
     <ClInclude Include="Utils.h" />

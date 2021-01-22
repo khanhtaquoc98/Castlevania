@@ -28,8 +28,10 @@
 #include "ItemAxe.h"
 #include "ItemCross.h"
 #include "Leopard.h"
-#include "Zombie.h"
+#include "ItemStopWatch.h"
+#include "Boss.h"
 #include "Bat.h"
+#include "Zombie.h"
 
 CSimon* CSimon::__instance = NULL;
 
@@ -63,6 +65,22 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt);
 	if (x <= -6) x = -6;
 
+	if (this->health == 0) {
+		this->SetNumLife(this->numLife - 1);
+		this->SetHealth(16);
+		this->SetPosition(start_x, start_y);
+		StartUntouchable();
+	}
+
+	
+	//Stopwatch
+	if (GetTickCount() - timeStopWatch > 6000) {
+		this->useStopWatch = false;
+		this->timeStopWatch = 0;
+	}
+	else {
+		//
+	}
 
 	// Simple fall down
 	if (isOnStair == false) {
@@ -114,9 +132,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					CPortal* p = dynamic_cast<CPortal*>(coliObject);
 					CGame::GetInstance()->SwitchScene(p->GetSceneId());
 				}
-				else if (dynamic_cast<CLeopard*>(coliObject)) {
+				/*else if (dynamic_cast<CLeopard*>(coliObject)) {
+					this->SetHealth(this->health - 2);
 					StartUntouchable();
-				}
+				}*/
 			}
 			else {
 				if (dynamic_cast<CItemBigHeart*>(coliObject)) {
@@ -134,6 +153,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (dynamic_cast<CItemDagger*>(coliObject)) {
 					coliObject->SetVisible(false);
 					this->SetWeapon(SUBWEAPON_DAGGER);
+				}
+				else if (dynamic_cast<CItemStopWatch*>(coliObject)) {
+					coliObject->SetVisible(false);
+					this->SetWeapon(SUBWEAPON_STOPWATCH);
 				}
 				else if (dynamic_cast<CStairBottom*>(coliObject)) {
 					this->canGoUpStair = true;
@@ -159,15 +182,13 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					coliObject->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_700);
 				}
-				else if (dynamic_cast<CLeopard*>(coliObject)) {
-					this->SetState(SIMON_STATE_HURT_DEATH);
-					StartUntouchable();
+				else if (dynamic_cast<CLeopard*>(coliObject) || dynamic_cast<CBat*>(coliObject) || dynamic_cast<CZombie*>(coliObject)) {
+					if (untouchable != 1) {
+						this->SetState(SIMON_STATE_HURT_DEATH);
+						StartUntouchable();
+					}
 				}
-				else if (dynamic_cast<CZombie*>(coliObject)) {
-					this->SetState(SIMON_STATE_HURT_DEATH);
-					StartUntouchable();
-				}
-				else if (dynamic_cast<CBat*>(coliObject)) {
+				else if (dynamic_cast<CBoss*>(coliObject)) {
 					this->SetState(SIMON_STATE_HURT_DEATH);
 					StartUntouchable();
 				}
@@ -243,11 +264,12 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					CPortal* p = dynamic_cast<CPortal*>(e->obj);
 					CGame::GetInstance()->SwitchScene(p->GetSceneId());
 				}
-				else if (dynamic_cast<CLeopard*>(e->obj)) {
+				else if (dynamic_cast<CLeopard*>(e->obj) || dynamic_cast<CBat*>(e->obj) || dynamic_cast<CZombie*>(e->obj)) {
+					StartUntouchable();
 					if (e->nx != 0) x += dx;
 					if (e->ny != 0) y += dy;
 					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
-					StartUntouchable();
+					this->SetHealth(this->health - 2);
 				}
 			}
 			else {
@@ -258,6 +280,13 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (e->ny != 0) y += dy;
 					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;	
 				}
+				else if (dynamic_cast<CBoss*>(e->obj)) {
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
+					health = health - 2;
+					this->SetState(SIMON_STATE_HURT_DEATH);
+					StartUntouchable();
+				}
 				else if (dynamic_cast<CBrick4MoneyRed*>(e->obj)) {
 					if (e->nx != 0) x += dx;
 					if (e->ny != 0) y += dy;
@@ -266,16 +295,20 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (dynamic_cast<CItemMoneyBagRed*>(e->obj)) {
 					e->obj->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_1000);
+					this->SetScore(1000);
 				}
 				else if (dynamic_cast<CItemMoneyBagPurple*>(e->obj)) {
 					e->obj->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_100);
+					this->SetScore(100);
 				}
 				else if (dynamic_cast<CItemMoneyBagYellow*>(e->obj)) {
 					e->obj->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_700);
+					this->SetScore(700);
 				}
 				else if (dynamic_cast<CItemBigHeart*>(e->obj)) {
+					this->SetNumHeart(this->numHeart + 5);
 					if (e->nx != 0 || e->ny != 0)
 					{
 						y = y - 0.2f;
@@ -283,6 +316,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 				else if (dynamic_cast<CItemSmallHeart*>(e->obj)) {
+					this->SetNumHeart(this->numHeart + 1);
 					if (e->nx != 0 || e->ny != 0)
 					{
 						y = y - 0.2f;
@@ -298,12 +332,17 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					e->obj->SetVisible(false);
 					this->SetWeapon(SUBWEAPON_DAGGER);
 				}
+				else if (dynamic_cast<CItemStopWatch*>(e->obj)) {
+					e->obj->SetVisible(false);
+					this->SetWeapon(SUBWEAPON_STOPWATCH);
+				}
 				else if (dynamic_cast<CItemHolyWater*>(e->obj)) {
 					e->obj->SetVisible(false);
 					this->SetWeapon(SUBWEAPON_HOLYWATER);
 				}
 				else if (dynamic_cast<CItemCross*>(e->obj)) {
 					e->obj->SetVisible(false);
+					eatCross = true;
 				}
 				else if (dynamic_cast<CItemAxe*>(e->obj)) {
 					e->obj->SetVisible(false);
@@ -314,35 +353,33 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					CPortal* p = dynamic_cast<CPortal*>(e->obj);
 					CGame::GetInstance()->SwitchScene(p->GetSceneId());
 				}
-				else if (dynamic_cast<CStairBottom*>(e->obj)) {
+				else if (dynamic_cast<CStairBottom*>(e->obj)) {\
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
 					this->canGoUpStair = true;
 					this->nxCanGoStair = e->obj->nx;
 					this->simonGoStair = e->obj->simonXStair;
 					this->canGoDownStair = false;
-					if (e->nx != 0) x += dx;
-					if (e->ny != 0) y += dy;
 					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
 				}
 				else if (dynamic_cast<CStairTop*>(e->obj)) {
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
+					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
 					this->nxCanGoStair = e->obj->nx;
 					this->simonGoStair = e->obj->simonXStair;
 					this->canGoDownStair = true;
 					this->canGoUpStair = false; 
+				}
+				else if (dynamic_cast<CLeopard*>(e->obj) || dynamic_cast<CBat*>(e->obj) || dynamic_cast<CZombie*>(e->obj)) {
 					if (e->nx != 0) x += dx;
 					if (e->ny != 0) y += dy;
-					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
-				}
-				else if (dynamic_cast<CLeopard*>(e->obj)) {
-						if (e->nx != 0) x += dx;
-						if (e->ny != 0) y += dy;
-						this->SetState(SIMON_STATE_HURT_DEATH);
+					if (untouchable != 1) {
 						StartUntouchable();
-				}
-				else if (dynamic_cast<CZombie*>(e->obj)) {
-					if (e->nx != 0) x += dx;
-					if (e->ny != 0) y += dy;
+						if (e->nx == this->nx) this->nx = this->nx * -1;
+						this->SetHealth(this->health - 2);
+					}
 					this->SetState(SIMON_STATE_HURT_DEATH);
-					StartUntouchable();
 				}
 				else {
 					if (nx != 0) vx = 0;
@@ -358,23 +395,29 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
-	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK)
+	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK || state == SIMON_STATE_ATTACK_DOWNSTAIR || state == SIMON_STATE_ATTACK_UPSTAIR)
 	{
 		whip->SetOrientation(nx);
-		whip->SetPositionWhip(D3DXVECTOR2(x, y), state != SIMON_STATE_ATTACK_SIT ? true : false);
+		whip->SetPositionWhipWithState(D3DXVECTOR2(x, y), state);
 		if (animation_set->at(SIMON_ANI_ATTACK)->GetCurrentFrame() == 2 ||
-			animation_set->at(SIMON_ANI_ATTACK_SIT)->GetCurrentFrame() == 2 ) {
+			animation_set->at(SIMON_ANI_ATTACK_SIT)->GetCurrentFrame() == 2 ||
+			animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->GetCurrentFrame() == 2 ||
+			animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->GetCurrentFrame() == 2) {
 			whip->Update(dt, coObjects);
 		}
 	}
+
 	if (state == SIMON_STATE_ATTACK_SUBWEAPON) {
 		if (animation_set->at(SIMON_ANI_ATTACK)->GetCurrentFrame() == 2) {
-			CSubWeapons::GetInstance()->UseSubWeapon(currentWeapon);
+			if (this->numHeart > 0) {
+				CSubWeapons::GetInstance()->UseSubWeapon(currentWeapon);
+			}
+			
 		}
 	}
 
 	
-	DebugOut(L" vx: %d\n", this->vx);
+	//DebugOut(L" vx: %d\n", this->vx);
 	/*DebugOut(L"canGoUpStair: %d\n", this->canGoUpStair);
 	DebugOut(L"state: %d\n", this->GetState());
 	DebugOut(L"canGoDownStair: %d\n", this->canGoDownStair);
@@ -396,6 +439,8 @@ void CSimon::Render()
 	else if (state == SIMON_STATE_GO_DOWNSTAIR) ani = SIMON_ANI_GO_DOWNSTAIR;
 	else if (state == SIMON_STATE_IDLE_DOWNSTAIR) ani = SIMON_ANI_IDLE_DOWNSTAIR;
 	else if (state == SIMON_STATE_HURT_DEATH) ani = SIMON_ANI_HURT_DEATH;
+	else if (state == SIMON_STATE_ATTACK_DOWNSTAIR) ani = SIMON_ANI_ATTACK_DOWNSTAIR;
+	else if (state == SIMON_STATE_ATTACK_UPSTAIR) ani = SIMON_ANI_ATTACK_UPSTAIR;
 	else
 	{
 		if (vx == 0)
@@ -413,7 +458,7 @@ void CSimon::Render()
 	animation_set->at(ani)->Render(x, y, nx, alpha);
 	RenderBoundingBox();
 
-	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK) {
+	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK || state == SIMON_STATE_ATTACK_UPSTAIR || state == SIMON_STATE_ATTACK_DOWNSTAIR) {
 		whip->RenderbyFrame(animation_set->at(ani)->GetCurrentFrame());
 	}
 }
@@ -529,6 +574,26 @@ void CSimon::SetState(int state)
 		}
 		break;
 	}
+	case SIMON_STATE_ATTACK_UPSTAIR:
+	{
+		animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->Reset();
+		animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->SetAniStartTime(GetTickCount());
+		vx = 0;
+		vy = 0;
+		this->isOnStair = true;
+
+		break;
+	}
+	case SIMON_STATE_ATTACK_DOWNSTAIR:
+	{
+		animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->Reset();
+		animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->SetAniStartTime(GetTickCount());
+		vx = 0;
+		vy = 0;
+		this->isOnStair = true;
+
+		break;
+	}
 	case SIMON_STATE_DIE:
 		vy = -0.06f;
 		vx = 0;
@@ -538,8 +603,8 @@ void CSimon::SetState(int state)
 		animation_set->at(SIMON_ANI_HURT_DEATH)->Reset();
 		animation_set->at(SIMON_ANI_HURT_DEATH)->SetAniStartTime(GetTickCount());
 		if (untouchable == 1) {
-			vy = -0.04f;
-			vx = -this->nx * 0.06f;
+			vy = -0.1f;
+			vx = -this->nx * 0.08f;
 		}
 		
 		break;

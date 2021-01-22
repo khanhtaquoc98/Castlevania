@@ -25,6 +25,9 @@ void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vx = -ZOMBIE_SPEED;
 	}
 
+	if (this->state == ZOMBIE_STATE_DESTROYED) {
+		vx = vy = 0;
+	}
 
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
@@ -75,14 +78,18 @@ void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
-			if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj))
+			/*if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj))
 			{
-				if (e->nx != 0) x += dx;
-				if (e->ny != 0) y += dy;
-			}
-			else if (dynamic_cast<CBrick*>(e->obj))
+				
+			}*/
+			/*else*/ 
+			if (dynamic_cast<CBrick*>(e->obj))
 			{
 				vy = 0;
+			}
+			else {
+				if (e->nx != 0) x += dx;
+				if (e->ny != 0) y += dy;
 			}
 
 		}
@@ -98,13 +105,22 @@ void CZombie::Render()
 	//animation_set->at(0)->Render(x, y, -nx);
 
 	if (state != ZOMBIE_STATE_DESTROYED) {
-		animation_set->at(ZOMBIE_ANI)->Render(x, y, -nx);
+		if (CSimon::GetInstance()->GetUseStopWatch() == true) {
+			int currentFrame = animation_set->at(ZOMBIE_ANI)->GetCurrentFrame();
+			animation_set->at(ZOMBIE_ANI)->SetCurrentFrame(currentFrame >= 0 ? currentFrame : 0);
+			animation_set->at(ZOMBIE_ANI)->RenderByFrame(currentFrame >= 0 ? currentFrame : 0, nx, x, y, 255);
+			RenderBoundingBox();
+		}
+		else {
+			animation_set->at(ZOMBIE_ANI)->Render(x, y, -nx);
+			RenderBoundingBox();
+		}
 	}
 	else {
 		animation_set->at(ZOMBIE_ANI_DESTROYED)->Render(x, y, -nx);
 	}
-
-	RenderBoundingBox();
+	
+	
 }
 
 CZombie* CZombie::__instance = NULL;

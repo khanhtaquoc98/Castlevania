@@ -178,13 +178,19 @@
     <ClCompile Include="GAudio.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="Bat.cpp">
+    <ClCompile Include="Boss.cpp">
       <Filter>Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="StopWatch.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemStopWatch.cpp">
+      <Filter>Items\Item</Filter>
     </ClCompile>
     <ClCompile Include="Zombie.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
-    <ClCompile Include="Fishman.cpp">
+    <ClCompile Include="Bat.cpp">
       <Filter>Enemies</Filter>
     </ClCompile>
   </ItemGroup>
@@ -330,13 +336,19 @@
     <ClInclude Include="GAudio.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Bat.h">
+    <ClInclude Include="Boss.h">
       <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="StopWatch.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemStopWatch.h">
+      <Filter>Items\Item</Filter>
     </ClInclude>
     <ClInclude Include="Zombie.h">
       <Filter>Enemies</Filter>
     </ClInclude>
-    <ClInclude Include="Fishman.h">
+    <ClInclude Include="Bat.h">
       <Filter>Enemies</Filter>
     </ClInclude>
   </ItemGroup>

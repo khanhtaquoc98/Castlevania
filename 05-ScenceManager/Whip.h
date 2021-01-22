@@ -18,6 +18,7 @@ public:
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	void SetPositionWhip(D3DXVECTOR2 simonPosition, bool isStanding);
+	void SetPositionWhipWithState(D3DXVECTOR2 simonPosition, int state);
 	void UpItemWhip();
 	static CWhip* GetInstance();
 };

@@ -3,9 +3,11 @@
 #include "Game.h"
 #include "Torch.h"
 #include "Items.h"
+#include "Candle.h"
+#include "Leopard.h"
+#include "Boss.h"
 #include "Zombie.h"
 #include "Bat.h"
-#include "Fishman.h"
 
 CDagger::CDagger() :CGameObject()
 {
@@ -19,7 +21,20 @@ void CDagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else vx = -DAGGER_SPEED;
 	vy = 0;
 
-	
+	/*for (UINT i = 0; i < coObjects->size(); i++)
+	{
+		LPGAMEOBJECT coliObject = coObjects->at(i);
+
+		if (this->CheckCollision(coliObject)) {
+			if (dynamic_cast<CTorch*>(coliObject)) {
+				this->SetVisible(false);
+				coObjects->at(i)->SetState(TORCH_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+
+		}
+	}*/
+
 	if (!CGame::GetInstance()->InCamera(this)) {
 		this->SetVisible(false);
 	}
@@ -58,18 +73,32 @@ void CDagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				this->SetVisible(false);
 				e->obj->SetState(TORCH_STATE_DESTROYED);
 				e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}		
+			else if (dynamic_cast<CCandle*>(e->obj)) {
+				this->SetVisible(false);
+				e->obj->SetState(CANDLE_STATE_DESTROYED);
+				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CLeopard*>(e->obj)) {
+				CSimon::GetInstance()->SetScore(100);
+				e->obj->SetVisible(false);
 			}
 			else if (dynamic_cast<CZombie*>(e->obj)) {
+				CSimon::GetInstance()->SetScore(100);
 				e->obj->SetState(ZOMBIE_STATE_DESTROYED);
 				e->obj->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CBat*>(e->obj)) {
+				CSimon::GetInstance()->SetScore(100);
 				e->obj->SetState(BAT_STATE_DESTROYED);
 				e->obj->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
-			else if (dynamic_cast<CFishman*>(e->obj)) {
-				e->obj->SetState(FISHMAN_STATE_DESTROYED);
-				e->obj->animation_set->at(FISHMAN_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			else if (dynamic_cast<CBoss*>(e->obj)) {
+				CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 2);
+			}
+			else {
+				if (e->nx != 0) x += dx;
+				if (e->ny != 0) y += dy;
 			}
 
 		}

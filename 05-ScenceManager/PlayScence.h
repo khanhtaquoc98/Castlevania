@@ -18,6 +18,8 @@ protected:
 	Board *HUD;
 
 	vector<LPGAMEOBJECT> objects;
+
+	vector<LPGAMEOBJECT> objectsEnemies;
 	vector<LMap> tileMaps;
 
 	int spaceHUD; //Chiều cao của bảng 
@@ -43,7 +45,6 @@ public:
 	virtual void Update(DWORD dt);
 	virtual void Render();
 	virtual void Unload();
-
 	
 	CSimon * GetPlayer() { return player; } 
 

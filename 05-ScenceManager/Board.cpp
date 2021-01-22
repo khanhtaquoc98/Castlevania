@@ -1,11 +1,14 @@
 #include "Board.h"
 #include "Simon.h"
 
+#include "Boss.h"
+
 Board* Board::__instance = NULL;
 void Board::Render()
 {
 	CSprites* sprites = CSprites::GetInstance();
 	CSimon* simon = CSimon::GetInstance();
+	CBoss* boss = CBoss::GetInstance();
 	CGame* game = CGame::GetInstance();
 	float cx, cy;
 	game->GetCamPos(cx, cy);
@@ -16,7 +19,7 @@ void Board::Render()
 	code->DrawNumber(1, { cx + 234, cy + 8 }, 2);
 	//HEALTH SIMON
 	code->DrawHP({ cx + 60, cy + 18 }, simon->GetHealth(), NUM_ID_SIMON);
-	code->DrawHP({ cx + 60, cy + 28 }, 16, NUM_ID_BOSS);
+	code->DrawHP({ cx + 60, cy + 28 }, boss->GetHealth() >= 0 ? boss->GetHealth() : 0, NUM_ID_BOSS);
 	//NUM LIFE
 	code->DrawNumber(simon->GetNumLife(), { cx + 200, cy + 28 }, 2);
 	//TIME

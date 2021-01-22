@@ -6,20 +6,24 @@
 #include "Leopard.h"
 #include "BrickHide.h"
 #include "WallPieces.h"
+#include "Boss.h"
 #include "Zombie.h"
 #include "Bat.h"
-#include "Fishman.h"
 
 
 CWhip::CWhip():CGameObject()
 {
-	SetState(NORMAL_WHIP);
+	SetState(LONG_CHAIN);
 }
 
 void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
+
+	coEvents.clear();
+
+	CalcPotentialCollisions(coObjects, coEvents);
 
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
@@ -34,34 +38,33 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				coliObject->SetState(CANDLE_STATE_DESTROYED);
 				coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
+			else if (dynamic_cast<CBoss*>(coliObject)) {
+				if (CBoss::GetInstance()->GetHealth() < 1) coliObject->SetState(DEAD);
+				CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 1);
+				//coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
 			else if (dynamic_cast<CLeopard*>(coliObject)) {
-				coliObject->SetState(CANDLE_STATE_DESTROYED);
-				coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+				CSimon::GetInstance()->SetScore(100);
+				coliObject->SetVisible(false);
+			}
+			else if (dynamic_cast<CZombie*>(coliObject)) {
+				CSimon::GetInstance()->SetScore(100);
+				coObjects->at(i)->SetState(ZOMBIE_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CBat*>(coliObject)) {
+				CSimon::GetInstance()->SetScore(100);
+				coObjects->at(i)->SetState(BAT_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CBrickHide*>(coliObject)) {
 				coliObject->SetVisible(false);
 				CWallPieces::GetInstance()->DropPiece(coliObject->x, coliObject->y);
 				CItems::GetInstance()->CheckAndDrop(coliObject);
 			}
-			else if (dynamic_cast<CZombie*>(coliObject)) {
-				coObjects->at(i)->SetState(ZOMBIE_STATE_DESTROYED);
-				coObjects->at(i)->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			}
-			else if (dynamic_cast<CBat*>(coliObject)) {
-				coObjects->at(i)->SetState(BAT_STATE_DESTROYED);
-				coObjects->at(i)->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			}
-			else if (dynamic_cast<CFishman*>(coliObject)) {
-				coObjects->at(i)->SetState(FISHMAN_STATE_DESTROYED);
-				coObjects->at(i)->animation_set->at(FISHMAN_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			}
+
 		}
 	}
-
-	coEvents.clear();
-
-	CalcPotentialCollisions(coObjects, coEvents);
-
 
 	//if (coEvents.size() == 0)
 	//{
@@ -94,18 +97,22 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	//	{
 	//		LPCOLLISIONEVENT e = coEventsResult[i];
 
-	//		if (dynamic_cast<CTorch*>(e->obj))
-	//		{
-	//			e->obj->SetState(TORCH_STATE_DESTROYED);
-	//			e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-	//		}
-	//		else if (dynamic_cast<CCandle*>(e->obj)) {
-	//			e->obj->SetState(CANDLE_STATE_DESTROYED);
-	//			e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-	//		}
-	//		else if (dynamic_cast<CLeopard*>(e->obj)) {
-	//			e->obj->SetState(CANDLE_STATE_DESTROYED);
-	//			e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+	//		//if (dynamic_cast<CTorch*>(e->obj))
+	//		//{
+	//		//	e->obj->SetState(TORCH_STATE_DESTROYED);
+	//		//	e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+	//		//}
+	//		//else if (dynamic_cast<CCandle*>(e->obj)) {
+	//		//	e->obj->SetState(CANDLE_STATE_DESTROYED);
+	//		//	e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+	//		//}
+	//		 if (dynamic_cast<CLeopard*>(e->obj)) {
+	//			 CSimon::GetInstance()->SetScore(100);
+	//			 e->obj->SetVisible(false);
+	//			 //e->obj->SetState(LEOPARD_STATE_DEAD);
+	//		} else if (dynamic_cast<CBoss*>(e->obj)) {
+	//			CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 1);
+	//			if(CBoss::GetInstance()->GetHealth() < 1) e->obj->SetState(DEAD);
 	//		}
 	//		/*else if (dynamic_cast<CBrickHide*>(e->obj)) {
 	//			e->obj->SetVisible(false);
@@ -188,6 +195,24 @@ void CWhip::SetPositionWhip(D3DXVECTOR2 simonPosition, bool isStanding)
 
 	this->SetPosition(simonPosition.x, simonPosition.y);
 }
+
+void CWhip::SetPositionWhipWithState(D3DXVECTOR2 simonPosition, int state) {
+	if (nx > 0)
+	{
+		simonPosition.x -= 42.0f;
+		if (state != SIMON_STATE_ATTACK_SIT) simonPosition.y += 3.6f;
+		else simonPosition.y += 12.0f;
+	}
+	else
+	{
+		simonPosition.x -= 48.0f;
+		if (state != SIMON_STATE_ATTACK_SIT) simonPosition.y += 3.6f;
+		else simonPosition.y += 12.0f;
+	}
+
+	this->SetPosition(simonPosition.x, simonPosition.y);
+}
+
 
 void CWhip::UpItemWhip()
 {

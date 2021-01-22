@@ -3,6 +3,7 @@
 #include "Brick.h"
 #include "Torch.h"
 #include "CMath"
+#include "Simon.h"
 
 void CBat::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
@@ -26,6 +27,10 @@ void CBat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (vy > 0 && y > yCheck + 20)
 	{
 		y = yCheck + 20; vy = -vy;
+	}
+
+	if (this->state == BAT_STATE_DESTROYED) {
+		vx = vy = 0;
 	}
 
 	for (UINT i = 0; i < coObjects->size(); i++)
@@ -77,15 +82,9 @@ void CBat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
-			if (dynamic_cast<CTorch*>(e->obj) || dynamic_cast<CCandle*>(e->obj))
-			{
-				if (e->nx != 0) x += dx;
-				if (e->ny != 0) y += dy;
-			}
-			else if (dynamic_cast<CBrick*>(e->obj))
-			{
-				vy = 0;
-			}
+			
+			if (e->nx != 0) x += dx;
+			if (e->ny != 0) y += dy;
 		}
 	}
 
@@ -97,13 +96,24 @@ void CBat::Render()
 {
 	//animation_set->at(0)->Render(x, y, -nx);
 	if (state != BAT_STATE_DESTROYED) {
-		animation_set->at(BAT_ANI)->Render(x, y, -nx);
+
+		if (CSimon::GetInstance()->GetUseStopWatch() == true) {
+			int currentFrame = animation_set->at(BAT_ANI)->GetCurrentFrame();
+			animation_set->at(BAT_ANI)->SetCurrentFrame(currentFrame >= 0 ? currentFrame : 0);
+			animation_set->at(BAT_ANI)->RenderByFrame(currentFrame >= 0 ? currentFrame : 0, nx, x, y, 255);
+			RenderBoundingBox();
+		}
+		else {
+			animation_set->at(BAT_ANI)->Render(x, y, -nx);
+			RenderBoundingBox();
+		}
+		
 	}
 	else {
 		animation_set->at(BAT_ANI_DESTROYED)->Render(x, y, -nx);
 	}
 
-	RenderBoundingBox();
+	
 }
 
 CBat* CBat::__instance = NULL;

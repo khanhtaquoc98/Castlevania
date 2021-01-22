@@ -53,8 +53,9 @@
 #define SUBWEAPON_DAGGER 41
 #define SUBWEAPON_HOLYWATER	72
 #define SUBWEAPON_AXE	73
+#define SUBWEAPON_STOPWATCH 74
 
-#define MARIO_UNTOUCHABLE_TIME 1000
+#define MARIO_UNTOUCHABLE_TIME 3000
 
 
 class CSimon : public CGameObject
@@ -72,10 +73,15 @@ class CSimon : public CGameObject
 	int directionStair;
 	bool isOnStair;
 	
-	int numLife = 4;
-	int numHeart = 20;
-	int health = 2;
-	int score;
+	int numLife = 3;
+	int numHeart = 10;
+	int health = 16;
+	int score = 0;
+
+	DWORD timeStopWatch;
+	bool useStopWatch = false;
+
+	bool eatCross = false;
 public: 
 	bool canGoUpStair;
 	bool canGoDownStair;
@@ -113,5 +119,12 @@ public:
 	void SetWeapon(int CurrentWeapon) { this->currentWeapon = CurrentWeapon; }
 	void SetScore(int score) { this->score += score; }
 
-		
+	bool GetUseStopWatch() {return useStopWatch; }
+	bool EatCross() { return eatCross; }
+	void ResetCross() { this->eatCross = false; }
+	void StartStopWatch() {
+		this->useStopWatch = true;
+		this->timeStopWatch = GetTickCount(); }
+
+	bool isStageBoss = false;
 };

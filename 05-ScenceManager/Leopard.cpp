@@ -28,7 +28,13 @@ void CLeopard::SetState(int state)
 		else vx = -LEOPARD_SPEED_RUN;
 		vy = -LEOPARD_GRAVITY_JUMPING;
 		break;
+	case LEOPARD_STATE_DEAD: {
+		vx = vy = 0;
+		//animation_set->at(LEOPARD_ANI_DEAD)->SetAniStartTime(GetTickCount());
+		break;
 	}
+	}
+	
 }
 
 CLeopard::CLeopard() :CGameObject()
@@ -39,26 +45,47 @@ CLeopard::CLeopard() :CGameObject()
 
 void CLeopard::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	left = x;
-	top = y;
-	right = left + WIDTH_LEOPARD;
-	bottom = top + HEIGHT_LEOPARD;
+	if (state != LEOPARD_STATE_DEAD) {
+		left = x;
+		top = y;
+		right = left + WIDTH_LEOPARD;
+		bottom = top + HEIGHT_LEOPARD;
+	}
+	else {
+		left = x;
+		top = y;
+		right = left + 10;
+		bottom = top + 10;
+	}
 }
 
 void CLeopard::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
+	if (CSimon::GetInstance()->GetUseStopWatch() == true) {
+		vx = vy = 0;
+	}
+	else { 
+		vy += LEOPARD_GRAVITY * dt;  // Simple fall down}
 
-	 vy += LEOPARD_GRAVITY * dt;// Simple fall down
+		if (state == LEOPARD_STATE_SIT && (abs(CSimon::GetInstance()->x - (this->x + 32)) >= 300)) {
+			this->SetOrientation(-CSimon::GetInstance()->GetOrientation());
+		}
 
-	if (state == LEOPARD_STATE_SIT && (abs(CSimon::GetInstance()->x - (this->x + 32)) >= 300)) {
-		this->SetOrientation(-CSimon::GetInstance()->GetOrientation());
+		//Check simon gần tới leopard thì setstate chạy
+		if (abs(CSimon::GetInstance()->x - (this->x)) <= LEOPARD_DEFAULT_SPACE) {
+			this->SetState(LEOPARD_STATE_RUN);
+		}
+
+		if (state == LEOPARD_STATE_RUN && abs(CSimon::GetInstance()->x - (this->x)) >= 200) {
+			this->SetVisible(false);
+		}
+
+		if (CSimon::GetInstance()->EatCross() == true) {
+			this->SetState(LEOPARD_STATE_DEAD);
+		}
 	}
 
-	//Check simon gần tới leopard thì setstate chạy
-	if (state == LEOPARD_STATE_SIT &&  abs(CSimon::GetInstance()->x - (this->x)) <= LEOPARD_DEFAULT_SPACE) {
-		this->SetState(LEOPARD_STATE_RUN);
-	}
 
 	// No collision occured, proceed normally
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -68,17 +95,6 @@ void CLeopard::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	CalcPotentialCollisions(coObjects, coEvents);
 
-	for (UINT i = 0; i < coObjects->size(); i++)
-	{
-		LPGAMEOBJECT coliObject = coObjects->at(i);
-
-		if (this->CheckCollision(coliObject)) {
-			if (dynamic_cast<CBrick4Leopard*>(coliObject)) {
-				this->SetState(LEOPARD_STATE_JUMP);
-				isJump = true;
-			}
-		}
-	}
 
 	if (coEvents.size() == 0)
 	{
@@ -105,14 +121,16 @@ void CLeopard::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
-			if (dynamic_cast<CBrick4Leopard*>(e->obj))
+		
+			if (dynamic_cast<CBrick4Leopard*>(e->obj) && state != LEOPARD_STATE_DEAD)
 			{
 				this->SetState(LEOPARD_STATE_JUMP);
 				isJump = true;
 			}
 			else if (dynamic_cast<CBrick*>(e->obj)) {
-				if (ny != 0) vy = 0;
-				if (isJump) {
+				if (e->ny != 0) vy = 0;
+				if (e->nx != 0) x += dx;
+				if (isJump && state != LEOPARD_STATE_DEAD) {
 					this->SetState(LEOPARD_SPEED_RUN);
 					isJump = false;
 					if (this->x <= CSimon::GetInstance()->x) {
@@ -123,18 +141,19 @@ void CLeopard::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else vx = -LEOPARD_SPEED_RUN;
 				}
+			} 
+			else if (dynamic_cast<CStairBottom*>(e->obj) || dynamic_cast<CStairBottom*>(e->obj)) {
+				if (e->ny != 0) vy = 0;
+				if (e->nx != 0) x += dx;
 			}
 			else {
-				y = y - 2;
-				if (e->ny <= 0) y += dy;
+				if (e->ny != 0) y += dy;
 				if (e->nx != 0) x += dx;
 			}
 		}
 	}
 
-
 	
-
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
@@ -147,12 +166,22 @@ void CLeopard::Render()
 	int ani = -1;
 	if (state == LEOPARD_STATE_SIT) ani = LEOPARD_ANI_SIT;
 	else if (state == LEOPARD_STATE_JUMP) ani = LEOPARD_ANI_JUMP;
+	else if (state == LEOPARD_STATE_DEAD) ani = LEOPARD_ANI_DEAD;
 	else {
 		ani = LEOPARD_ANI_RUN;
 	}
 
-	animation_set->at(ani)->Render(x, y, nx);
-	RenderBoundingBox();
+	if (CSimon::GetInstance()->GetUseStopWatch() == true) {
+		int currentFrame = animation_set->at(ani)->GetCurrentFrame();
+		animation_set->at(ani)->SetCurrentFrame(currentFrame >= 0 ? currentFrame : 0);
+		animation_set->at(ani)->RenderByFrame(currentFrame >= 0 ? currentFrame : 0, nx, x, y, 255);
+		RenderBoundingBox();
+	}
+	else {
+		animation_set->at(ani)->Render(x, y, nx);
+		RenderBoundingBox();
+	}
+	
 }
 
 CLeopard* CLeopard::__instance = NULL;

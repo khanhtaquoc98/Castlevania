@@ -61,6 +61,11 @@ void CSubWeapons::UseSubWeapon(int TypeWeapon)
 
 		break;
 	}
+	case  OBJECT_SUBWEAPON_STOPWATCH:
+	{
+		CSimon::GetInstance()->StartStopWatch();
+		break;
+	}
 	default:
 		break;
 	}

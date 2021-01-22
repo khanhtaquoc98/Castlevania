@@ -6,9 +6,10 @@
 #include "Candle.h"
 #include "Items.h"
 #include "Utils.h"
+#include "Leopard.h"
+#include "Boss.h"
 #include "Zombie.h"
 #include "Bat.h"
-#include "Fishman.h"
 
 CAxe::CAxe() :CGameObject()
 {
@@ -26,8 +27,6 @@ void CAxe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy = 0.2f;
 	}
 	else vy = -0.2f;
-
-	
 
 	if (!CGame::GetInstance()->InCamera(this)) {
 		this->SetVisible(false);
@@ -64,23 +63,34 @@ void CAxe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			LPCOLLISIONEVENT e = coEventsResult[i];
 			if (e->nx != 0) x += dx;
 			if (e->ny != 0) y += dy;
-			 if (dynamic_cast<CCandle*>(e->obj))
+			if (dynamic_cast<CTorch*>(e->obj))
 			{
+				this->SetVisible(false);
+				e->obj->SetState(TORCH_STATE_DESTROYED);
+				e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CCandle*>(e->obj)) {
+				this->SetVisible(false);
 				e->obj->SetState(CANDLE_STATE_DESTROYED);
 				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			 }
-			 else if (dynamic_cast<CZombie*>(e->obj)) {
-				 e->obj->SetState(ZOMBIE_STATE_DESTROYED);
-				 e->obj->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			 }
-			 else if (dynamic_cast<CBat*>(e->obj)) {
-				 e->obj->SetState(BAT_STATE_DESTROYED);
-				 e->obj->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			 }
-			 else if (dynamic_cast<CFishman*>(e->obj)) {
-				 e->obj->SetState(FISHMAN_STATE_DESTROYED);
-				 e->obj->animation_set->at(FISHMAN_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			 }
+			}
+			else if (dynamic_cast<CLeopard*>(e->obj)) {
+				CSimon::GetInstance()->SetScore(100);
+				e->obj->SetVisible(false);
+			}
+			else if (dynamic_cast<CZombie*>(e->obj)) {
+				CSimon::GetInstance()->SetScore(100);
+				e->obj->SetState(ZOMBIE_STATE_DESTROYED);
+				e->obj->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CBat*>(e->obj)) {
+				CSimon::GetInstance()->SetScore(100);
+				e->obj->SetState(BAT_STATE_DESTROYED);
+				e->obj->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CBoss*>(e->obj)) {
+				CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 2);
+			}
 			
 		}
 	}

@@ -18,10 +18,12 @@
 #include "ItemHolyWater.h"
 #include "ItemCross.h"
 #include "ItemInvisibility.h"
+#include "ItemStopWatch.h"
 #include "ItemDouble.h"
 #include "Dagger.h"
 #include "HolyWater.h"
 #include "Axe.h"
+#include "StopWatch.h"
 #include "SubWeapons.h"
 #include "Map.h"
 #include "Leopard.h"
@@ -35,9 +37,10 @@
 #include "ItemMoneyBagPurple.h"
 #include "ItemMoneyBagYellow.h"
 #include "WallPieces.h"
-#include "Zombie.h"
+#include "Board.h"
+#include "Boss.h"
 #include "Bat.h"
-#include "Fishman.h"
+#include "Zombie.h"
 
 using namespace std;
 
@@ -75,11 +78,13 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_ITEM_CROSS 18
 #define OBJECT_ITEM_INVISIBILITY 19
 #define OBJECT_ITEM_DOUBLE 199
+#define OBJECT_ITEM_STOPWATCH 198
 #define OBJECT_TYPE_WALL_PIECES		30
 
 #define OBJECT_SUBWEAPON_DAGGER	41
 #define OBJECT_SUBWEAPON_HOYLYWATER	72
 #define OBJECT_SUBWEAPON_AXE	73
+#define OBJECT_SUBWEAPON_STOPWATCH 74
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -98,6 +103,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_TYPE_ITEM_MONEY_PURPLE 83
 #define OBJECT_TYPE_BRICK_HIDE	84
 #define OBJECT_TYPE_POINT_EFFECT	99
+#define OBJECT_TYPE_BOSS	51
 
 #define MAX_SCENE_LINE 1024
 
@@ -313,6 +319,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(false);
 		break;
 	}
+	case OBJECT_ITEM_STOPWATCH: {
+		obj = new CItemStopWatch();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_STOPWATCH, obj);
+		obj->SetVisible(false);
+		break;
+	}
 	case OBJECT_ITEM_DOUBLE: {
 		obj = new CItemDouble();
 		CItems::GetInstance()->AddItem(OBJECT_ITEM_DOUBLE, obj);
@@ -340,16 +352,18 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_AXE, obj);
 		break;
 	}
-	case OBJECT_TYPE_LEOPARD:
+	case OBJECT_SUBWEAPON_STOPWATCH:
 	{
-		obj = new CLeopard();
-		obj->SetVisible(true);
+		obj = new CStopWatch();
+		obj->SetVisible(false);
+		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_STOPWATCH, obj);
 		break;
 	}
 	case OBJECT_TYPE_ZOMBIE:
 	{
 		obj = new CZombie();
 		obj->SetVisible(true);
+		objectsEnemies.push_back(obj);
 		break;
 	}
 	case OBJECT_TYPE_BAT:
@@ -358,14 +372,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CBat();
 		obj->SetVisible(true);
 		obj->SetyCheck(yCheck);
+		objectsEnemies.push_back(obj);
 		break;
 	}
-	case OBJECT_TYPE_FISHMAN:
+	case OBJECT_TYPE_LEOPARD:
 	{
-		int yCheck = atoi(tokens[4].c_str());
-		obj = new CFishman();
+		obj = new CLeopard();
 		obj->SetVisible(true);
-		obj->SetyCheck(yCheck);
+		objectsEnemies.push_back(obj);
 		break;
 	}
 	case OBJECT_TYPE_BRICK_4_LEOPARD:
@@ -457,6 +471,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(true);
 		break;
 	}
+
+	case OBJECT_TYPE_BOSS:
+	{
+		obj = new CBoss(player);
+		obj->SetVisible(true);
+		break;
+	}
 		
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
@@ -484,7 +505,6 @@ void CPlayScene::_ParseSection_INFO_MAP(string line) {
 
 void CPlayScene::_ParseSection_TILE_MAP(string line) {
 	vector<string> tokens = split(line);
-
 	for (int i = 0; i < tokens.size(); i++) {
 		int index = atoi(tokens[i].c_str());
 		RECT Tile;
@@ -559,6 +579,8 @@ void CPlayScene::Load()
 		player->SetState(SIMON_STATE_IDLE_DOWNSTAIR);
 	}*/
 	HUD = Board::GetInstance();
+	CSimon::GetInstance()->ResetCross();
+
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
@@ -570,6 +592,12 @@ void CPlayScene::Update(DWORD dt)
 
 
 	vector<LPGAMEOBJECT> coObjects;
+
+	if (CSimon::GetInstance()->EatCross() == true) {
+		for (int i = 0; i < objectsEnemies.size(); i++) {
+			objectsEnemies[i]->SetVisible(false);
+		}
+	}
 
 	for (size_t i = 0; i < objects.size(); i++)
 	{
@@ -593,17 +621,28 @@ void CPlayScene::Update(DWORD dt)
 	player->GetPosition(cx, cy);
 
 	CGame* game = CGame::GetInstance();
-	if (cx < game->GetScreenWidth() / 2) {
-		cx = 0.0f;
+	if (game->GetScene() == 5 && player->isStageBoss) {
+		cx = 512;
+		if (player->x <= cx)
+		{
+			player->x = cx;
+		}
 	}
-	else if (cx > this->widthMap - game->GetScreenWidth() / 2) {
-		cx = this->widthMap - game->GetScreenWidth();
+	else {
+		if (cx < game->GetScreenWidth() / 2) {
+			cx = 0.0f;
+		}
+		else if (cx > this->widthMap - game->GetScreenWidth() / 2) {
+			cx = this->widthMap - game->GetScreenWidth();
+		}
+		else
+		{
+			cx -= game->GetScreenWidth() / 2;
+			cy -= game->GetScreenHeight() / 2;
+		}
 	}
-	else
-	{
-		cx -= game->GetScreenWidth() / 2;
-		cy -= game->GetScreenHeight() / 2;
-	}
+
+	
 	HUD->Update(dt);
 
 	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
@@ -614,10 +653,12 @@ void CPlayScene::Render()
 	for (int i = 0; i < tileMaps.size(); i++)
 		tileMaps[i]->Render();
 
+
 	for (int i = 0; i < objects.size(); i++) {
 		if (!dynamic_cast<CSimon*>(objects[i]) && objects[i]->isVisible() == true && !dynamic_cast<CBrickHide*>(objects[i]))
 			objects[i]->Render();
 	}
+
 	for (int i = 0; i < objects.size(); i++) {
 		if (dynamic_cast<CSimon*>(objects[i]))
 			objects[i]->Render();
@@ -641,7 +682,7 @@ void CPlayScene::Unload()
 
 	CWallPieces::GetInstance()->Clear();
 	CItems::GetInstance()->Clear();
-
+	objectsEnemies.clear();
 	objects.clear();
 	player = NULL;
 
@@ -695,19 +736,46 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_D:
 		simon->SetWeapon(SUBWEAPON_AXE);
 		break;
+	case DIK_F:
+		simon->SetWeapon(74); //StopWatch
+		break;
 	case DIK_Z:
-		if (simon->GetState() == SIMON_STATE_JUMP) {
-			simon->SetState(SIMON_STATE_JUMP_ATTACK);
-		}
-		else if (simon->GetState() == SIMON_STATE_IDLE) {
-			if (CGame::GetInstance()->IsKeyDown(DIK_UP) && simon->GetWeapon() != 0) {
-				simon->SetState(SIMON_STATE_ATTACK_SUBWEAPON);
+		if (simon->IsOnStair()) {
+			if (simon->GetState() == SIMON_STATE_IDLE_UPSTAIR || simon->GetState() == SIMON_STATE_GO_UPSTAIR)
+			{
+				simon->SetState(SIMON_STATE_ATTACK_UPSTAIR);
+				simon->animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->Reset();
+				simon->animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->SetAniStartTime(GetTickCount());
 			}
-			else
-				simon->SetState(SIMON_STATE_ATTACK);
+			if (simon->GetState() == SIMON_STATE_IDLE_DOWNSTAIR || simon->GetState() == SIMON_STATE_GO_DOWNSTAIR)
+			{
+				simon->SetState(SIMON_STATE_ATTACK_DOWNSTAIR);
+				simon->animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->Reset();
+				simon->animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->SetAniStartTime(GetTickCount());
+			}
 		}
-		else if (simon->GetState() == SIMON_STATE_SIT)
-			simon->SetState(SIMON_STATE_ATTACK_SIT);
+		else {
+			if (simon->GetState() == SIMON_STATE_JUMP) {
+				simon->SetState(SIMON_STATE_JUMP_ATTACK);
+			}
+			else if (simon->GetState() == SIMON_STATE_IDLE) {
+				if (CGame::GetInstance()->IsKeyDown(DIK_UP) && simon->GetWeapon() != 0) {
+					if (simon->GetNumHeart() > 0) {
+						simon->SetNumHeart(simon->GetNumHeart() - 1);
+						simon->SetState(SIMON_STATE_ATTACK_SUBWEAPON);
+					}
+					else {
+						simon->SetWeapon(0);
+						simon->SetState(SIMON_STATE_ATTACK);
+					}
+
+				}
+				else
+					simon->SetState(SIMON_STATE_ATTACK);
+			}
+			else if (simon->GetState() == SIMON_STATE_SIT)
+				simon->SetState(SIMON_STATE_ATTACK_SIT);
+		}
 		break;
 	case DIK_X:
 		//if (simon->vy != 0) return;
@@ -781,6 +849,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (simon->GetState() == SIMON_STATE_GO_UPSTAIR && simon->animation_set->at(SIMON_ANI_GO_UPSTAIR)->IsOver(200) == false) return;
 	if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR && simon->animation_set->at(SIMON_ANI_GO_DOWNSTAIR)->IsOver(200) == false) return;
 	if (simon->GetState() == SIMON_STATE_HURT_DEATH && simon->animation_set->at(SIMON_ANI_HURT_DEATH)->IsOver(300) == false) return;
+	if (simon->GetState() == SIMON_STATE_ATTACK_DOWNSTAIR && simon->animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->IsOver(300) == false) return;
+	if (simon->GetState() == SIMON_STATE_ATTACK_UPSTAIR && simon->animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->IsOver(300) == false) return;
 
 	if (simon->IsOnStair() == false) {
 		if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_Z))
@@ -832,10 +902,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		else 
 		{
-			if (simon->GetState() == SIMON_STATE_GO_UPSTAIR) {
+			if (simon->GetState() == SIMON_STATE_GO_UPSTAIR || simon->GetState() == SIMON_STATE_ATTACK_UPSTAIR) {
 				simon->SetState(SIMON_STATE_IDLE_UPSTAIR);
 			}
-			else if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR) {
+			else if (simon->GetState() == SIMON_STATE_GO_DOWNSTAIR || simon->GetState() == SIMON_STATE_ATTACK_DOWNSTAIR) {
 				simon->SetState(SIMON_STATE_IDLE_DOWNSTAIR);
 			}
 		}

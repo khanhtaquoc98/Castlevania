@@ -6,9 +6,10 @@
 #include "Candle.h"
 #include "Items.h"
 #include "Utils.h"
+#include "Leopard.h"
+#include "Boss.h"
 #include "Zombie.h"
 #include "Bat.h"
-#include "Fishman.h"
 
 CHolyWater::CHolyWater() :CGameObject()
 {
@@ -79,11 +80,34 @@ void CHolyWater::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
-				 if (dynamic_cast<CCandle*>(e->obj)) 
-				 {
+				if (dynamic_cast<CTorch*>(e->obj))
+				{
+					this->SetVisible(false);
+					e->obj->SetState(TORCH_STATE_DESTROYED);
+					e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+				}
+				else if (dynamic_cast<CCandle*>(e->obj)) {
+					this->SetVisible(false);
 					e->obj->SetState(CANDLE_STATE_DESTROYED);
 					e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-				 }
+				}
+				else if (dynamic_cast<CLeopard*>(e->obj)) {
+					CSimon::GetInstance()->SetScore(100);
+					e->obj->SetVisible(false);
+				}
+				else if (dynamic_cast<CZombie*>(e->obj)) {
+					CSimon::GetInstance()->SetScore(100);
+					e->obj->SetState(ZOMBIE_STATE_DESTROYED);
+					e->obj->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+				}
+				else if (dynamic_cast<CBat*>(e->obj)) {
+					CSimon::GetInstance()->SetScore(100);
+					e->obj->SetState(BAT_STATE_DESTROYED);
+					e->obj->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+				}
+				else if (dynamic_cast<CBoss*>(e->obj)) {
+					CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 2);
+				}
 				else if (dynamic_cast<CBrick*>(e->obj))
 				{
 					x += -HOLY_WATER_NORMAL_BBOX_WIDTH/2;
@@ -93,18 +117,6 @@ void CHolyWater::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					this->timeStartBurn = GetTickCount();
 					//this->animation_set->at(ANI_HOLYWATER_BURN)->SetAniStartTime(GetTickCount());
 				} 
-				else if (dynamic_cast<CZombie*>(e->obj)) {
-					 e->obj->SetState(ZOMBIE_STATE_DESTROYED);
-					 e->obj->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-				 }
-				else if (dynamic_cast<CBat*>(e->obj)) {
-					 e->obj->SetState(BAT_STATE_DESTROYED);
-					 e->obj->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-				 }
-				else if (dynamic_cast<CFishman*>(e->obj)) {
-					 e->obj->SetState(FISHMAN_STATE_DESTROYED);
-					 e->obj->animation_set->at(FISHMAN_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-				 }
 		}
 	}
 
