@@ -53,5 +53,6 @@ public:
 
 	int GetHealth() { return health; }
 	void SetHealth(int health) { this->health = health; }
+	//void SetState(int state);
 
 };

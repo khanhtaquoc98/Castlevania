@@ -190,6 +190,23 @@ void CWhip::SetPositionWhip(D3DXVECTOR2 simonPosition, bool isStanding)
 	this->SetPosition(simonPosition.x, simonPosition.y);
 }
 
+void CWhip::SetPositionWhipWithState(D3DXVECTOR2 simonPosition, int state) {
+	if (nx > 0)
+	{
+		simonPosition.x -= 42.0f;
+		if (state != SIMON_STATE_ATTACK_SIT) simonPosition.y += 3.6f;
+		else simonPosition.y += 12.0f;
+	}
+	else
+	{
+		simonPosition.x -= 48.0f;
+		if (state != SIMON_STATE_ATTACK_SIT) simonPosition.y += 3.6f;
+		else simonPosition.y += 12.0f;
+	}
+
+	this->SetPosition(simonPosition.x, simonPosition.y);
+}
+
 void CWhip::UpItemWhip()
 {
 	switch (CWhip::GetInstance()->GetState())

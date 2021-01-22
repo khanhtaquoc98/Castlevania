@@ -594,8 +594,12 @@ void CPlayScene::Update(DWORD dt)
 	player->GetPosition(cx, cy);
 
 	CGame* game = CGame::GetInstance();
-	if (game->GetScene() == 5 && CBoss::GetInstance()->GetState() != STATE_SLEEP) {
-		cx = this->widthMap - game->GetScreenWidth()/2;
+	if (game->GetScene() == 5 && player->isStageBoss ) {
+		cx = 512;
+			if (player->x <= cx)
+			{
+				player->x = cx;
+			}
 	}
 	else {
 		if (cx < game->GetScreenWidth() / 2) {
@@ -610,6 +614,8 @@ void CPlayScene::Update(DWORD dt)
 			cy -= game->GetScreenHeight() / 2;
 		}
 	}
+
+	
 
 	
 	HUD->Update(dt);

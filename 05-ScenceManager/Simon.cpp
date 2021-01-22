@@ -185,6 +185,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					this->SetState(SIMON_STATE_HURT_DEATH);
 					StartUntouchable();
 				}
+				else if (dynamic_cast<CBoss*>(coliObject)) {
+					this->SetState(SIMON_STATE_HURT_DEATH);
+					StartUntouchable();
+				}
 				else {
 					this->canGoUpStair = false;
 					this->canGoDownStair = false;
@@ -387,12 +391,14 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
-	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK)
+	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK || state == SIMON_STATE_ATTACK_DOWNSTAIR || state == SIMON_STATE_ATTACK_UPSTAIR)
 	{
 		whip->SetOrientation(nx);
-		whip->SetPositionWhip(D3DXVECTOR2(x, y), state != SIMON_STATE_ATTACK_SIT ? true : false);
+		whip->SetPositionWhipWithState(D3DXVECTOR2(x, y), state );
 		if (animation_set->at(SIMON_ANI_ATTACK)->GetCurrentFrame() == 2 ||
-			animation_set->at(SIMON_ANI_ATTACK_SIT)->GetCurrentFrame() == 2 ) {
+			animation_set->at(SIMON_ANI_ATTACK_SIT)->GetCurrentFrame() == 2 || 
+			animation_set->at(SIMON_ANI_ATTACK_UPSTAIR)->GetCurrentFrame() == 2 ||
+			animation_set->at(SIMON_ANI_ATTACK_DOWNSTAIR)->GetCurrentFrame() == 2) {
 			whip->Update(dt, coObjects);
 		}
 	}
@@ -447,7 +453,7 @@ void CSimon::Render()
 	animation_set->at(ani)->Render(x, y, nx, alpha);
 	RenderBoundingBox();
 
-	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK) {
+	if (state == SIMON_STATE_ATTACK || state == SIMON_STATE_ATTACK_SIT || state == SIMON_STATE_JUMP_ATTACK || state == SIMON_STATE_ATTACK_UPSTAIR || state == SIMON_STATE_ATTACK_DOWNSTAIR) {
 		whip->RenderbyFrame(animation_set->at(ani)->GetCurrentFrame());
 	}
 }

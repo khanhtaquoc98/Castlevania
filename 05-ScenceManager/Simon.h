@@ -82,6 +82,8 @@ class CSimon : public CGameObject
 	bool useStopWatch = false;
 
 	bool eatCross = false;
+
+	
 public: 
 	bool canGoUpStair;
 	bool canGoDownStair;
@@ -125,4 +127,7 @@ public:
 	void StartStopWatch() {
 		this->useStopWatch = true;
 		this->timeStopWatch = GetTickCount(); }
+
+	//Tien Ho 
+	bool isStageBoss = false;
 };
