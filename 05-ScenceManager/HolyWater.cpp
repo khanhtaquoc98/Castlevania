@@ -6,6 +6,8 @@
 #include "Candle.h"
 #include "Items.h"
 #include "Utils.h"
+#include "Leopard.h"
+#include "Boss.h"
 
 CHolyWater::CHolyWater() :CGameObject()
 {
@@ -90,6 +92,14 @@ void CHolyWater::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					this->timeStartBurn = GetTickCount();
 					//this->animation_set->at(ANI_HOLYWATER_BURN)->SetAniStartTime(GetTickCount());
 				} 
+				else if (dynamic_cast<CLeopard*>(e->obj)) {
+					 e->obj->SetState(LEOPARD_STATE_DEAD);
+					 e->obj->animation_set->at(LEOPARD_ANI_DEAD)->SetAniStartTime(GetTickCount());
+					 e->obj->vx = 0;
+				 }
+				else if (dynamic_cast<CBoss*>(e->obj)) {
+					 CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 2);
+				 }
 		}
 	}
 

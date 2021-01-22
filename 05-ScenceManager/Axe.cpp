@@ -6,6 +6,8 @@
 #include "Candle.h"
 #include "Items.h"
 #include "Utils.h"
+#include "Leopard.h"
+#include "Boss.h"
 
 CAxe::CAxe() :CGameObject()
 {
@@ -60,9 +62,17 @@ void CAxe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (e->nx != 0) x += dx;
 			if (e->ny != 0) y += dy;
 			 if (dynamic_cast<CCandle*>(e->obj))
-			{
+				{
 				e->obj->SetState(CANDLE_STATE_DESTROYED);
 				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			 } 
+			 else  if (dynamic_cast<CLeopard*>(e->obj)) {
+				 e->obj->SetState(LEOPARD_STATE_DEAD);
+				 e->obj->animation_set->at(LEOPARD_ANI_DEAD)->SetAniStartTime(GetTickCount());
+				 e->obj->vx = 0;
+			 }
+			 else  if (dynamic_cast<CBoss*>(e->obj)) {
+				 CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 2);
 			 }
 			
 		}

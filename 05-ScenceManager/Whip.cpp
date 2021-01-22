@@ -33,11 +33,14 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CLeopard*>(coliObject)) {
-				coliObject->SetState(CANDLE_STATE_DESTROYED);
-				coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+				CSimon::GetInstance()->SetScore(100);
+				coliObject->SetState(LEOPARD_STATE_DEAD);
+				coliObject->animation_set->at(LEOPARD_ANI_DEAD)->SetAniStartTime(GetTickCount());
+				coliObject->vx = 0;
 			}
 			else if (dynamic_cast<CBoss*>(coliObject)) {
-				coliObject->SetState(DEAD);
+				if (CBoss::GetInstance()->GetHealth() < 1) coliObject->SetState(DEAD);
+				CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 1);
 				//coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}
 			else if (dynamic_cast<CBrickHide*>(coliObject)) {
@@ -54,58 +57,65 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CalcPotentialCollisions(coObjects, coEvents);
 
 
-	//if (coEvents.size() == 0)
-	//{
-	//	x += dx;
-	//	y += dy;
-	//}
-	//else
-	//{
-	//	float min_tx, min_ty, nx = 0, ny;
-	//	float rdx = 0;
-	//	float rdy = 0;
+	if (coEvents.size() == 0)
+	{
+		x += dx;
+		y += dy;
+	}
+	else
+	{
+		float min_tx, min_ty, nx = 0, ny;
+		float rdx = 0;
+		float rdy = 0;
 
-	//	// TODO: This is a very ugly designed function!!!!
-	//	FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+		// TODO: This is a very ugly designed function!!!!
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-	//	// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
-	//	//if (rdx != 0 && rdx!=dx)
-	//	//	x += nx*abs(rdx); 
+		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
+		//if (rdx != 0 && rdx!=dx)
+		//	x += nx*abs(rdx); 
 
-	//	// block every object first!
-	//	x += min_tx * dx + nx * 0.2f;
-	//	y += min_ty * dy + ny * 0.2f;
+		// block every object first!
+		x += min_tx * dx + nx * 0.2f;
+		y += min_ty * dy + ny * 0.2f;
 
-	//	//
-	//	// Collision logic with other objects
-	//	//
+		//
+		// Collision logic with other objects
+		//
 
 
-	//	for (UINT i = 0; i < coEventsResult.size(); i++)
-	//	{
-	//		LPCOLLISIONEVENT e = coEventsResult[i];
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[i];
 
-	//		if (dynamic_cast<CTorch*>(e->obj))
-	//		{
-	//			e->obj->SetState(TORCH_STATE_DESTROYED);
-	//			e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-	//		}
-	//		else if (dynamic_cast<CCandle*>(e->obj)) {
-	//			e->obj->SetState(CANDLE_STATE_DESTROYED);
-	//			e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-	//		}
-	//		else if (dynamic_cast<CLeopard*>(e->obj)) {
-	//			e->obj->SetState(CANDLE_STATE_DESTROYED);
-	//			e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-	//		}
-	//		/*else if (dynamic_cast<CBrickHide*>(e->obj)) {
-	//			e->obj->SetVisible(false);
-	//			CWallPieces::GetInstance()->DropPiece(e->obj->x, e->obj->y);
-	//			CItems::GetInstance()->CheckAndDrop(e->obj);
-	//		}*/
+			//if (dynamic_cast<CTorch*>(e->obj))
+			//{
+			//	e->obj->SetState(TORCH_STATE_DESTROYED);
+			//	e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			//}
+			//else if (dynamic_cast<CCandle*>(e->obj)) {
+			//	e->obj->SetState(CANDLE_STATE_DESTROYED);
+			//	e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			//}
+			 if (dynamic_cast<CLeopard*>(e->obj)) {
+				 CSimon::GetInstance()->SetScore(100);
+				 e->obj->SetState(LEOPARD_STATE_DEAD);
+				 e->obj->animation_set->at(LEOPARD_ANI_DEAD)->SetAniStartTime(GetTickCount());
+				 e->obj->vx = 0;
+			} else if (dynamic_cast<CBoss*>(e->obj)) {
+				CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 1);
+				if(CBoss::GetInstance()->GetHealth() < 1) e->obj->SetState(DEAD);
+			
+				//coliObject->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			/*else if (dynamic_cast<CBrickHide*>(e->obj)) {
+				e->obj->SetVisible(false);
+				CWallPieces::GetInstance()->DropPiece(e->obj->x, e->obj->y);
+				CItems::GetInstance()->CheckAndDrop(e->obj);
+			}*/
 
-	//	}
-	//}
+		}
+	}
 }
 
 void CWhip::RenderbyFrame(int currentFrame)

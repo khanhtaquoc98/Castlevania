@@ -18,10 +18,12 @@
 #include "ItemHolyWater.h"
 #include "ItemCross.h"
 #include "ItemInvisibility.h"
+#include "ItemStopWatch.h"
 #include "ItemDouble.h"
 #include "Dagger.h"
 #include "HolyWater.h"
 #include "Axe.h"
+#include "StopWatch.h"
 #include "SubWeapons.h"
 #include "Map.h"
 #include "Leopard.h"
@@ -74,11 +76,13 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 #define OBJECT_ITEM_CROSS 18
 #define OBJECT_ITEM_INVISIBILITY 19
 #define OBJECT_ITEM_DOUBLE 199
+#define OBJECT_ITEM_STOPWATCH 198
 #define OBJECT_TYPE_WALL_PIECES		30
 
 #define OBJECT_SUBWEAPON_DAGGER	41
 #define OBJECT_SUBWEAPON_HOYLYWATER	72
 #define OBJECT_SUBWEAPON_AXE	73
+#define OBJECT_SUBWEAPON_STOPWATCH 74
 
 #define OBJECT_TYPE_PORTAL	50
 
@@ -310,6 +314,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj->SetVisible(false);
 		break;
 	}
+	case OBJECT_ITEM_STOPWATCH: {
+		obj = new CItemStopWatch();
+		CItems::GetInstance()->AddItem(OBJECT_ITEM_STOPWATCH, obj);
+		obj->SetVisible(false);
+		break;
+	}
 	case OBJECT_ITEM_DOUBLE: {
 		obj = new CItemDouble();
 		CItems::GetInstance()->AddItem(OBJECT_ITEM_DOUBLE, obj);
@@ -337,10 +347,18 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_AXE, obj);
 		break;
 	}
+	case OBJECT_SUBWEAPON_STOPWATCH:
+	{
+		obj = new CStopWatch();
+		obj->SetVisible(false);
+		CSubWeapons::GetInstance()->AddSubWeapon(OBJECT_SUBWEAPON_STOPWATCH, obj);
+		break;
+	}
 	case OBJECT_TYPE_LEOPARD:
 	{
 		obj = new CLeopard();
 		obj->SetVisible(true);
+		objectsEnemies.push_back(obj);
 		break;
 	}
 	case OBJECT_TYPE_BRICK_4_LEOPARD:
@@ -466,7 +484,6 @@ void CPlayScene::_ParseSection_INFO_MAP(string line) {
 
 void CPlayScene::_ParseSection_TILE_MAP(string line) {
 	vector<string> tokens = split(line);
-
 	for (int i = 0; i < tokens.size(); i++) {
 		int index = atoi(tokens[i].c_str());
 		RECT Tile;
@@ -541,6 +558,8 @@ void CPlayScene::Load()
 		player->SetState(SIMON_STATE_IDLE_DOWNSTAIR);
 	}*/
 	HUD = Board::GetInstance();
+	CSimon::GetInstance()->ResetCross();
+
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
@@ -575,17 +594,24 @@ void CPlayScene::Update(DWORD dt)
 	player->GetPosition(cx, cy);
 
 	CGame* game = CGame::GetInstance();
-	if (cx < game->GetScreenWidth() / 2) {
-		cx = 0.0f;
+	if (game->GetScene() == 5 && CBoss::GetInstance()->GetState() != STATE_SLEEP) {
+		cx = this->widthMap - game->GetScreenWidth()/2;
 	}
-	else if (cx > this->widthMap - game->GetScreenWidth() / 2) {
-		cx = this->widthMap - game->GetScreenWidth();
+	else {
+		if (cx < game->GetScreenWidth() / 2) {
+			cx = 0.0f;
+		}
+		else if (cx > this->widthMap - game->GetScreenWidth() / 2) {
+			cx = this->widthMap - game->GetScreenWidth();
+		}
+		else
+		{
+			cx -= game->GetScreenWidth() / 2;
+			cy -= game->GetScreenHeight() / 2;
+		}
 	}
-	else
-	{
-		cx -= game->GetScreenWidth() / 2;
-		cy -= game->GetScreenHeight() / 2;
-	}
+
+	
 	HUD->Update(dt);
 
 	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
@@ -623,7 +649,7 @@ void CPlayScene::Unload()
 
 	CWallPieces::GetInstance()->Clear();
 	CItems::GetInstance()->Clear();
-
+	objectsEnemies.clear();
 	objects.clear();
 	player = NULL;
 
@@ -677,6 +703,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_D:
 		simon->SetWeapon(SUBWEAPON_AXE);
 		break;
+	case DIK_F:
+		simon->SetWeapon(74); //StopWatch
+		break;
 	case DIK_Z:
 		if (simon->IsOnStair()) {
 			if (simon->GetState() == SIMON_STATE_IDLE_UPSTAIR || simon->GetState() == SIMON_STATE_GO_UPSTAIR)
@@ -698,7 +727,15 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			}
 			else if (simon->GetState() == SIMON_STATE_IDLE) {
 				if (CGame::GetInstance()->IsKeyDown(DIK_UP) && simon->GetWeapon() != 0) {
-					simon->SetState(SIMON_STATE_ATTACK_SUBWEAPON);
+					if (simon->GetNumHeart() > 0) {
+						simon->SetNumHeart(simon->GetNumHeart() - 1);
+						simon->SetState(SIMON_STATE_ATTACK_SUBWEAPON);
+					}
+					else {
+						simon->SetWeapon(0);
+						simon->SetState(SIMON_STATE_ATTACK);
+					}
+
 				}
 				else
 					simon->SetState(SIMON_STATE_ATTACK);

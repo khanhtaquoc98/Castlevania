@@ -5,10 +5,12 @@
 #define OBJECT_SUBWEAPON_DAGGER 41
 #define OBJECT_SUBWEAPON_HOYLYWATER 72
 #define OBJECT_SUBWEAPON_AXE	73
+#define SUBWEAPON_STOPWATCH 74
 
 #define SPRITES_DAGGER	20024
 #define SPRITES_HOLYWATER	90009
 #define SPRITES_AXE	73001
+#define SPRITES_STOPWATCH 90013
 
 
 void Code::DrawNumber(int number, D3DXVECTOR2 position, int length)
@@ -42,9 +44,9 @@ void Code::DrawSubWeapon(D3DXVECTOR2 position, int info)
 	case OBJECT_SUBWEAPON_AXE:
 		CSprites::GetInstance()->Get(SPRITES_AXE)->Draw(position.x, position.y, 1);
 		break;
-	/*case ID_WATCH:
-		CSprites::GetInstance()->Get(ID_WATCH)->Draw(position.x, position.y - 3, 1);
-		break;*/
+	case SUBWEAPON_STOPWATCH:
+		CSprites::GetInstance()->Get(SPRITES_STOPWATCH)->Draw(position.x, position.y - 3, 1);
+		break;
 	default:
 		break;
 	}

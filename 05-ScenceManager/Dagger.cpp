@@ -3,6 +3,9 @@
 #include "Game.h"
 #include "Torch.h"
 #include "Items.h"
+#include "Candle.h"
+#include "Leopard.h"
+#include "Boss.h"
 
 CDagger::CDagger() :CGameObject()
 {
@@ -16,7 +19,7 @@ void CDagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else vx = -DAGGER_SPEED;
 	vy = 0;
 
-	for (UINT i = 0; i < coObjects->size(); i++)
+	/*for (UINT i = 0; i < coObjects->size(); i++)
 	{
 		LPGAMEOBJECT coliObject = coObjects->at(i);
 
@@ -28,7 +31,7 @@ void CDagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 
 		}
-	}
+	}*/
 
 	if (!CGame::GetInstance()->InCamera(this)) {
 		this->SetVisible(false);
@@ -69,6 +72,23 @@ void CDagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				e->obj->SetState(TORCH_STATE_DESTROYED);
 				e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			}		
+			else if (dynamic_cast<CCandle*>(e->obj)) {
+				this->SetVisible(false);
+				e->obj->SetState(CANDLE_STATE_DESTROYED);
+				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CLeopard*>(e->obj)) {
+				e->obj->SetState(LEOPARD_STATE_DEAD);
+				e->obj->animation_set->at(LEOPARD_ANI_DEAD)->SetAniStartTime(GetTickCount());
+				e->obj->vx = 0;
+			}
+			else if (dynamic_cast<CBoss*>(e->obj)) {
+				CBoss::GetInstance()->SetHealth(CBoss::GetInstance()->GetHealth() - 2);
+			}
+			else {
+				if (e->nx != 0) x += dx;
+				if (e->ny != 0) y += dy;
+			}
 
 		}
 	}

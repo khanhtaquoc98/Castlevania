@@ -21,21 +21,12 @@
 
 
 class CBoss : public CGameObject {
+
 	static CBoss* __instance;
-	virtual void SetState(int state);
+	//virtual void SetState(int state);
 
+	int health = 2;
 
-public:
-	CBoss();
-	CBoss(CSimon* simon);
-	~CBoss();
-	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
-	void Render();
-	//CBoss* GetInstance();
-	RECT GetBound();
-	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
-	bool isDead;
-	bool isSleep;
 protected:
 	CSimon* mSimon;
 	int ani;
@@ -45,4 +36,22 @@ protected:
 	bool isAttack;
 	bool isHitSimon;
 	bool isAtBottom;
+
+public:
+	CBoss();
+	CBoss(CSimon* simon);
+	~CBoss();
+	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void Render();
+	
+	RECT GetBound();
+	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	bool isDead;
+	bool isSleep;
+	
+	static CBoss* GetInstance();
+
+	int GetHealth() { return health; }
+	void SetHealth(int health) { this->health = health; }
+
 };

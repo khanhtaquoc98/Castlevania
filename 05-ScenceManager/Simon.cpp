@@ -28,6 +28,8 @@
 #include "ItemAxe.h"
 #include "ItemCross.h"
 #include "Leopard.h"
+#include "ItemStopWatch.h"
+#include "Boss.h"
 
 CSimon* CSimon::__instance = NULL;
 
@@ -61,6 +63,23 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt);
 	if (x <= -6) x = -6;
 
+	if (this->health == 0) {
+		this->SetNumLife(this->numLife - 1);
+		this->SetHealth(16);
+		this->SetPosition(start_x, start_y);
+		StartUntouchable();
+	}
+
+	DebugOut(L" bool: %d\n", this->useStopWatch);
+	DebugOut(L" time: %d\n", this->timeStopWatch);
+	//Stopwatch
+	if (GetTickCount() - timeStopWatch > 6000) {
+		this->useStopWatch = false;
+		this->timeStopWatch = 0;
+	}
+	else {
+		//
+	}
 
 	// Simple fall down
 	if (isOnStair == false) {
@@ -112,9 +131,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					CPortal* p = dynamic_cast<CPortal*>(coliObject);
 					CGame::GetInstance()->SwitchScene(p->GetSceneId());
 				}
-				else if (dynamic_cast<CLeopard*>(coliObject)) {
+				/*else if (dynamic_cast<CLeopard*>(coliObject)) {
+					this->SetHealth(this->health - 2);
 					StartUntouchable();
-				}
+				}*/
 			}
 			else {
 				if (dynamic_cast<CItemBigHeart*>(coliObject)) {
@@ -132,6 +152,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (dynamic_cast<CItemDagger*>(coliObject)) {
 					coliObject->SetVisible(false);
 					this->SetWeapon(SUBWEAPON_DAGGER);
+				}
+				else if (dynamic_cast<CItemStopWatch*>(coliObject)) {
+					coliObject->SetVisible(false);
+					this->SetWeapon(SUBWEAPON_STOPWATCH);
 				}
 				else if (dynamic_cast<CStairBottom*>(coliObject)) {
 					this->canGoUpStair = true;
@@ -237,6 +261,8 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (e->nx != 0) x += dx;
 					if (e->ny != 0) y += dy;
 					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
+					if (e->nx == this->nx) this->nx = this->nx * -1;
+					this->SetHealth(this->health - 2);
 					StartUntouchable();
 				}
 			}
@@ -248,6 +274,13 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (e->ny != 0) y += dy;
 					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;	
 				}
+				else if (dynamic_cast<CBoss*>(e->obj)) {
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
+					health = health - 2;
+					this->SetState(SIMON_STATE_HURT_DEATH);
+					StartUntouchable();
+				}
 				else if (dynamic_cast<CBrick4MoneyRed*>(e->obj)) {
 					if (e->nx != 0) x += dx;
 					if (e->ny != 0) y += dy;
@@ -256,16 +289,20 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (dynamic_cast<CItemMoneyBagRed*>(e->obj)) {
 					e->obj->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_1000);
+					this->SetScore(1000);
 				}
 				else if (dynamic_cast<CItemMoneyBagPurple*>(e->obj)) {
 					e->obj->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_100);
+					this->SetScore(100);
 				}
 				else if (dynamic_cast<CItemMoneyBagYellow*>(e->obj)) {
 					e->obj->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_700);
+					this->SetScore(700);
 				}
 				else if (dynamic_cast<CItemBigHeart*>(e->obj)) {
+					this->SetNumHeart(this->numHeart + 5);
 					if (e->nx != 0 || e->ny != 0)
 					{
 						y = y - 0.2f;
@@ -273,6 +310,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 				else if (dynamic_cast<CItemSmallHeart*>(e->obj)) {
+					this->SetNumHeart(this->numHeart + 1);
 					if (e->nx != 0 || e->ny != 0)
 					{
 						y = y - 0.2f;
@@ -294,6 +332,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 				else if (dynamic_cast<CItemCross*>(e->obj)) {
 					e->obj->SetVisible(false);
+					eatCross = true;
 				}
 				else if (dynamic_cast<CItemAxe*>(e->obj)) {
 					e->obj->SetVisible(false);
@@ -323,10 +362,16 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
 				}
 				else if (dynamic_cast<CLeopard*>(e->obj)) {
-						if (e->nx != 0) x += dx;
-						if (e->ny != 0) y += dy;
-						this->SetState(SIMON_STATE_HURT_DEATH);
-						StartUntouchable();
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
+					if (e->nx == this->nx) this->nx = this->nx * -1;
+					//this->SetHealth(this->health - 2);
+					this->SetState(SIMON_STATE_HURT_DEATH);
+					StartUntouchable();
+				}
+				else if (dynamic_cast<CBrickHide*>(e->obj)) {
+					if (e->nx != 0) x += dx;
+					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
 				}
 				else {
 					if (nx != 0) vx = 0;
@@ -353,7 +398,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	if (state == SIMON_STATE_ATTACK_SUBWEAPON) {
 		if (animation_set->at(SIMON_ANI_ATTACK)->GetCurrentFrame() == 2) {
-			CSubWeapons::GetInstance()->UseSubWeapon(currentWeapon);
+			if (this->numHeart > 0) {
+				CSubWeapons::GetInstance()->UseSubWeapon(currentWeapon);
+			}
+			
 		}
 	}
 

@@ -150,6 +150,7 @@
     <ClCompile Include="ItemMoneyBagYellow.cpp" />
     <ClCompile Include="Items.cpp" />
     <ClCompile Include="ItemSmallHeart.cpp" />
+    <ClCompile Include="ItemStopWatch.cpp" />
     <ClCompile Include="Leopard.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="PointEffect.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="StairBottom.cpp" />
     <ClCompile Include="StairTop.cpp" />
+    <ClCompile Include="StopWatch.cpp" />
     <ClCompile Include="SubWeapons.cpp" />
     <ClCompile Include="Torch.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -200,6 +202,7 @@
     <ClInclude Include="ItemMoneyBagYellow.h" />
     <ClInclude Include="Items.h" />
     <ClInclude Include="ItemSmallHeart.h" />
+    <ClInclude Include="ItemStopWatch.h" />
     <ClInclude Include="Leopard.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="PointEffect.h" />
@@ -208,6 +211,7 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="StairBottom.h" />
     <ClInclude Include="StairTop.h" />
+    <ClInclude Include="StopWatch.h" />
     <ClInclude Include="SubWeapons.h" />
     <ClInclude Include="Torch.h" />
     <ClInclude Include="Utils.h" />
