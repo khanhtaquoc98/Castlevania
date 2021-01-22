@@ -178,6 +178,15 @@
     <ClCompile Include="GAudio.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Bat.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Zombie.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Fishman.cpp">
+      <Filter>Enemies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animations.h">
@@ -320,6 +329,15 @@
     </ClInclude>
     <ClInclude Include="GAudio.h">
       <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Bat.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Zombie.h">
+      <Filter>Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Fishman.h">
+      <Filter>Enemies</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

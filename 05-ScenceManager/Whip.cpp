@@ -6,6 +6,9 @@
 #include "Leopard.h"
 #include "BrickHide.h"
 #include "WallPieces.h"
+#include "Zombie.h"
+#include "Bat.h"
+#include "Fishman.h"
 
 
 CWhip::CWhip():CGameObject()
@@ -40,7 +43,18 @@ void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CWallPieces::GetInstance()->DropPiece(coliObject->x, coliObject->y);
 				CItems::GetInstance()->CheckAndDrop(coliObject);
 			}
-
+			else if (dynamic_cast<CZombie*>(coliObject)) {
+				coObjects->at(i)->SetState(ZOMBIE_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CBat*>(coliObject)) {
+				coObjects->at(i)->SetState(BAT_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CFishman*>(coliObject)) {
+				coObjects->at(i)->SetState(FISHMAN_STATE_DESTROYED);
+				coObjects->at(i)->animation_set->at(FISHMAN_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
 		}
 	}
 

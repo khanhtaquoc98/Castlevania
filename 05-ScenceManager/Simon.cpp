@@ -28,6 +28,8 @@
 #include "ItemAxe.h"
 #include "ItemCross.h"
 #include "Leopard.h"
+#include "Zombie.h"
+#include "Bat.h"
 
 CSimon* CSimon::__instance = NULL;
 
@@ -158,6 +160,14 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_700);
 				}
 				else if (dynamic_cast<CLeopard*>(coliObject)) {
+					this->SetState(SIMON_STATE_HURT_DEATH);
+					StartUntouchable();
+				}
+				else if (dynamic_cast<CZombie*>(coliObject)) {
+					this->SetState(SIMON_STATE_HURT_DEATH);
+					StartUntouchable();
+				}
+				else if (dynamic_cast<CBat*>(coliObject)) {
 					this->SetState(SIMON_STATE_HURT_DEATH);
 					StartUntouchable();
 				}
@@ -327,6 +337,12 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						if (e->ny != 0) y += dy;
 						this->SetState(SIMON_STATE_HURT_DEATH);
 						StartUntouchable();
+				}
+				else if (dynamic_cast<CZombie*>(e->obj)) {
+					if (e->nx != 0) x += dx;
+					if (e->ny != 0) y += dy;
+					this->SetState(SIMON_STATE_HURT_DEATH);
+					StartUntouchable();
 				}
 				else {
 					if (nx != 0) vx = 0;

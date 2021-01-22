@@ -6,6 +6,9 @@
 #include "Candle.h"
 #include "Items.h"
 #include "Utils.h"
+#include "Zombie.h"
+#include "Bat.h"
+#include "Fishman.h"
 
 CAxe::CAxe() :CGameObject()
 {
@@ -23,6 +26,8 @@ void CAxe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy = 0.2f;
 	}
 	else vy = -0.2f;
+
+	
 
 	if (!CGame::GetInstance()->InCamera(this)) {
 		this->SetVisible(false);
@@ -63,6 +68,18 @@ void CAxe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				e->obj->SetState(CANDLE_STATE_DESTROYED);
 				e->obj->animation_set->at(CANDLE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			 }
+			 else if (dynamic_cast<CZombie*>(e->obj)) {
+				 e->obj->SetState(ZOMBIE_STATE_DESTROYED);
+				 e->obj->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			 }
+			 else if (dynamic_cast<CBat*>(e->obj)) {
+				 e->obj->SetState(BAT_STATE_DESTROYED);
+				 e->obj->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			 }
+			 else if (dynamic_cast<CFishman*>(e->obj)) {
+				 e->obj->SetState(FISHMAN_STATE_DESTROYED);
+				 e->obj->animation_set->at(FISHMAN_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
 			 }
 			
 		}

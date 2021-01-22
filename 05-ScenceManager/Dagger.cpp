@@ -3,6 +3,9 @@
 #include "Game.h"
 #include "Torch.h"
 #include "Items.h"
+#include "Zombie.h"
+#include "Bat.h"
+#include "Fishman.h"
 
 CDagger::CDagger() :CGameObject()
 {
@@ -16,20 +19,7 @@ void CDagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else vx = -DAGGER_SPEED;
 	vy = 0;
 
-	for (UINT i = 0; i < coObjects->size(); i++)
-	{
-		LPGAMEOBJECT coliObject = coObjects->at(i);
-
-		if (this->CheckCollision(coliObject)) {
-			if (dynamic_cast<CTorch*>(coliObject)) {
-				this->SetVisible(false);
-				coObjects->at(i)->SetState(TORCH_STATE_DESTROYED);
-				coObjects->at(i)->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			}
-
-		}
-	}
-
+	
 	if (!CGame::GetInstance()->InCamera(this)) {
 		this->SetVisible(false);
 	}
@@ -68,7 +58,19 @@ void CDagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				this->SetVisible(false);
 				e->obj->SetState(TORCH_STATE_DESTROYED);
 				e->obj->animation_set->at(TORCH_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
-			}		
+			}
+			else if (dynamic_cast<CZombie*>(e->obj)) {
+				e->obj->SetState(ZOMBIE_STATE_DESTROYED);
+				e->obj->animation_set->at(ZOMBIE_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CBat*>(e->obj)) {
+				e->obj->SetState(BAT_STATE_DESTROYED);
+				e->obj->animation_set->at(BAT_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
+			else if (dynamic_cast<CFishman*>(e->obj)) {
+				e->obj->SetState(FISHMAN_STATE_DESTROYED);
+				e->obj->animation_set->at(FISHMAN_ANI_DESTROYED)->SetAniStartTime(GetTickCount());
+			}
 
 		}
 	}

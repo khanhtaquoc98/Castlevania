@@ -54,7 +54,7 @@
 #define SUBWEAPON_HOLYWATER	72
 #define SUBWEAPON_AXE	73
 
-#define MARIO_UNTOUCHABLE_TIME 800
+#define MARIO_UNTOUCHABLE_TIME 1000
 
 
 class CSimon : public CGameObject

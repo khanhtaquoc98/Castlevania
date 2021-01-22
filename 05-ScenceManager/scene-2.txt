@@ -5,7 +5,7 @@
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
-# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem,8=daggeritem,9=candle, 10=smallheartitem,11=leopard, 12=brick4leopard, 20=//, 16=holywateritem, 17= axeitem, 72= holywater
+# type: 0 = Simon, 41 = Dagger,  4 = whip,5 = torch, 6=bigheartitem ,7=chainitem,8=daggeritem,9=candle, 10=smallheartitem,11=leopard, 12=brick4leopard, 20=//, 16=holywateritem, 17= axeitem, 72= holywater, 13= zombie, 14= bat, 15= fishman
 
 #BIRCK_HIDE
 84	1008	97	33	83
@@ -20,7 +20,7 @@
 30	1010	101	30
 
 # SIMON
-0	400	0	1
+0	200	0	1
 #WHIP
 4	0	0	2
 #holywater	
@@ -30,6 +30,16 @@
 #AXE
 73	0	0	73
 
+# ZOMBIE
+13	425	120	47
+#13	450	120	47
+#13	475	120	47
+
+# BAT
+#14	300	100	48	140
+
+#FISHMAN
+15	500	500	49	80
 
 #BRICK 
 1	1520	98	31	16	66

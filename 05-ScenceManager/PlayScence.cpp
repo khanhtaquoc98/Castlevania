@@ -35,7 +35,9 @@
 #include "ItemMoneyBagPurple.h"
 #include "ItemMoneyBagYellow.h"
 #include "WallPieces.h"
-#include "Board.h"
+#include "Zombie.h"
+#include "Bat.h"
+#include "Fishman.h"
 
 using namespace std;
 
@@ -83,6 +85,9 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 
 #define OBJECT_TYPE_LEOPARD	11
 #define OBJECT_TYPE_BRICK_4_LEOPARD	12
+#define OBJECT_TYPE_ZOMBIE 13
+#define OBJECT_TYPE_BAT 14
+#define OBJECT_TYPE_FISHMAN 15
 
 #define OBJECT_TYPE_STAIR_BOTTOM 20
 #define OBJECT_TYPE_STAIR_TOP	21
@@ -339,6 +344,28 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		obj = new CLeopard();
 		obj->SetVisible(true);
+		break;
+	}
+	case OBJECT_TYPE_ZOMBIE:
+	{
+		obj = new CZombie();
+		obj->SetVisible(true);
+		break;
+	}
+	case OBJECT_TYPE_BAT:
+	{
+		int yCheck = atoi(tokens[4].c_str());
+		obj = new CBat();
+		obj->SetVisible(true);
+		obj->SetyCheck(yCheck);
+		break;
+	}
+	case OBJECT_TYPE_FISHMAN:
+	{
+		int yCheck = atoi(tokens[4].c_str());
+		obj = new CFishman();
+		obj->SetVisible(true);
+		obj->SetyCheck(yCheck);
 		break;
 	}
 	case OBJECT_TYPE_BRICK_4_LEOPARD:
