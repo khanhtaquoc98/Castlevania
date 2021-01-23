@@ -14,7 +14,7 @@
 #define LEOPARD_ANI_JUMP	2
 #define LEOPARD_ANI_DEAD	3
 
-#define LEOPARD_DEFAULT_SPACE 80.0f // khoảng cách Leopard start chạy bên trái
+#define LEOPARD_DEFAULT_SPACE 70.0f // khoảng cách Leopard start chạy bên trái
 
 #define LEOPARD_SPEED_RUN 0.16f
 #define LEOPARD_GRAVITY 0.0006f

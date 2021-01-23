@@ -32,6 +32,7 @@
 #include "Boss.h"
 #include "Bat.h"
 #include "Zombie.h"
+#include "ItemInvisibility.h"
 
 CSimon* CSimon::__instance = NULL;
 
@@ -173,6 +174,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (dynamic_cast<CCandle*>(coliObject)) {
 
 				}
+				else if (dynamic_cast<CItemAxe*>(coliObject)) {
+					coliObject->SetVisible(false);
+					this->SetWeapon(SUBWEAPON_AXE);
+				}
 				else if (dynamic_cast<CItemMoneyBagPurple*>(coliObject)) {
 					coliObject->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_1000);
@@ -189,8 +194,10 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 				else if (dynamic_cast<CBoss*>(coliObject)) {
-					this->SetState(SIMON_STATE_HURT_DEATH);
-					StartUntouchable();
+					if (untouchable != 1) {
+						this->SetState(SIMON_STATE_HURT_DEATH);
+						StartUntouchable();
+					}
 				}
 				else {
 					this->canGoUpStair = false;
@@ -283,6 +290,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (dynamic_cast<CBoss*>(e->obj)) {
 					if (e->nx != 0) x += dx;
 					if (e->ny != 0) y += dy;
+					if (e->nx != 0 || e->ny != 0) y = y - 0.2f;
 					health = health - 2;
 					this->SetState(SIMON_STATE_HURT_DEATH);
 					StartUntouchable();
@@ -296,6 +304,11 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					e->obj->SetVisible(false);
 					PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_1000);
 					this->SetScore(1000);
+				}
+				else if (dynamic_cast<CItemInvisibility*>(e->obj)) {
+					e->obj->SetVisible(false);
+					/*PointEffects::GetInstance()->SetPointEffect(POINT_EFFECT_1000);
+					this->SetScore(1000);*/
 				}
 				else if (dynamic_cast<CItemMoneyBagPurple*>(e->obj)) {
 					e->obj->SetVisible(false);
@@ -381,6 +394,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					this->SetState(SIMON_STATE_HURT_DEATH);
 				}
+				//else if ()
 				else {
 					if (nx != 0) vx = 0;
 					if (ny != 0) vy = 0;
