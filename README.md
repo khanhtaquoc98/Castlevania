@@ -7,9 +7,12 @@
 
 
 :video_game: A remake of Castlevania NES written in **C++** using *Direct X 9 Library*
-
 <br> **Instructor:** Teacher Huỳnh Hồ Thị Mộng Trinh
 <br> **Time:** 2021
+<br> **My Team:** 
+- [Ta Quoc Khanh](https://github.com/khanhtaquoc98)
+- [Ho Nguyen Nhat Tien](https://github.com/nhattienho1998)
+- [Nguyen Viet Hung](https://github.com/hungnguyen1920)
 
 
 ## 1. Introduction
