@@ -3,16 +3,12 @@
    <img width="50%" src ="https://static.wikia.nocookie.net/logopedia/images/a/a2/Castlevania_logo_color.png/revision/latest?cb=20131231142206" />
 </p>
 
-**SE102 GAME UIT**
-
-
 :video_game: A remake of Castlevania NES written in **C++** using *Direct X 9 Library*
+
 <br> **Instructor:** Teacher Huỳnh Hồ Thị Mộng Trinh
-<br> **Time:** 2021
+<br> **Time:** 09/2021
 <br> **My Team:** 
-- [Ta Quoc Khanh](https://github.com/khanhtaquoc98)
-- [Ho Nguyen Nhat Tien](https://github.com/nhattienho1998)
-- [Nguyen Viet Hung](https://github.com/hungnguyen1920)
+[Ta Quoc Khanh](https://github.com/khanhtaquoc98) - [Ho Nguyen Nhat Tien](https://github.com/nhattienho1998) - [Nguyen Viet Hung](https://github.com/hungnguyen1920)
 
 
 ## 1. Introduction
