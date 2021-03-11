@@ -12,7 +12,7 @@
 - **Castlevania**, known in Japan as *Akumajou Dracula* (translated as "Demon Castle Dracula"), is a game developed and published by Konami for the Famicom Disk System in Japan in September of 1986. In May 1987 it was ported to cartridge format and released in North America for the NES followed by a European release in 1988, and then once again in Japan in 1993.
 
 ## 2. Full Map
-
+https://nesmaps.com/maps/Castlevania/CastlevaniaMapLevel01b.png
 
 
 
