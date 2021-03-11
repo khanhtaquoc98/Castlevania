@@ -5,7 +5,7 @@
 
 :video_game: A remake of Castlevania NES written in **C++** using *Direct X 9 Library*
 
-<br> **Subject:** Introduction to game development(SE102)
+<br> **Subject:** Introduction to game development - SE102
 <br> **Instructor:** Teacher Huỳnh Hồ Thị Mộng Trinh
 <br> **Time:** 09/2021
 <br> **My Team:** 
