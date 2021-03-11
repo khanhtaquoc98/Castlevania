@@ -20,7 +20,7 @@
 ![Full Map](https://nesmaps.com/maps/Castlevania/CastlevaniaMapLevel01b.png?raw=true)
 
 
-## 4.Tools & Libraries
+## 3.Tools & Libraries
 - Microsoft Visual Studio
 - Paint
 - [GIMP](https://www.gimp.org/) - Edit images sprite 
@@ -29,7 +29,7 @@
 - [DirectX 9.0 Software Development Kit](https://www.microsoft.com/en-us/download/details.aspx?id=6812)
 
 
-## 5. References
+## 4. References
 - [Sample project of Teacher Dinh Nguyen Anh Dung](https://github.com/dungdna2000/gamedev-intro-tutorials)
 - [Sample project of Nguyen Viet Tien](https://github.com/viettiennguyen029/Castlevania)
 - [Game programming patterns](http://gameprogrammingpatterns.com/contents.html)
