@@ -7,7 +7,7 @@
 
 <br> **Subject:** Introduction to game development - SE102
 <br> **Instructor:** Teacher Huỳnh Hồ Thị Mộng Trinh
-<br> **Time:** 09/2021
+<br> **Time:** 09/2020
 <br> **My Team:** 
 [Ta Quoc Khanh](https://github.com/khanhtaquoc98) - [Ho Nguyen Nhat Tien](https://github.com/nhattienho1998) - [Nguyen Viet Hung](https://github.com/hungnguyen1920)
 
